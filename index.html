@@ -491,11 +491,15 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   /* ---------- звук ---------- */
   var ctx=null,noiseGain=null,purrGain=null,soundOn=false;
   function brown(c){var len=c.sampleRate*3,b=c.createBuffer(1,len,c.sampleRate),d=b.getChannelData(0),l=0;for(var i=0;i<len;i++){var w=Math.random()*2-1;l=(l+.02*w)/1.02;d[i]=l*3.5}return b}
+  var PURR_LEVEL=1.04;
   function initAudio(){
     if(ctx)return;
     try{ctx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){ctx=null;return}
     var buf=brown(ctx);
     var a=ctx.createBufferSource();a.buffer=buf;a.loop=true;var lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=500;noiseGain=ctx.createGain();noiseGain.gain.value=0;a.connect(lp).connect(noiseGain).connect(ctx.destination);a.start();
+    purrGain=ctx.createGain();purrGain.gain.value=0;purrGain.connect(ctx.destination);
+    var synthGain=ctx.createGain();synthGain.gain.value=.3;
+    function useSynth(){if(synthOn)return;synthOn=true;synthGain.connect(purrGain);
     var b=ctx.createBufferSource();b.buffer=buf;b.loop=true;
     var lp2=ctx.createBiquadFilter();lp2.type='lowpass';lp2.frequency.value=620;
     var pk=ctx.createBiquadFilter();pk.type='peaking';pk.frequency.value=170;pk.Q.value=1.2;pk.gain.value=9;
@@ -504,8 +508,17 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     var shp=ctx.createWaveShaper(),cv=new Float32Array(256);for(var i=0;i<256;i++){var x=i/127.5-1;cv[i]=Math.pow((x+1)/2,3)}shp.curve=cv;
     lfo.connect(shp).connect(pulse.gain);lfo.start();
     var br=ctx.createGain();br.gain.value=.65;var blfo=ctx.createOscillator();blfo.frequency.value=.42;var bd=ctx.createGain();bd.gain.value=.35;blfo.connect(bd).connect(br.gain);blfo.start();
-    purrGain=ctx.createGain();purrGain.gain.value=0;
-    b.connect(lp2).connect(pk).connect(pulse).connect(br).connect(purrGain).connect(ctx.destination);b.start();
+    b.connect(lp2).connect(pk).connect(pulse).connect(br).connect(synthGain);b.start();
+    }
+    var synthOn=false;
+    try{
+      fetch('purr.wav').then(function(r){if(!r.ok)throw 0;return r.arrayBuffer()}).then(function(ab){
+        return new Promise(function(res,rej){var pr=ctx.decodeAudioData(ab,res,rej);if(pr&&pr.then)pr.then(res,rej)});
+      }).then(function(pb){
+        var src=ctx.createBufferSource();src.buffer=pb;src.loop=true;
+        var g=ctx.createGain();g.gain.value=PURR_LEVEL;src.connect(g).connect(purrGain);src.start();
+      }).catch(useSynth);
+    }catch(e){useSynth()}
   }
   $('#soundBtn').addEventListener('click',function(){initAudio();if(!ctx)return;if(ctx.state==='suspended')ctx.resume();soundOn=!soundOn;this.setAttribute('aria-pressed',soundOn);noiseGain.gain.setTargetAtTime(soundOn?.09:0,ctx.currentTime,.8);if(!soundOn)purrGain.gain.setTargetAtTime(0,ctx.currentTime,.2)});
 
@@ -572,7 +585,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
       function setCalm(v){calm=Math.max(0,Math.min(100,v));svg.classList.toggle('sleepy',calm>32);for(var i=lines.length-1;i>=0;i--){if(calm>=lines[i][0]){if(!said[i]){said[i]=1;$('#catLine').textContent=lines[i][1]}break}}if(calm>20)mark('cat');}
       setCalm(calm);
       var pt=null;
-      function startPurr(){initAudio();if(!ctx)return;if(ctx.state==='suspended')ctx.resume();purrGain.gain.setTargetAtTime(Math.min(.28,.14+calm/600),ctx.currentTime,.25);clearTimeout(pt);pt=setTimeout(stopPurr,1100)}
+      function startPurr(){initAudio();if(!ctx)return;if(ctx.state==='suspended')ctx.resume();purrGain.gain.setTargetAtTime(Math.min(.7,.4+calm/250),ctx.currentTime,.3);clearTimeout(pt);pt=setTimeout(stopPurr,1100)}
       function stopPurr(){if(purrGain)purrGain.gain.setTargetAtTime(0,ctx.currentTime,.5)}
       function purr(x,y){var n=Date.now();if(n-lastPurr<900)return;lastPurr=n;var s=document.createElement('span');s.className='purr';s.textContent=T('purr')[Math.floor(Math.random()*4)];s.style.left=(x-14)+'px';s.style.top=(y-30)+'px';box.appendChild(s);setTimeout(function(){s.remove()},2300)}
       function pos(e){var r=box.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top]}

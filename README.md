@@ -23,3 +23,7 @@ English, Ukrainian and Russian. The game picks your browser language, and you ca
 ## Tech
 
 One self-contained `index.html` with no build step: hand-drawn pencil-style SVG, plain JavaScript and the Web Audio API. Progress (the blossoming branch, the stars in the jar, the curtain) is saved in your browser only.
+
+## Credits
+
+The purr is a real cat recording, `cat_purrsleepy_loop.wav` from [Cat purr & meow on OpenGameArt](https://opengameart.org/content/cat-purr-meow), released under CC0.
