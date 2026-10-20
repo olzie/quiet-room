@@ -973,7 +973,11 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     openSheet('<h2 id="sheetTitle">'+T('catTitle')+'</h2><p id="catLine">'+T('catIntro')+'</p><div class="catbox" id="catbox"><svg viewBox="0 0 206 240" id="bigCat" aria-label="'+T('catAria')+'">'+catSVG('b')+'</svg></div>',function(){
       var box=$('#catbox'),svg=$('#bigCat'),down=false,lx=0,ly=0,acc=0,calm=catAsleep?Math.max(40,store.num('catCalm',40,0,100)):0,lastPurr=0,said={};
       var CLN=T('catLines'),lines=[[15,CLN[0]],[35,CLN[1]],[60,CLN[2]],[85,CLN[3]],[100,CLN[4]]];
-      function setCalm(v){calm=Math.max(0,Math.min(100,v));svg.classList.toggle('sleepy',calm>32);for(var i=lines.length-1;i>=0;i--){if(calm>=lines[i][0]){if(!said[i]){said[i]=1;$('#catLine').textContent=lines[i][1]}break}}if(calm>20)mark('cat');}
+      /* фразы кота идут по очереди, каждая держится не меньше 3,5 с */
+      var lq=[],lt=null,lastL=0;
+      function pumpL(){lt=null;if(!lq.length)return;var w=3500-(Date.now()-lastL);if(w>0){lt=setTimeout(pumpL,w);return}var el=$('#catLine');if(el)el.textContent=lq.shift();lastL=Date.now();if(lq.length)lt=setTimeout(pumpL,3500)}
+      function sayL(x){lq.push(x);if(!lt)pumpL()}
+      function setCalm(v){calm=Math.max(0,Math.min(100,v));svg.classList.toggle('sleepy',calm>32);for(var i=0;i<lines.length;i++){if(calm>=lines[i][0]&&!said[i]){said[i]=1;sayL(lines[i][1])}}if(calm>20)mark('cat');}
       setCalm(calm);
       var pt=null;
       function startPurr(){initAudio();if(!ctx)return;unlockIOS();if(ctx.state==='suspended')ctx.resume();purrGain.gain.setTargetAtTime(Math.min(.7,.4+calm/250),ctx.currentTime,.3);clearTimeout(pt);pt=setTimeout(stopPurr,1100)}
@@ -1002,7 +1006,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
         if(tap&&e&&e.type==='pointerup'&&tap.onCat){var q=pos(e);if(Math.hypot(q[0]-tap.x,q[1]-tap.y)<10&&Date.now()-tap.t<450)floaties(tap.x,tap.y)}tap=null}
       box.addEventListener('pointerdown',onDown);box.addEventListener('pointermove',onMove);box.addEventListener('pointerup',onUp);box.addEventListener('pointercancel',onUp);box.addEventListener('pointerleave',onUp);
       var decay=setInterval(function(){if(!down&&calm>0&&calm<30)setCalm(calm-.6)},1200);
-      return function(){clearInterval(decay);clearTimeout(pt);stopPurr();store.set('catCalm',calm);var was=catAsleep;setSceneSleep(calm>32);if(calm>32&&!was)say(T('catSay'))};
+      return function(){clearInterval(decay);clearTimeout(pt);clearTimeout(lt);lq=[];stopPurr();store.set('catCalm',calm);var was=catAsleep;setSceneSleep(calm>32);if(calm>32&&!was)say(T('catSay'))};
     });
   }
 
