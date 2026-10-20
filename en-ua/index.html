@@ -760,6 +760,10 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 
   /* ---------- свет и подписи ---------- */
   var started=Date.now(),acts={};
+  /* огоньки-подсказки гаснут после первого нажатия на предмет и не возвращаются */
+  var hintsSeen=store.get('hintsSeen',{})||{};
+  function seeHint(a){if(!a)return;if(!hintsSeen[a]){hintsSeen[a]=1;store.set('hintsSeen',hintsSeen)}var h=document.querySelector('[data-hint="'+a+'"]');if(h)h.classList.add('seen')}
+  function applySeen(){Object.keys(acts).concat(Object.keys(hintsSeen)).forEach(function(a){var h=document.querySelector('[data-hint="'+a+'"]');if(h)h.classList.add('seen')})}
   var wi=0;
   setInterval(function(){var w=T('whispers');wi=(wi+1)%w.length;say(w[wi])},24000);
   var sayT=null;
@@ -1246,14 +1250,14 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   /* при повороте телефона или смене размера комната перестраивается под новую высоту */
   var rsT=null;addEventListener('resize',function(){clearTimeout(rsT);rsT=setTimeout(function(){if(Math.abs(calcSE()-SE)<24)return;buildScene();
     drawBigArt();drawVase();drawJar();drawLaundry();drawCurtain(curtainT);drawSky();setSceneSleep(catAsleep);applyLang();
-    Object.keys(acts).forEach(function(a){var h=document.querySelector('[data-hint="'+a+'"]');if(h)h.classList.add('seen')});bindActs($('#scene'))},200)});
+    applySeen();bindActs($('#scene'))},200)});
   function bindActs(root){root.querySelectorAll('[data-act]').forEach(function(el){
-    el.addEventListener('click',function(){map[el.dataset.act]()});
+    el.addEventListener('click',function(){seeHint(el.dataset.act);map[el.dataset.act]()});
     el.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&el.tagName!=='BUTTON'){e.preventDefault();map[el.dataset.act]()}});
   })}
-  bindActs(document);
+  bindActs(document);applySeen();
   if(0)document.querySelectorAll('[data-act]').forEach(function(el){
-    el.addEventListener('click',function(){map[el.dataset.act]()});
+    el.addEventListener('click',function(){seeHint(el.dataset.act);map[el.dataset.act]()});
     el.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&el.tagName!=='BUTTON'){e.preventDefault();map[el.dataset.act]()}});
   });
 })();
