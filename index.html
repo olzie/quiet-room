@@ -474,7 +474,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   function foldedStack(cx,top,id){
     seed=55;var s='',h=7.6;
     var items=[
-      {c:{c:'#b5dcc4',p:'#f6ecd9',d:'#8fbea2'},k:'stripes',w:46,dx:0},
+      {c:{c:'#f3eee6',p:'#d9d2e8',d:'#cfc6b8'},k:'stripes',w:46,dx:0},
       {c:{c:'#9fbbe0',p:'#8eabd4',d:'#7f9cc8'},k:'twill',w:44,dx:-1.6},
       {c:{c:'#f2b8c6',p:'#fde9ef',d:'#d998aa'},k:'dots',w:45,dx:1.2},
       {c:{c:'#c9b6ea',p:'#ad98d8',d:'#a28ccf'},k:'knit',w:43,dx:-.4}
@@ -510,7 +510,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
       s+=SK(el(cx,top,w/2,4.5,.5,1,30),1.3);
       /* полотенце на полу */
       var tw='M'+(x1+8)+' '+(bot+4)+' Q'+(x1+18)+' '+(bot-6)+' '+(x1+34)+' '+(bot-2)+' Q'+(x1+44)+' '+(bot+4)+' '+(x1+38)+' '+(bot+12)+' Q'+(x1+22)+' '+(bot+16)+' '+(x1+8)+' '+(bot+4)+' Z';
-      s+=F(tw,'#b5dcc4')+SK(tw,1.1)+K('M'+(x1+16)+' '+(bot+2)+' Q'+(x1+26)+' '+(bot+6)+' '+(x1+34)+' '+(bot+2),.8,'k','opacity=".6"');
+      s+=F(tw,'#f3eee6')+SK(tw,1.1)+K('M'+(x1+16)+' '+(bot+2)+' Q'+(x1+26)+' '+(bot+6)+' '+(x1+34)+' '+(bot+2),.8,'k','opacity=".6"');
     }
     return s;
   }
@@ -900,7 +900,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     {c:'#f2b8c6',f:'url(#txDots)',pieces:[{p:[[78,30],[60,34],[28,60],[42,84],[62,72],[62,172],[138,172],[138,72],[158,84],[172,60],[140,34],[122,30],[112,40],[100,43],[88,40]]}],folds:[['R',72],['L',128],['U',104]]},
     {c:'#c9b6ea',f:'url(#txKnit)',pieces:[{p:[[78,30],[60,34],[22,140],[38,148],[62,78],[62,172],[138,172],[138,78],[162,148],[178,140],[140,34],[122,30],[112,40],[100,43],[88,40]]},{p:[[62,160],[138,160],[138,172],[62,172]],c:'url(#txRib)'}],folds:[['R',70],['L',130],['U',104]]},
     {c:'#9fbbe0',f:'url(#txDenim)',pieces:[{p:[[58,22],[142,22],[150,182],[108,182],[100,84],[92,182],[50,182]]},{p:[[58,22],[142,22],[142.6,32],[57.4,32]],c:'url(#txDenimBand)'}],folds:[['R',100],['U',102]]},
-    {c:'#b5dcc4',f:'url(#txTerry)',pieces:[{p:[[40,36],[160,36],[160,164],[40,164]]},{p:[[40,138],[160,138],[160,148],[40,148]],c:'#f6ecd9'},{p:[[40,52],[160,52],[160,62],[40,62]],c:'#f6ecd9'}],folds:[['R',100],['U',100]]}
+    {c:'#f3eee6',f:'url(#txTerry)',pieces:[{p:[[40,36],[160,36],[160,164],[40,164]]},{p:[[40,138],[160,138],[160,148],[40,148]],c:'#d9d2e8'},{p:[[40,52],[160,52],[160,62],[40,62]],c:'#d9d2e8'}],folds:[['R',100],['U',100]]}
   ];
   var TEXDEFS='<defs>'+
     '<pattern id="txDots" width="11" height="11" patternUnits="userSpaceOnUse"><rect width="11" height="11" fill="#f2b8c6"/><circle cx="3" cy="3" r="1.4" fill="#fde9ef"/><circle cx="8.5" cy="8.5" r="1.4" fill="#fde9ef"/></pattern>'+
@@ -908,7 +908,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     '<pattern id="txRib" width="4" height="10" patternUnits="userSpaceOnUse"><rect width="4" height="10" fill="#b8a3e0"/><path d="M1 0 V10" stroke="#a48fd2" stroke-width="1"/></pattern>'+
     '<pattern id="txDenim" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#9fbbe0"/><path d="M-1 7 L7 -1 M-1 1 L1 -1 M5 7 L7 5" stroke="#8eabd4" stroke-width=".8"/></pattern>'+
     '<pattern id="txDenimBand" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#8eabd4"/><path d="M0 3 H3" stroke="#f0d79c" stroke-width=".9"/></pattern>'+
-    '<pattern id="txTerry" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#b5dcc4"/><circle cx="1.3" cy="1.3" r=".8" fill="#a3d0b4"/><circle cx="3.8" cy="3.8" r=".8" fill="#c7e6d3"/></pattern>'+
+    '<pattern id="txTerry" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#f3eee6"/><circle cx="1.3" cy="1.3" r=".8" fill="#e2dbd0"/><circle cx="3.8" cy="3.8" r=".8" fill="#fbf8f2"/></pattern>'+
     '</defs>';
 
   function clipHalf(poly,ax,v,less){var o=[];for(var i=0;i<poly.length;i++){var A=poly[i],B=poly[(i+1)%poly.length],ia=less?A[ax]<=v:A[ax]>=v,ib=less?B[ax]<=v:B[ax]>=v;if(ia)o.push(A);if(ia!==ib){var q=(v-A[ax])/(B[ax]-A[ax]);o.push([A[0]+(B[0]-A[0])*q,A[1]+(B[1]-A[1])*q])}}return o.length>=3?o:null}
