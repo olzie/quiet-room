@@ -702,6 +702,22 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   if(laundryDone)mark('laundry');
   if(catAsleep)mark('cat');
 
+  /* ---------- виброотклик ----------
+     Android: стандартная вибрация. iPhone: Safari не умеет вибрировать напрямую,
+     но даёт лёгкий «тик», когда переключается системный тумблер, поэтому щёлкаем спрятанным тумблером. */
+  var HAP=(function(){
+    var lab=null,last=0,ios=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    function ensure(){if(lab)return;var st='position:fixed;left:-20px;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
+      var i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.id='hapsw';i.tabIndex=-1;i.setAttribute('aria-hidden','true');i.style.cssText=st;
+      lab=document.createElement('label');lab.htmlFor='hapsw';lab.setAttribute('aria-hidden','true');lab.style.cssText=st;document.body.appendChild(i);document.body.appendChild(lab)}
+    function tick(){if(ios){ensure();try{lab.click()}catch(e){}}else if(navigator.vibrate){try{navigator.vibrate(8)}catch(e){}}}
+    return {
+      purr:function(){var n=Date.now();if(n-last<240)return;last=n;
+        if(!ios&&navigator.vibrate){try{navigator.vibrate([8,24,8,24,8])}catch(e){}}else tick()},
+      tick:tick
+    };
+  })();
+
   /* ---------- звук ---------- */
   var ctx=null,purrGain=null,master=null,soundMode=store.get('sound','silence'),bg={},nightDim=1,unlockEl=null;
   if(['silence','grey','meditate'].indexOf(soundMode)<0)soundMode='silence';
@@ -881,8 +897,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
       function stopPurr(){if(purrGain)purrGain.gain.setTargetAtTime(0,ctx.currentTime,.5)}
       function purr(x,y){var n=Date.now();if(n-lastPurr<900)return;lastPurr=n;var s=document.createElement('span');s.className='purr';s.textContent=T('purr')[Math.floor(Math.random()*4)];s.style.left=(x-14)+'px';s.style.top=(y-30)+'px';box.appendChild(s);setTimeout(function(){s.remove()},2300)}
       function pos(e){var r=box.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top]}
-      function onDown(e){down=true;startPurr();var p=pos(e);lx=p[0];ly=p[1];try{box.setPointerCapture(e.pointerId)}catch(_){}if(Math.random()<.5){svg.classList.add('twitch');setTimeout(function(){svg.classList.remove('twitch')},480)}}
-      function onMove(e){if(!down&&e.pointerType!=='mouse')return;var p=pos(e),d=Math.hypot(p[0]-lx,p[1]-ly);lx=p[0];ly=p[1];if(d>60)return;acc+=d*(down?1:.4);if(acc>38){acc=0;setCalm(calm+(down?2.2:1));purr(p[0],p[1]);startPurr()}}
+      function onDown(e){down=true;startPurr();HAP.purr();var p=pos(e);lx=p[0];ly=p[1];try{box.setPointerCapture(e.pointerId)}catch(_){}if(Math.random()<.5){svg.classList.add('twitch');setTimeout(function(){svg.classList.remove('twitch')},480)}}
+      function onMove(e){if(!down&&e.pointerType!=='mouse')return;var p=pos(e),d=Math.hypot(p[0]-lx,p[1]-ly);lx=p[0];ly=p[1];if(d>60)return;acc+=d*(down?1:.4);if(acc>38){acc=0;setCalm(calm+(down?2.2:1));purr(p[0],p[1]);startPurr();HAP.purr()}}
       function onUp(){down=false;clearTimeout(pt);pt=setTimeout(stopPurr,350)}
       box.addEventListener('pointerdown',onDown);box.addEventListener('pointermove',onMove);box.addEventListener('pointerup',onUp);box.addEventListener('pointercancel',onUp);box.addEventListener('pointerleave',onUp);
       var decay=setInterval(function(){if(!down&&calm>0&&calm<30)setCalm(calm-.6)},1200);
