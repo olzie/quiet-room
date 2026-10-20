@@ -115,7 +115,9 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 .kp{fill:none;stroke-linecap:round;stroke-linejoin:round}
 .ks{stroke:#1d1934;stroke-width:.9;stroke-linejoin:round}
 .hot{cursor:pointer}
-.hot:hover .k,.hot:focus-visible .k{stroke:var(--lamp)}
+/* на телефоне :hover залипает после нажатия — подсвечиваем только при наведении мышью */
+@media (hover:hover) and (pointer:fine){.hot:hover .k{stroke:var(--lamp)}}
+.hot:focus-visible .k{stroke:var(--lamp)}
 .hot:focus-visible{outline:none}
 .hint{pointer-events:none;transition:opacity .8s}
 .hint circle.ring{fill:none;stroke:var(--firefly);stroke-width:1.2;transform-box:fill-box;transform-origin:center;animation:ping 2.8s ease-out infinite}
