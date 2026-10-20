@@ -213,7 +213,13 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 #jarform .presets{flex-wrap:nowrap;overflow-x:auto;justify-content:safe center;max-width:100%;scrollbar-width:none;padding-bottom:2px}
 #jarform .presets::-webkit-scrollbar{display:none}
 #jarform .preset{flex:none}
-#jarform .thought-in{min-height:46px;overflow:hidden}
+#jarform .thought-in{min-height:0;height:46px;padding:0 14px;font-size:16px;text-overflow:ellipsis}
+/* набор текста на телефоне: прячем лишнее, чтобы окно помещалось над клавиатурой */
+.sheet.typing #card>p,.sheet.typing #shakeRow,.sheet.typing #closeSheet{display:none}
+.sheet.typing .jarbox svg{height:min(150px,18dvh)!important}
+.sheet.typing #jStat{min-height:1.45em}
+.sheet{bottom:var(--kb,0px)}
+.sheet.kbd{max-height:calc(var(--vvh,100dvh) - 8px)}
 .slip{position:absolute;top:3%;left:50%;width:min(78%,220px);height:32px;transform:translateX(-50%);perspective:700px;pointer-events:none;animation:slipIn .2s ease-out,slipOut .34s var(--outAt,.8s) ease-in forwards}
 @keyframes slipIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}}
 @keyframes slipOut{to{opacity:0;transform:translateX(-50%) scale(.2) rotate(var(--tw,160deg))}}
@@ -873,6 +879,10 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   function openSheet(html,after,noBack){if(cleanup){cleanup();cleanup=null}$('#card').innerHTML=XBTN()+html+(noBack?'':'<button class="btn ghost" id="closeSheet">'+T('back')+'</button>');$('#veil').classList.add('on');$('#sheet').classList.add('on');var cb=$('#closeSheet');if(cb)cb.addEventListener('click',closeSheet);$('#closeX').addEventListener('click',closeSheet);cleanup=after?after():null}
   function closeSheet(){if(cleanup){cleanup();cleanup=null}$('#veil').classList.remove('on');$('#sheet').classList.remove('on');if(purrGain&&ctx)purrGain.gain.setTargetAtTime(0,ctx.currentTime,.3)}
   $('#veil').addEventListener('click',closeSheet);
+  /* клавиатура на телефоне: ставим окно ровно над ней и ограничиваем высоту видимой частью экрана */
+  (function(){var vv=window.visualViewport;if(!vv)return;var de=document.documentElement;
+    function upd(){var kb=Math.max(0,window.innerHeight-vv.height-vv.offsetTop);var on=kb>80;de.style.setProperty('--kb',on?kb+'px':'0px');de.style.setProperty('--vvh',vv.height+'px');$('#sheet').classList.toggle('kbd',on)}
+    vv.addEventListener('resize',upd);vv.addEventListener('scroll',upd);upd()})();
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet()});
 
   /* ---------- штора ---------- */
@@ -1052,7 +1062,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   /* ---------- банка со звёздочками ---------- */
   function actThoughts(){
     var coarse=false;try{coarse=matchMedia('(pointer:coarse)').matches}catch(e){}
-    openSheet('<h2 id="sheetTitle">'+T('jarTitle')+'</h2><p>'+T('jarIntro')+'</p><div class="jarbox" id="jarbox" role="button" tabindex="0" aria-label="'+T('shake')+'"><svg viewBox="-75 -205 150 215" id="bigJar"><defs><filter id="sglow" x="-300%" y="-300%" width="700%" height="700%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g class="jarwob" id="jarWob"><g transform="scale(1.65)" id="bigJarG">'+jarSVG(jarStars,true)+'</g></g></svg></div><div class="status" id="jStat">'+inJar(jarStars)+'</div><div class="jarform" id="shakeRow"><button class="btn ghost small" id="shakeBtn">'+T('shake')+'</button>'+(coarse?'<div class="mhint">'+T('motionHint')+'</div>':'')+'</div><div class="jarform" id="jarform"><textarea class="thought-in" id="tin" maxlength="80" rows="1" placeholder="'+T('placeholder')+'"></textarea><div class="presets">'+T('presets').map(function(x){return '<button class="preset">'+x+'</button>'}).join('')+'</div><div class="row"><button class="btn" id="tgo">'+T('fold')+'</button></div></div>',function(){
+    openSheet('<h2 id="sheetTitle">'+T('jarTitle')+'</h2><p>'+T('jarIntro')+'</p><div class="jarbox" id="jarbox" role="button" tabindex="0" aria-label="'+T('shake')+'"><svg viewBox="-75 -205 150 215" id="bigJar"><defs><filter id="sglow" x="-300%" y="-300%" width="700%" height="700%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g class="jarwob" id="jarWob"><g transform="scale(1.65)" id="bigJarG">'+jarSVG(jarStars,true)+'</g></g></svg></div><div class="status" id="jStat">'+inJar(jarStars)+'</div><div class="jarform" id="shakeRow"><button class="btn ghost small" id="shakeBtn">'+T('shake')+'</button>'+(coarse?'<div class="mhint">'+T('motionHint')+'</div>':'')+'</div><div class="jarform" id="jarform"><input type="text" class="thought-in" id="tin" maxlength="80" enterkeyhint="done" autocomplete="off" autocapitalize="sentences" placeholder="'+T('placeholder')+'"><div class="presets">'+T('presets').map(function(x){return '<button class="preset">'+x+'</button>'}).join('')+'</div><div class="row"><button class="btn" id="tgo">'+T('fold')+'</button></div></div>',function(){
       var busy=false,releasing=false,shakes=0,dim=1,lastShake=0,alive=true,RX=/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/;
       /* Safari иногда не стирает след от движущихся звёздочек — один раз перерисовываем банку целиком */
       function repaint(){var sv=$('#bigJar'),bx=$('#jarbox');if(!sv)return;sv.style.transform='translateZ(0)';if(bx)bx.style.transform='translateZ(0)';requestAnimationFrame(function(){requestAnimationFrame(function(){sv.style.transform='';if(bx)bx.style.transform=''})})}
@@ -1139,7 +1149,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
         t=(t||'').trim();if(!t||busy||releasing)return;busy=true;
         var idx=jarStars,color=SC[idx%SC.length];
         var strip=makeSlip(t,color);$('#jarbox').appendChild(strip);strip._fit();
-        $('#tin').value='';fitTin();
+        $('#tin').value='';
         setTimeout(function(){
           strip.remove();
           var holder=alive&&$('#bigJarG .newstars');
@@ -1157,12 +1167,15 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
           },1330);
         },Math.round(strip._total*1000)-60);
       }
-      function fitTin(){var a=$('#tin');if(!a)return;a.style.height='auto';a.style.height=a.scrollHeight+3+'px'}
-      $('#tin').addEventListener('input',fitTin);
+      var tin=$('#tin'),sh=$('#sheet');
+      tin.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();fold(tin.value)}});
+      if(coarse){var tOff=null;tin.addEventListener('focus',function(){clearTimeout(tOff);sh.classList.add('typing')});tin.addEventListener('blur',function(){tOff=setTimeout(function(){sh.classList.remove('typing')},180)})}
+      /* кнопки не забирают фокус у поля — клавиатура не прячется, окно не прыгает */
+      [].forEach.call(document.querySelectorAll('#tgo, #jarform .preset'),function(b){b.addEventListener('pointerdown',function(e){if(document.activeElement===tin)e.preventDefault()})});
       $('#tgo').addEventListener('click',function(){fold($('#tin').value)});
       document.querySelectorAll('.preset').forEach(function(p){p.addEventListener('click',function(){fold(p.textContent)})});
       if(jarStars>=SLOTS.length)setTimeout(release,900);
-      return function(){alive=false;if(motionOn)window.removeEventListener('devicemotion',onMotion)};
+      return function(){alive=false;sh.classList.remove('typing');try{tin.blur()}catch(e){}if(motionOn)window.removeEventListener('devicemotion',onMotion)};
     });
   }
 
