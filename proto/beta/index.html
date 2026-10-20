@@ -213,7 +213,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 #jarform .presets{flex-wrap:nowrap;overflow-x:auto;justify-content:safe center;max-width:100%;scrollbar-width:none;padding-bottom:2px}
 #jarform .presets::-webkit-scrollbar{display:none}
 #jarform .preset{flex:none}
-#jarform .thought-in{min-height:46px}
+#jarform .thought-in{min-height:46px;overflow:hidden}
 .slip{position:absolute;top:3%;left:50%;width:min(78%,220px);height:32px;transform:translateX(-50%);perspective:700px;pointer-events:none;animation:slipIn .2s ease-out,slipOut .34s var(--outAt,.8s) ease-in forwards}
 @keyframes slipIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}}
 @keyframes slipOut{to{opacity:0;transform:translateX(-50%) scale(.2) rotate(var(--tw,160deg))}}
@@ -222,7 +222,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 .slip .face{position:absolute;inset:-.6px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--c)}
 .slip .back{transform:rotateY(180deg);background:color-mix(in srgb,var(--c) 76%,#2a2147)}
 .slip .backx{transform:rotateX(180deg);background:color-mix(in srgb,var(--c) 76%,#2a2147)}
-.slip .txt{position:absolute;display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden;font-family:var(--display);font-weight:600;font-size:.78rem;color:#2a2147;padding:0 10px;box-sizing:border-box}
+.slip .txt{position:absolute;display:flex;align-items:center;justify-content:center;white-space:normal;text-align:center;line-height:1.25;overflow-wrap:anywhere;overflow:hidden;font-family:var(--display);font-weight:600;font-size:.78rem;color:#2a2147;padding:0 10px;box-sizing:border-box}
 .slip .crease{position:absolute;pointer-events:none;background:linear-gradient(var(--cd,90deg),transparent,rgba(42,33,71,.28),transparent);transition:opacity .25s ease}
 /* Safari не передаёт прозрачность родителя объёмным слоям — в конце прячем грани явно */
 .slip.out .face,.slip.out .crease{visibility:hidden}
@@ -1052,7 +1052,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   /* ---------- банка со звёздочками ---------- */
   function actThoughts(){
     var coarse=false;try{coarse=matchMedia('(pointer:coarse)').matches}catch(e){}
-    openSheet('<h2 id="sheetTitle">'+T('jarTitle')+'</h2><p>'+T('jarIntro')+'</p><div class="jarbox" id="jarbox" role="button" tabindex="0" aria-label="'+T('shake')+'"><svg viewBox="-75 -205 150 215" id="bigJar"><defs><filter id="sglow" x="-300%" y="-300%" width="700%" height="700%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g class="jarwob" id="jarWob"><g transform="scale(1.65)" id="bigJarG">'+jarSVG(jarStars,true)+'</g></g></svg></div><div class="status" id="jStat">'+inJar(jarStars)+'</div><div class="jarform" id="shakeRow"><button class="btn ghost small" id="shakeBtn">'+T('shake')+'</button>'+(coarse?'<div class="mhint">'+T('motionHint')+'</div>':'')+'</div><div class="jarform" id="jarform"><textarea class="thought-in" id="tin" maxlength="120" placeholder="'+T('placeholder')+'"></textarea><div class="presets">'+T('presets').map(function(x){return '<button class="preset">'+x+'</button>'}).join('')+'</div><div class="row"><button class="btn" id="tgo">'+T('fold')+'</button></div></div>',function(){
+    openSheet('<h2 id="sheetTitle">'+T('jarTitle')+'</h2><p>'+T('jarIntro')+'</p><div class="jarbox" id="jarbox" role="button" tabindex="0" aria-label="'+T('shake')+'"><svg viewBox="-75 -205 150 215" id="bigJar"><defs><filter id="sglow" x="-300%" y="-300%" width="700%" height="700%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g class="jarwob" id="jarWob"><g transform="scale(1.65)" id="bigJarG">'+jarSVG(jarStars,true)+'</g></g></svg></div><div class="status" id="jStat">'+inJar(jarStars)+'</div><div class="jarform" id="shakeRow"><button class="btn ghost small" id="shakeBtn">'+T('shake')+'</button>'+(coarse?'<div class="mhint">'+T('motionHint')+'</div>':'')+'</div><div class="jarform" id="jarform"><textarea class="thought-in" id="tin" maxlength="80" rows="1" placeholder="'+T('placeholder')+'"></textarea><div class="presets">'+T('presets').map(function(x){return '<button class="preset">'+x+'</button>'}).join('')+'</div><div class="row"><button class="btn" id="tgo">'+T('fold')+'</button></div></div>',function(){
       var busy=false,releasing=false,shakes=0,dim=1,lastShake=0,alive=true,RX=/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/;
       /* Safari иногда не стирает след от движущихся звёздочек — один раз перерисовываем банку целиком */
       function repaint(){var sv=$('#bigJar'),bx=$('#jarbox');if(!sv)return;sv.style.transform='translateZ(0)';if(bx)bx.style.transform='translateZ(0)';requestAnimationFrame(function(){requestAnimationFrame(function(){sv.style.transform='';if(bx)bx.style.transform=''})})}
@@ -1130,6 +1130,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
         groups.forEach(function(g){el.appendChild(g)});
         var cr=document.createElement('div');cr.className='crease';if(f1==='L'||f1==='R'){cr.style.cssText='left:calc(50% - 5px);width:10px;top:0;bottom:0'}else{cr.style.cssText='top:calc(50% - 4px);height:8px;left:0;right:0';cr.style.setProperty('--cd','180deg')}el.appendChild(cr);
         el._total=(two?D2+DUR+.06:D1+DUR+.08)+.34;
+        el._fit=function(){var m=document.createElement('div');m.className='txt';m.style.cssText='position:absolute;visibility:hidden;display:block;width:'+el.offsetWidth+'px;height:auto;padding:0 10px;box-sizing:border-box';m.textContent=text;el.appendChild(m);var hh=Math.ceil(m.getBoundingClientRect().height);m.remove();el.style.height=Math.max(32,hh+14)+'px'};
         setTimeout(function(){cr.classList.add('done')},Math.round((D1+DUR)*1000));
         setTimeout(function(){el.classList.add('out')},Math.round(((two?D2+DUR+.06:D1+DUR+.08)+.28)*1000));
         return el;
@@ -1137,8 +1138,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
       function fold(t){
         t=(t||'').trim();if(!t||busy||releasing)return;busy=true;
         var idx=jarStars,color=SC[idx%SC.length];
-        var strip=makeSlip(t,color);$('#jarbox').appendChild(strip);
-        $('#tin').value='';
+        var strip=makeSlip(t,color);$('#jarbox').appendChild(strip);strip._fit();
+        $('#tin').value='';fitTin();
         setTimeout(function(){
           strip.remove();
           var holder=alive&&$('#bigJarG .newstars');
@@ -1156,6 +1157,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
           },1330);
         },Math.round(strip._total*1000)-60);
       }
+      function fitTin(){var a=$('#tin');if(!a)return;a.style.height='auto';a.style.height=a.scrollHeight+3+'px'}
+      $('#tin').addEventListener('input',fitTin);
       $('#tgo').addEventListener('click',function(){fold($('#tin').value)});
       document.querySelectorAll('.preset').forEach(function(p){p.addEventListener('click',function(){fold(p.textContent)})});
       if(jarStars>=SLOTS.length)setTimeout(release,900);
