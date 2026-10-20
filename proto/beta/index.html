@@ -218,8 +218,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 .sheet.typing #card>p,.sheet.typing #shakeRow,.sheet.typing #closeSheet{display:none}
 .sheet.typing .jarbox svg{height:min(150px,18dvh)!important}
 .sheet.typing #jStat{min-height:1.45em}
-.sheet{bottom:var(--kb,0px)}
-.sheet.kbd{max-height:calc(var(--vvh,100dvh) - 8px)}
+.sheet.typing{top:0;bottom:auto;padding-top:8px}
+#jarform{padding:4px 4px 2px;box-sizing:border-box}
 .slip{position:absolute;top:3%;left:50%;width:min(78%,220px);height:32px;transform:translateX(-50%);perspective:700px;pointer-events:none;animation:slipIn .2s ease-out,slipOut .34s var(--outAt,.8s) ease-in forwards}
 @keyframes slipIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}}
 @keyframes slipOut{to{opacity:0;transform:translateX(-50%) scale(.2) rotate(var(--tw,160deg))}}
@@ -879,10 +879,6 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   function openSheet(html,after,noBack){if(cleanup){cleanup();cleanup=null}$('#card').innerHTML=XBTN()+html+(noBack?'':'<button class="btn ghost" id="closeSheet">'+T('back')+'</button>');$('#veil').classList.add('on');$('#sheet').classList.add('on');var cb=$('#closeSheet');if(cb)cb.addEventListener('click',closeSheet);$('#closeX').addEventListener('click',closeSheet);cleanup=after?after():null}
   function closeSheet(){if(cleanup){cleanup();cleanup=null}$('#veil').classList.remove('on');$('#sheet').classList.remove('on');if(purrGain&&ctx)purrGain.gain.setTargetAtTime(0,ctx.currentTime,.3)}
   $('#veil').addEventListener('click',closeSheet);
-  /* клавиатура на телефоне: ставим окно ровно над ней и ограничиваем высоту видимой частью экрана */
-  (function(){var vv=window.visualViewport;if(!vv)return;var de=document.documentElement;
-    function upd(){var kb=Math.max(0,window.innerHeight-vv.height-vv.offsetTop);var on=kb>80;de.style.setProperty('--kb',on?kb+'px':'0px');de.style.setProperty('--vvh',vv.height+'px');$('#sheet').classList.toggle('kbd',on)}
-    vv.addEventListener('resize',upd);vv.addEventListener('scroll',upd);upd()})();
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet()});
 
   /* ---------- штора ---------- */
