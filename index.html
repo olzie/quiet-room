@@ -598,13 +598,35 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     var ir=c.createBuffer(2,Math.floor(c.sampleRate*3.5),c.sampleRate);for(var ch=0;ch<2;ch++){var d=ir.getChannelData(ch);for(var i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2.6)}
     var conv=c.createConvolver();conv.buffer=ir;var wet=c.createGain();wet.gain.value=.5;var dry=c.createGain();dry.gain.value=.65;
     var bus=c.createGain();bus.connect(dry).connect(out);bus.connect(conv).connect(wet).connect(out);
+    var musicG=c.createGain();musicG.gain.value=.26;musicG.connect(out);
+    function synthPad(){
     var lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=800;lp.connect(bus);
     [[87.31,.075,'sine'],[130.81,.055,'sine'],[174.61,.05,'sine'],[220,.035,'sine'],[261.63,.022,'sine']].forEach(function(n){
       [-1.5,1.5].forEach(function(dt){var o=c.createOscillator();o.type=n[2];o.frequency.value=n[0];o.detune.value=dt;
         var g=c.createGain();g.gain.value=n[1]*.5;var l=c.createOscillator();l.frequency.value=.025+Math.random()*.04;var lg=c.createGain();lg.gain.value=n[1]*.45;l.connect(lg).connect(g.gain);l.start(c.currentTime+Math.random()*3);
         o.connect(g).connect(lp);o.start()})});
-    var PENT=[349.23,392,440,523.25,587.33,698.46];
-    function chime(at){var fq=PENT[Math.floor(Math.random()*PENT.length)];[1,2.76].forEach(function(m,ii){var o=c.createOscillator();o.type='sine';o.frequency.value=fq*m;var g=c.createGain();g.gain.setValueAtTime(0,at);g.gain.linearRampToValueAtTime(ii?.01:.045,at+.03);g.gain.exponentialRampToValueAtTime(.0001,at+(ii?2.5:6));o.connect(g).connect(bus);o.start(at);o.stop(at+6.3)})}
+    }
+    /* готовый трек по кругу с плавной склейкой: каждый новый проход вступает за 5 с до конца предыдущего */
+    var XF=5;
+    function loopTrack(buf){
+      var D=buf.duration-.06,step=D-XF,next=c.currentTime+.1;
+      function sched(){
+        while(next<c.currentTime+step+1){
+          var s=c.createBufferSource();s.buffer=buf;var g=c.createGain();
+          g.gain.setValueAtTime(0,next);g.gain.linearRampToValueAtTime(1,next+XF);g.gain.setValueAtTime(1,next+D-XF);g.gain.linearRampToValueAtTime(0,next+D);
+          s.connect(g).connect(musicG);s.start(next,.05,D);next+=step;
+        }
+        setTimeout(sched,Math.max(1000,(step-2)*500));
+      }
+      sched();
+    }
+    try{
+      fetch('meditation.mp3').then(function(r){if(!r.ok)throw 0;return r.arrayBuffer()}).then(function(ab){
+        return new Promise(function(res,rej){var pr=c.decodeAudioData(ab,res,rej);if(pr&&pr.then)pr.then(res,rej)});
+      }).then(loopTrack).catch(synthPad);
+    }catch(e){synthPad()}
+    var PENT=[293.66,329.63,369.99,440,493.88,587.33];
+    function chime(at){var fq=PENT[Math.floor(Math.random()*PENT.length)];[1,2.76].forEach(function(m,ii){var o=c.createOscillator();o.type='sine';o.frequency.value=fq*m;var g=c.createGain();g.gain.setValueAtTime(0,at);g.gain.linearRampToValueAtTime(ii?.008:.035,at+.03);g.gain.exponentialRampToValueAtTime(.0001,at+(ii?2.5:6));o.connect(g).connect(bus);o.start(at);o.stop(at+6.3)})}
     out._chime=chime;return out;
   }
   var chimeT=null;

@@ -27,3 +27,5 @@ One self-contained `index.html` with no build step: hand-drawn pencil-style SVG,
 ## Credits
 
 The purr is a real cat recording, `cat_purrsleepy_loop.wav` from [Cat purr & meow on OpenGameArt](https://opengameart.org/content/cat-purr-meow), released under CC0.
+
+The meditation track is "Gentle Drifting Descent" by BudgetPixel AI (https://budgetpixel.com/background-music/gentle-drifting-descent-7fb65440), CC BY 4.0. Changes: low frequencies below 120 Hz were filtered out and the track was converted to MP3; in the game it loops with a crossfade.
