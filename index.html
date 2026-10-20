@@ -586,11 +586,12 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
         if(!col||(v==='night'&&col===PAL[0])||(v==='day'&&col===PAL[1]))pickCol(v==='night'?PAL[1]:PAL[0]);render()}
       setBg(bg);
       var srcLayer=store.get('paintingLayer',null);
-      if(srcLayer||userArt){var im=new Image();im.onload=function(){lc.drawImage(im,0,0,L.width,L.height);render()};im.src=srcLayer||userArt}
+      var hasSrc=!!(srcLayer||userArt),loaded=!hasSrc;
+      if(hasSrc){var im=new Image();im.onload=function(){lc.drawImage(im,0,0,L.width,L.height);loaded=true;render()};im.onerror=function(){loaded=true};im.src=srcLayer||userArt}
       function snap(){try{hist.push(lc.getImageData(0,0,L.width,L.height));if(hist.length>20)hist.shift()}catch(e){}}
       function pos(e){var rc=cv.getBoundingClientRect();return [(e.clientX-rc.left)*cv.width/rc.width,(e.clientY-rc.top)*cv.height/rc.height]}
       function ink(){lc.globalCompositeOperation=er?'destination-out':'source-over';lc.strokeStyle=lc.fillStyle=er?'#000':col}
-      cv.addEventListener('pointerdown',function(e){e.preventDefault();snap();down=true;dirty=true;last=pos(e);mid=last;try{cv.setPointerCapture(e.pointerId)}catch(_){}
+      cv.addEventListener('pointerdown',function(e){e.preventDefault();if(!loaded)return;snap();down=true;dirty=true;last=pos(e);mid=last;try{cv.setPointerCapture(e.pointerId)}catch(_){}
         ink();lc.beginPath();lc.arc(last[0],last[1],wid*S/2,0,6.283);lc.fill();reqRender()});
       cv.addEventListener('pointermove',function(e){if(!down)return;var p=pos(e),m=[(last[0]+p[0])/2,(last[1]+p[1])/2];ink();lc.lineWidth=wid*S;lc.beginPath();lc.moveTo(mid[0],mid[1]);lc.quadraticCurveTo(last[0],last[1],m[0],m[1]);lc.stroke();mid=m;last=p;reqRender()});
       function up(){down=false}
@@ -603,11 +604,11 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
         b.textContent=T('clearSure');b.classList.add('warn');clearArmed=setTimeout(function(){clearArmed=null;if(alive){b.textContent=T('clear');b.classList.remove('warn')}},2600)});
       function isEmpty(){try{var d=lc.getImageData(0,0,L.width,L.height).data;for(var i=3;i<d.length;i+=16)if(d[i]>8)return false;return true}catch(e){return false}}
       function resetHills(){userArt=null;store.set('painting',null);store.set('paintingLayer',null);drawBigArt()}
-      function save(){if(isEmpty()){var had=!!userArt;resetHills();return had?'reset':'empty'}try{render();var out=document.createElement('canvas');out.width=CW;out.height=CH;out.getContext('2d').drawImage(cv,0,0,CW,CH);userArt=out.toDataURL('image/jpeg',.82);userBg=bg;
+      function save(){if(!loaded)return 'kept';if(isEmpty()){var had=!!userArt;resetHills();return had?'reset':'empty'}try{render();var out=document.createElement('canvas');out.width=CW;out.height=CH;out.getContext('2d').drawImage(cv,0,0,CW,CH);userArt=out.toDataURL('image/jpeg',.82);userBg=bg;
         store.set('painting',userArt);store.set('paintingBg',bg);store.set('paintingLayer',L.toDataURL('image/png'));drawBigArt();return 'saved'}catch(e){return 'fail'}}
-      $('#hang').addEventListener('click',function(){var res=save();dirty=false;closeSheet();if(res==='saved'){mark('painting');say(T('hungSay'))}else say(T(res==='empty'?'emptySay':'resetSay'))});
+      $('#hang').addEventListener('click',function(){var res=save();dirty=false;closeSheet();if(res==='kept')return;if(res==='saved'){mark('painting');say(T('hungSay'))}else say(T(res==='empty'?'emptySay':'resetSay'))});
       var ra=$('#resetArt');if(ra)ra.addEventListener('click',function(){userArt=null;store.set('painting',null);store.set('paintingLayer',null);drawBigArt();dirty=false;closeSheet();say(T('resetSay'))});
-      return function(){alive=false;if(dirty){var res=save();say(T(res==='saved'?'hungSay':'resetSay'))}};
+      return function(){alive=false;if(dirty){var res=save();if(res!=='kept')say(T(res==='saved'?'hungSay':'resetSay'))}};
     });
   }
 
@@ -1113,6 +1114,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     el.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&el.tagName!=='BUTTON'){e.preventDefault();map[el.dataset.act]()}});
   });
 })();
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 if('serviceWorker' in navigator&&location.protocol==='https:'){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}
 </script>
 
