@@ -637,7 +637,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
       $('#hang').addEventListener('click',function(){var res=save();dirty=false;closeSheet();if(res==='kept')return;if(res==='saved'){mark('painting');say(T('hungSay'))}else say(T(res==='empty'?'emptySay':'resetSay'))});
       var ra=$('#resetArt');if(ra)ra.addEventListener('click',function(){userArt=null;store.set('painting',null);store.set('paintingLayer',null);drawBigArt();dirty=false;closeSheet();say(T('resetSay'))});
       return function(){alive=false;if(dirty){var res=save();if(res!=='kept')say(T(res==='saved'?'hungSay':'resetSay'))}};
-    });
+    },true);
   }
 
   /* ---------- сцена ---------- */
@@ -851,7 +851,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   /* ---------- панель ---------- */
   var cleanup=null;
   function XBTN(){return '<button class="round x" id="closeX" aria-label="'+T('close')+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg></button>'}
-  function openSheet(html,after){if(cleanup){cleanup();cleanup=null}$('#card').innerHTML=XBTN()+html+'<button class="btn ghost" id="closeSheet">'+T('back')+'</button>';$('#veil').classList.add('on');$('#sheet').classList.add('on');$('#closeSheet').addEventListener('click',closeSheet);$('#closeX').addEventListener('click',closeSheet);cleanup=after?after():null}
+  function openSheet(html,after,noBack){if(cleanup){cleanup();cleanup=null}$('#card').innerHTML=XBTN()+html+(noBack?'':'<button class="btn ghost" id="closeSheet">'+T('back')+'</button>');$('#veil').classList.add('on');$('#sheet').classList.add('on');var cb=$('#closeSheet');if(cb)cb.addEventListener('click',closeSheet);$('#closeX').addEventListener('click',closeSheet);cleanup=after?after():null}
   function closeSheet(){if(cleanup){cleanup();cleanup=null}$('#veil').classList.remove('on');$('#sheet').classList.remove('on');if(purrGain&&ctx)purrGain.gain.setTargetAtTime(0,ctx.currentTime,.3)}
   $('#veil').addEventListener('click',closeSheet);
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet()});

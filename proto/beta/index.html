@@ -288,8 +288,10 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 .night .soft{font-size:.82rem;color:#4f4a6c;font-family:var(--body)}
 .night .btn.ghost{color:#4f4a6c;border-color:#221f38}
 .star{position:absolute;width:2px;height:2px;border-radius:50%;background:#bfb8e0;animation:tw 6s ease-in-out infinite}
-.nmoon{width:120px;height:120px;animation:nmb 10s ease-in-out infinite}
-@keyframes nmb{0%,100%{transform:scale(1);opacity:.78}40%{transform:scale(1.1);opacity:1}}
+.nmoon{width:120px;height:120px;transform-origin:50% 50%;animation:nmb 8s ease-in-out infinite}
+@keyframes nmb{0%,100%{transform:scale(.84);opacity:.72}45%{transform:scale(1.16);opacity:1}}
+.nmglow{transform-origin:60px 60px;animation:nmg 8s ease-in-out infinite}
+@keyframes nmg{0%,100%{opacity:.35}45%{opacity:1}}
 .night .nphase{color:#8d86ad;font-size:.95rem;max-width:30ch}
 .slow-dot{width:10px;height:10px;border-radius:50%;background:#3a3460;animation:sd 10s ease-in-out infinite}
 @keyframes sd{0%,100%{transform:scale(1);opacity:.5}40%{transform:scale(2.4);opacity:.9}}
@@ -334,7 +336,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"><div class="card" id="card"></div></div>
 
 <div class="night" id="night" aria-live="polite">
-  <svg class="nmoon" viewBox="0 0 120 120" aria-hidden="true"><defs><radialGradient id="nmg"><stop offset="0" stop-color="#d8cfa8" stop-opacity=".22"/><stop offset=".55" stop-color="#d8cfa8" stop-opacity=".06"/><stop offset="1" stop-color="#d8cfa8" stop-opacity="0"/></radialGradient></defs><circle cx="60" cy="60" r="58" fill="url(#nmg)"/><circle cx="60" cy="60" r="30" fill="#17142a" stroke="#2d2848" stroke-width="1.2"/><path id="nmPh" fill="#c9c09c" opacity=".85"/></svg>
+  <svg class="nmoon" viewBox="0 0 120 120" aria-hidden="true"><defs><radialGradient id="nmg"><stop offset="0" stop-color="#d8cfa8" stop-opacity=".38"/><stop offset=".55" stop-color="#d8cfa8" stop-opacity=".12"/><stop offset="1" stop-color="#d8cfa8" stop-opacity="0"/></radialGradient></defs><circle class="nmglow" cx="60" cy="60" r="58" fill="url(#nmg)"/><circle cx="60" cy="60" r="30" fill="#17142a" stroke="#2d2848" stroke-width="1.2"/><path id="nmPh" fill="#c9c09c" opacity=".85"/></svg>
   <p data-i18n="night1">Свет выключен. Кот уже спит. Можно закрыть глаза.</p>
   <p class="soft nphase" id="nPhase"></p>
   <p class="soft" data-i18n="night2">Дыши так же медленно, как эта точка.</p>
@@ -628,7 +630,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
       $('#hang').addEventListener('click',function(){var res=save();dirty=false;closeSheet();if(res==='kept')return;if(res==='saved'){mark('painting');say(T('hungSay'))}else say(T(res==='empty'?'emptySay':'resetSay'))});
       var ra=$('#resetArt');if(ra)ra.addEventListener('click',function(){userArt=null;store.set('painting',null);store.set('paintingLayer',null);drawBigArt();dirty=false;closeSheet();say(T('resetSay'))});
       return function(){alive=false;if(dirty){var res=save();if(res!=='kept')say(T(res==='saved'?'hungSay':'resetSay'))}};
-    });
+    },true);
   }
 
   /* ---------- сцена ---------- */
@@ -846,7 +848,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   /* ---------- панель ---------- */
   var cleanup=null;
   function XBTN(){return '<button class="round x" id="closeX" aria-label="'+T('close')+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg></button>'}
-  function openSheet(html,after){if(cleanup){cleanup();cleanup=null}$('#card').innerHTML=XBTN()+html+'<button class="btn ghost" id="closeSheet">'+T('back')+'</button>';$('#veil').classList.add('on');$('#sheet').classList.add('on');$('#closeSheet').addEventListener('click',closeSheet);$('#closeX').addEventListener('click',closeSheet);cleanup=after?after():null}
+  function openSheet(html,after,noBack){if(cleanup){cleanup();cleanup=null}$('#card').innerHTML=XBTN()+html+(noBack?'':'<button class="btn ghost" id="closeSheet">'+T('back')+'</button>');$('#veil').classList.add('on');$('#sheet').classList.add('on');var cb=$('#closeSheet');if(cb)cb.addEventListener('click',closeSheet);$('#closeX').addEventListener('click',closeSheet);cleanup=after?after():null}
   function closeSheet(){if(cleanup){cleanup();cleanup=null}$('#veil').classList.remove('on');$('#sheet').classList.remove('on');if(purrGain&&ctx)purrGain.gain.setTargetAtTime(0,ctx.currentTime,.3)}
   $('#veil').addEventListener('click',closeSheet);
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet()});
