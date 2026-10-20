@@ -213,16 +213,10 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 #jarform .presets{flex-wrap:nowrap;overflow-x:auto;justify-content:safe center;max-width:100%;scrollbar-width:none;padding-bottom:2px}
 #jarform .presets::-webkit-scrollbar{display:none}
 #jarform .preset{flex:none}
-#jarform .thought-in{min-height:0;height:46px;padding:0 14px;font-size:16px;text-overflow:ellipsis}
+#jarform .thought-in{min-height:0;height:calc(2 * 1.35em + 20px);line-height:1.35;padding:10px 14px;font-size:16px;overflow-y:auto}
 /* набор текста на телефоне: прячем лишнее, чтобы окно помещалось над клавиатурой */
 #jStat{flex-direction:column}
 #jStat .mhint{margin:0;line-height:1.35}
-/* окно банки на телефоне сразу стоит выше — поле оказывается над клавиатурой, при наборе ничего не двигается */
-.sheet.jarsheet{top:0;bottom:auto;padding-top:36px}
-.sheet.jarsheet .card{gap:9px;padding-top:14px}
-.sheet.jarsheet .jarbox{margin-top:-14px}
-.sheet.jarsheet:not(.on){transform:translateY(100dvh)}
-@media (display-mode: standalone){.sheet.jarsheet{padding-top:calc(env(safe-area-inset-top,0px) + 8px)}}
 #jarform{padding:4px 4px 2px;box-sizing:border-box}
 .slip{position:absolute;top:3%;left:50%;width:min(78%,220px);height:32px;transform:translateX(-50%);perspective:700px;pointer-events:none;animation:slipIn .2s ease-out,slipOut .34s var(--outAt,.8s) ease-in forwards}
 @keyframes slipIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}}
@@ -880,8 +874,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   /* ---------- панель ---------- */
   var cleanup=null;
   function XBTN(){return '<button class="round x" id="closeX" aria-label="'+T('close')+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg></button>'}
-  var coarseDev=false;try{coarseDev=matchMedia('(pointer:coarse)').matches}catch(e){}
-  function openSheet(html,after,noBack){if(cleanup){cleanup();cleanup=null}var shE=$('#sheet'),js=coarseDev&&html.indexOf('id="jarbox"')>=0;if(shE.classList.contains('jarsheet')!==js){shE.classList.toggle('jarsheet',js);void shE.offsetHeight}$('#card').innerHTML=XBTN()+html+(noBack?'':'<button class="btn ghost" id="closeSheet">'+T('back')+'</button>');$('#veil').classList.add('on');$('#sheet').classList.add('on');var cb=$('#closeSheet');if(cb)cb.addEventListener('click',closeSheet);$('#closeX').addEventListener('click',closeSheet);cleanup=after?after():null}
+  function openSheet(html,after,noBack){if(cleanup){cleanup();cleanup=null}$('#card').innerHTML=XBTN()+html+(noBack?'':'<button class="btn ghost" id="closeSheet">'+T('back')+'</button>');$('#veil').classList.add('on');$('#sheet').classList.add('on');var cb=$('#closeSheet');if(cb)cb.addEventListener('click',closeSheet);$('#closeX').addEventListener('click',closeSheet);cleanup=after?after():null}
   function closeSheet(){if(cleanup){cleanup();cleanup=null}$('#veil').classList.remove('on');$('#sheet').classList.remove('on');if(purrGain&&ctx)purrGain.gain.setTargetAtTime(0,ctx.currentTime,.3)}
   $('#veil').addEventListener('click',closeSheet);
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet()});
@@ -1063,7 +1056,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   /* ---------- банка со звёздочками ---------- */
   function actThoughts(){
     var coarse=false;try{coarse=matchMedia('(pointer:coarse)').matches}catch(e){}
-    openSheet('<h2 id="sheetTitle">'+T('jarTitle')+'</h2><p>'+T('jarIntro')+'</p><div class="jarbox" id="jarbox" role="button" tabindex="0" aria-label="'+T('shake')+'"><svg viewBox="-75 -205 150 215" id="bigJar"><defs><filter id="sglow" x="-300%" y="-300%" width="700%" height="700%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g class="jarwob" id="jarWob"><g transform="scale(1.65)" id="bigJarG">'+jarSVG(jarStars,true)+'</g></g></svg></div><div class="status" id="jStat"></div><div class="jarform" id="jarform"><input type="text" class="thought-in" id="tin" maxlength="80" enterkeyhint="done" autocomplete="off" autocapitalize="sentences" placeholder="'+T('placeholder')+'"><div class="presets">'+T('presets').map(function(x){return '<button class="preset">'+x+'</button>'}).join('')+'</div><div class="row"><button class="btn" id="tgo">'+T('fold')+'</button></div></div>',function(){
+    openSheet('<h2 id="sheetTitle">'+T('jarTitle')+'</h2><p>'+T('jarIntro')+'</p><div class="jarbox" id="jarbox" role="button" tabindex="0" aria-label="'+T('shake')+'"><svg viewBox="-75 -205 150 215" id="bigJar"><defs><filter id="sglow" x="-300%" y="-300%" width="700%" height="700%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g class="jarwob" id="jarWob"><g transform="scale(1.65)" id="bigJarG">'+jarSVG(jarStars,true)+'</g></g></svg></div><div class="status" id="jStat"></div><div class="jarform" id="jarform"><textarea class="thought-in" id="tin" rows="2" maxlength="80" enterkeyhint="done" autocomplete="off" placeholder="'+T('placeholder')+'"></textarea><div class="presets">'+T('presets').map(function(x){return '<button class="preset">'+x+'</button>'}).join('')+'</div><div class="row"><button class="btn" id="tgo">'+T('fold')+'</button></div></div>',function(){
       var busy=false,releasing=false,shakes=0,dim=1,lastShake=0,alive=true,RX=/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/;
       /* Safari иногда не стирает след от движущихся звёздочек — один раз перерисовываем банку целиком */
       function repaint(){var sv=$('#bigJar'),bx=$('#jarbox');if(!sv)return;sv.style.transform='translateZ(0)';if(bx)bx.style.transform='translateZ(0)';requestAnimationFrame(function(){requestAnimationFrame(function(){sv.style.transform='';if(bx)bx.style.transform=''})})}
