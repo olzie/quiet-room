@@ -881,10 +881,15 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
           box.appendChild(e);e.addEventListener('animationend',function(){this.remove()},{once:true})}}
       function purr(x,y){var n=Date.now();if(n-lastPurr<900)return;lastPurr=n;var s=document.createElement('span');s.className='purr';s.textContent=T('purr')[Math.floor(Math.random()*4)];s.style.left=(x-14)+'px';s.style.top=(y-30)+'px';box.appendChild(s);setTimeout(function(){s.remove()},2300)}
       function pos(e){var r=box.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top]}
-      var tap=null;
+      var tap=null,pass=0,trk=null;
+      function trackPass(e){var q=pos(e);if(!trk){trk={x:q[0],y:q[1],sx:0,sy:0,rx:0,ry:0};return}
+        [['x',0,'sx','rx'],['y',1,'sy','ry']].forEach(function(a){var st=q[a[1]]-trk[a[0]];if(Math.abs(st)<.5)return;var sg=st>0?1:-1;
+          if(sg===trk[a[2]])trk[a[3]]+=Math.abs(st);else{if(trk[a[3]]>28){pass++;if(pass%2===1&&onCatAt(e))floaties(q[0],q[1])}trk[a[2]]=sg;trk[a[3]]=Math.abs(st)}});
+        trk.x=q[0];trk.y=q[1]}
+      function onCatAt(e){var el=document.elementFromPoint(e.clientX,e.clientY);return !!(el&&el!==svg&&el.closest&&el.closest('#bigCat'))}
       function onDown(e){down=true;startPurr();var pp=pos(e),tg=e.target,onCat=!!(tg&&tg!==svg&&tg.closest&&tg.closest('#bigCat'));tap={x:pp[0],y:pp[1],t:Date.now(),onCat:onCat};var p=pos(e);lx=p[0];ly=p[1];try{box.setPointerCapture(e.pointerId)}catch(_){}if(Math.random()<.5){svg.classList.add('twitch');setTimeout(function(){svg.classList.remove('twitch')},480)}}
-      function onMove(e){if(!down&&e.pointerType!=='mouse')return;var p=pos(e),d=Math.hypot(p[0]-lx,p[1]-ly);lx=p[0];ly=p[1];if(d>60)return;acc+=d*(down?1:.4);if(acc>38){acc=0;setCalm(calm+(down?2.2:1));purr(p[0],p[1]);startPurr()}}
-      function onUp(e){down=false;clearTimeout(pt);pt=setTimeout(stopPurr,350);
+      function onMove(e){if(down)trackPass(e);if(!down&&e.pointerType!=='mouse')return;var p=pos(e),d=Math.hypot(p[0]-lx,p[1]-ly);lx=p[0];ly=p[1];if(d>60)return;acc+=d*(down?1:.4);if(acc>38){acc=0;setCalm(calm+(down?2.2:1));purr(p[0],p[1]);startPurr()}}
+      function onUp(e){down=false;trk=null;clearTimeout(pt);pt=setTimeout(stopPurr,350);
         if(tap&&e&&e.type==='pointerup'&&tap.onCat){var q=pos(e);if(Math.hypot(q[0]-tap.x,q[1]-tap.y)<10&&Date.now()-tap.t<450)floaties(tap.x,tap.y)}tap=null}
       box.addEventListener('pointerdown',onDown);box.addEventListener('pointermove',onMove);box.addEventListener('pointerup',onUp);box.addEventListener('pointercancel',onUp);box.addEventListener('pointerleave',onUp);
       var decay=setInterval(function(){if(!down&&calm>0&&calm<30)setCalm(calm-.6)},1200);
