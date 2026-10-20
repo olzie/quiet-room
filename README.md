@@ -4,6 +4,12 @@ A tiny bedtime game. You're already in bed, and that's all you need to do. You c
 
 **Play:** https://olzie.github.io/quiet-room/
 
+## Versions
+
+- Main (English, Ukrainian, Russian): https://olzie.github.io/quiet-room/
+- English and Ukrainian only: https://olzie.github.io/quiet-room/en-ua/
+- Beta, for trying new features: https://olzie.github.io/quiet-room/proto/beta/
+
 ## What's in the room
 
 - **Dumpling the cat** in a witch hat. Stroke his back slowly and he falls asleep right on the bed.
