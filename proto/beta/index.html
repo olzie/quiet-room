@@ -757,7 +757,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   setSceneSleep(catAsleep);
 
   /* ---------- свет и подписи ---------- */
-  var started=Date.now(),acts={};
+  var started=Date.now(),acts={},lightsOut=false;
   /* огоньки-подсказки гаснут после первого нажатия на предмет и не возвращаются */
   var hintsSeen=store.get('hintsSeen',{});if(!hintsSeen||typeof hintsSeen!=='object'||Array.isArray(hintsSeen))hintsSeen={};
   function seeHint(a){if(!a)return;if(!hintsSeen[a]){hintsSeen[a]=1;store.set('hintsSeen',hintsSeen)}var h=document.querySelector('[data-hint="'+a+'"]');if(h)h.classList.add('seen')}
@@ -1196,10 +1196,10 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   function actLamp(){
     var n=Object.keys(acts).length;
     openSheet('<h2 id="sheetTitle">'+T('lampTitle')+'</h2><p>'+T(n?'lampDid':'lampNone')+'</p><div class="row"><button class="btn" id="off">'+T('off')+'</button></div>');
-    $('#off').addEventListener('click',function(){closeSheet();mark('lamp');$('#glowC').style.opacity=0;$('#bulb').style.opacity=.15;updLight();$('#nmPh').setAttribute('d',phaseD(60,60,28,lightP));$('#nPhase').textContent=T(phaseKey(lightP));setTimeout(function(){$('#night').classList.add('on');nightDim=.55;if(ctx)applyMode()},900)});
+    $('#off').addEventListener('click',function(){lightsOut=true;closeSheet();mark('lamp');$('#glowC').style.opacity=0;$('#bulb').style.opacity=.15;updLight();$('#nmPh').setAttribute('d',phaseD(60,60,28,lightP));$('#nPhase').textContent=T(phaseKey(lightP));setTimeout(function(){closeSheet();$('#night').classList.add('on');nightDim=.55;if(ctx)applyMode()},900)});
   }
   (function(){var n=$('#night');for(var i=0;i<40;i++){var s=document.createElement('span');s.className='star';s.style.left=(Math.random()*100)+'%';s.style.top=(Math.random()*100)+'%';s.style.opacity=(.2+Math.random()*.5);s.style.animationDelay=(Math.random()*6)+'s';n.appendChild(s)}})();
-  $('#lightOn').addEventListener('click',function(){$('#night').classList.remove('on');$('#glowC').style.opacity=1;$('#bulb').style.opacity=.9;nightDim=1;if(ctx)applyMode()});
+  $('#lightOn').addEventListener('click',function(){lightsOut=false;$('#night').classList.remove('on');$('#glowC').style.opacity=1;$('#bulb').style.opacity=.9;nightDim=1;if(ctx)applyMode()});
 
   $('#meter').addEventListener('click',function(){updLight();var m=Math.floor((Date.now()-started)/60000);
     say(lightP>=1?T('moonFull'):(m<1?T('justCame'):T('restFor').replace('{n}',minWord(m))))});
@@ -1252,13 +1252,13 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     drawBigArt();drawVase();drawJar();drawLaundry();drawCurtain(curtainT);drawSky();setSceneSleep(catAsleep);applyLang();
     applySeen();bindActs($('#scene'))},200)});
   function bindActs(root){root.querySelectorAll('[data-act]').forEach(function(el){
-    el.addEventListener('click',function(){seeHint(el.dataset.act);map[el.dataset.act]()});
-    el.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&el.tagName!=='BUTTON'){e.preventDefault();map[el.dataset.act]()}});
+    el.addEventListener('click',function(){if(lightsOut)return;seeHint(el.dataset.act);map[el.dataset.act]()});
+    el.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&el.tagName!=='BUTTON'){e.preventDefault();if(lightsOut)return;map[el.dataset.act]()}});
   })}
   bindActs(document);applySeen();
   if(0)document.querySelectorAll('[data-act]').forEach(function(el){
-    el.addEventListener('click',function(){seeHint(el.dataset.act);map[el.dataset.act]()});
-    el.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&el.tagName!=='BUTTON'){e.preventDefault();map[el.dataset.act]()}});
+    el.addEventListener('click',function(){if(lightsOut)return;seeHint(el.dataset.act);map[el.dataset.act]()});
+    el.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&el.tagName!=='BUTTON'){e.preventDefault();if(lightsOut)return;map[el.dataset.act]()}});
   });
 })();
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
