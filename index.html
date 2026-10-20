@@ -572,7 +572,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   /* ---------- звук ---------- */
   var ctx=null,purrGain=null,master=null,soundMode=store.get('sound','silence'),bg={},nightDim=1,unlockEl=null;
   if(['silence','grey','meditate'].indexOf(soundMode)<0)soundMode='silence';
-  var LEVEL={grey:.18,meditate:.9};
+  var LEVEL={grey:.18,meditate:1};
   var ICO={silence:'<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/>',grey:'<path d="M3 12h1.5l1.5-4 2 8 2-10 2 12 2-9 2 6 1.5-3H21"/>',meditate:'<path d="M15.5 4.5a7.5 7.5 0 1 0 4 12 6 6 0 0 1-4-12z"/><path d="M19 4l.5 1.5L21 6l-1.5.5L19 8l-.5-1.5L17 6l1.5-.5z"/>'};
   function silentWav(){var n=800,b=new Uint8Array(44+n),v=new DataView(b.buffer);function s(o,x){for(var i=0;i<x.length;i++)b[o+i]=x.charCodeAt(i)}s(0,'RIFF');v.setUint32(4,36+n,true);s(8,'WAVEfmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,8000,true);v.setUint32(28,8000,true);v.setUint16(32,1,true);v.setUint16(34,8,true);s(36,'data');v.setUint32(40,n,true);for(var i=0;i<n;i++)b[44+i]=128;var str='';for(var k=0;k<b.length;k++)str+=String.fromCharCode(b[k]);return 'data:audio/wav;base64,'+btoa(str)}
   function unlockIOS(){
@@ -593,12 +593,12 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     var ir=c.createBuffer(2,Math.floor(c.sampleRate*3.5),c.sampleRate);for(var ch=0;ch<2;ch++){var d=ir.getChannelData(ch);for(var i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2.6)}
     var conv=c.createConvolver();conv.buffer=ir;var wet=c.createGain();wet.gain.value=.5;var dry=c.createGain();dry.gain.value=.65;
     var bus=c.createGain();bus.connect(dry).connect(out);bus.connect(conv).connect(wet).connect(out);
-    var lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1100;lp.connect(bus);
-    [[110,.07,'sine'],[164.81,.05,'triangle'],[220,.045,'triangle'],[246.94,.03,'sine'],[329.63,.02,'sine']].forEach(function(n){
-      [-4,4].forEach(function(dt){var o=c.createOscillator();o.type=n[2];o.frequency.value=n[0];o.detune.value=dt;
-        var g=c.createGain();g.gain.value=n[1]*.5;var l=c.createOscillator();l.frequency.value=.04+Math.random()*.08;var lg=c.createGain();lg.gain.value=n[1]*.45;l.connect(lg).connect(g.gain);l.start(c.currentTime+Math.random()*3);
+    var lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=800;lp.connect(bus);
+    [[87.31,.075,'sine'],[130.81,.055,'sine'],[174.61,.05,'sine'],[220,.035,'sine'],[261.63,.022,'sine']].forEach(function(n){
+      [-1.5,1.5].forEach(function(dt){var o=c.createOscillator();o.type=n[2];o.frequency.value=n[0];o.detune.value=dt;
+        var g=c.createGain();g.gain.value=n[1]*.5;var l=c.createOscillator();l.frequency.value=.025+Math.random()*.04;var lg=c.createGain();lg.gain.value=n[1]*.45;l.connect(lg).connect(g.gain);l.start(c.currentTime+Math.random()*3);
         o.connect(g).connect(lp);o.start()})});
-    var PENT=[440,523.25,587.33,659.25,783.99,880];
+    var PENT=[349.23,392,440,523.25,587.33,698.46];
     function chime(at){var fq=PENT[Math.floor(Math.random()*PENT.length)];[1,2.76].forEach(function(m,ii){var o=c.createOscillator();o.type='sine';o.frequency.value=fq*m;var g=c.createGain();g.gain.setValueAtTime(0,at);g.gain.linearRampToValueAtTime(ii?.01:.045,at+.03);g.gain.exponentialRampToValueAtTime(.0001,at+(ii?2.5:6));o.connect(g).connect(bus);o.start(at);o.stop(at+6.3)})}
     out._chime=chime;return out;
   }
