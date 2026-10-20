@@ -223,7 +223,10 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 .slip .back{transform:rotateY(180deg);background:color-mix(in srgb,var(--c) 76%,#2a2147)}
 .slip .backx{transform:rotateX(180deg);background:color-mix(in srgb,var(--c) 76%,#2a2147)}
 .slip .txt{position:absolute;display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden;font-family:var(--display);font-weight:600;font-size:.78rem;color:#2a2147;padding:0 10px;box-sizing:border-box}
-.slip .crease{position:absolute;pointer-events:none;background:linear-gradient(var(--cd,90deg),transparent,rgba(42,33,71,.28),transparent)}
+.slip .crease{position:absolute;pointer-events:none;background:linear-gradient(var(--cd,90deg),transparent,rgba(42,33,71,.28),transparent);transition:opacity .25s ease}
+/* Safari не передаёт прозрачность родителя объёмным слоям — в конце прячем грани явно */
+.slip.out .face,.slip.out .crease{visibility:hidden}
+.slip .crease.done{opacity:0}
 @keyframes fY1{to{transform:rotateY(var(--a)) translateZ(-1px)}}
 @keyframes fX1{to{transform:rotateX(var(--a)) translateZ(-1px)}}
 .alist{display:flex;flex-direction:column;gap:6px;width:100%;max-width:380px}
@@ -1126,6 +1129,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
         groups.forEach(function(g){el.appendChild(g)});
         var cr=document.createElement('div');cr.className='crease';if(f1==='L'||f1==='R'){cr.style.cssText='left:calc(50% - 5px);width:10px;top:0;bottom:0'}else{cr.style.cssText='top:calc(50% - 4px);height:8px;left:0;right:0';cr.style.setProperty('--cd','180deg')}el.appendChild(cr);
         el._total=(two?D2+DUR+.06:D1+DUR+.08)+.34;
+        setTimeout(function(){cr.classList.add('done')},Math.round((D1+DUR)*1000));
+        setTimeout(function(){el.classList.add('out')},Math.round(((two?D2+DUR+.06:D1+DUR+.08)+.28)*1000));
         return el;
       }
       function fold(t){
@@ -1134,14 +1139,16 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
         var strip=makeSlip(t,color);$('#jarbox').appendChild(strip);
         $('#tin').value='';
         setTimeout(function(){
-          strip.remove();repaint();
-          fixOrder();var si=nextSlot(),slot=SLOTS[si];
-          var holder=$('#bigJarG .newstars');
+          strip.remove();
+          var holder=alive&&$('#bigJarG .newstars');
+          if(!holder){fixOrder();jarOrder.push(nextSlot());store.set('jarOrder',jarOrder);jarStars=Math.min(idx+1,SLOTS.length);store.set('stars',jarStars);drawJar();busy=false;return}
+          repaint();fixOrder();var si=nextSlot(),slot=SLOTS[si];
           holder.insertAdjacentHTML('beforeend',starG(-8,-122,idx,'fall'));
           var g=holder.lastElementChild;g.style.transition='transform .32s cubic-bezier(.3,1.6,.5,1)';g.style.transform='translate(-8px,-122px) scale(.15) rotate(-120deg)';
           requestAnimationFrame(function(){requestAnimationFrame(function(){g.style.transform='translate(-8px,-122px) scale(1) rotate(0deg)'})});
           setTimeout(function(){g.style.transition='';g.style.transform='translate('+f(slot[0])+'px,'+f(slot[1])+'px)';g.dataset.base=g.style.transform},330);
           setTimeout(function(){
+            if(!alive){jarOrder.push(si);store.set('jarOrder',jarOrder);jarStars=Math.min(idx+1,SLOTS.length);store.set('stars',jarStars);drawJar();busy=false;return}
             jarOrder.push(si);store.set('jarOrder',jarOrder);jarStars=Math.min(idx+1,SLOTS.length);store.set('stars',jarStars);drawJar();mark('thoughts');busy=false;
             $('#jStat').textContent=inJar(jarStars);repaint();
             if(jarStars>=SLOTS.length)setTimeout(release,700);
