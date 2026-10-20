@@ -1164,7 +1164,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
             var mv=(f2==='L'&&cx===1)||(f2==='R'&&cx===0);if(mv){g.style.transformOrigin=f2==='L'?'0 50%':'100% 50%';g.style.setProperty('--a',(f2==='L'?-180:180)+'deg');g.style.animation='fY1 '+DUR+'s '+D2+'s cubic-bezier(.5,0,.3,1) forwards'}
             return g})}
         groups.forEach(function(g){el.appendChild(g)});
-        var cr=document.createElement('div');cr.className='crease';if(f1==='L'||f1==='R'){cr.style.cssText='left:calc(50% - 3px);width:6px;top:0;bottom:0'}else{cr.style.cssText='top:calc(50% - 2px);height:4px;left:0;right:0';cr.style.setProperty('--cd','180deg');cr.style.setProperty('--ca','.13')}el.appendChild(cr);
+        var cr=document.createElement('div');cr.className='crease';if(f1==='L'||f1==='R'){cr.style.cssText='left:calc(50% - 5px);width:10px;top:0;bottom:0'}else{cr.style.cssText='top:calc(50% - 2px);height:4px;left:0;right:0';cr.style.setProperty('--cd','180deg');cr.style.setProperty('--ca','.13')}el.appendChild(cr);
         el._total=(two?D2+DUR+.06:D1+DUR+.08)+.34;
         el._fit=function(){var m=document.createElement('div');m.className='txt';m.style.cssText='position:absolute;visibility:hidden;display:block;width:'+el.offsetWidth+'px;height:auto;padding:0 10px;box-sizing:border-box';m.textContent=text;el.appendChild(m);var hh=Math.ceil(m.getBoundingClientRect().height);m.remove();el.style.height=Math.max(32,hh+14)+'px'};
         setTimeout(function(){cr.classList.add('done')},Math.round((D1+DUR)*1000));
