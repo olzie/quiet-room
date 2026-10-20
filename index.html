@@ -384,7 +384,14 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     return 'en';
   }
   var L=detectLang();
-  function T(k){var v=I18N[L][k];return v===undefined?I18N.ru[k]:v}
+  /* типографика: последнее слово не остаётся одно на строке, однобуквенные слова и тире не висят на краю строки */
+  var NB='\u00a0';
+  function TY(s){if(Array.isArray(s))return s.map(TY);if(typeof s!=='string'||s.indexOf(' ')<0)return s;
+    for(var i=0;i<2;i++)s=s.replace(/(^|[\s\u00a0(«"„])([вВиИаАсСкКуУоОяЯіІйЙзЗ]) /g,'$1$2'+NB);
+    s=s.replace(/ ([—–]) /g,NB+'$1 ');
+    if(s.trim().split(/[\s\u00a0]+/).length>=3){var j=s.lastIndexOf(' ');if(j>0)s=s.slice(0,j)+NB+s.slice(j+1)}
+    return s}
+  function T(k){var v=I18N[L][k];return TY(v===undefined?I18N.ru[k]:v)}
   function plural(n){var w=T('stars');if(L==='en')return n===1?w[0]:w[1];var a=n%10,b=n%100;if(a===1&&b!==11)return w[0];if(a>=2&&a<=4&&(b<12||b>14))return w[1];return w[2]}
   function inJar(n){return T('inJar').replace('{n}',n).replace('{w}',plural(n))}
   function applyLang(){
