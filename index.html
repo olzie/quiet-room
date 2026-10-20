@@ -508,7 +508,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     s+=F('M0 0H400V560H0Z','var(--wall)');
     s+=F('M0 0 L125 14 L125 392 L0 442 Z','var(--wall-l)');
     s+=F('M0 442 L125 392 L400 392 L400 560 L0 560Z','var(--floor)');
-    s+=F('M100 414 L400 404 L400 516 L30 516 Z','var(--rug)');
+    s+=F('M215 404 L400 404 L400 516 L0 516 L0 497.7 Z','var(--rug)');
     s+=F('M26 0 L52 4 L52 322 L26 328 Z','var(--sky)');
     s+='<circle class="lampglow" id="glowC" cx="205" cy="208" r="190" fill="url(#glow)"/>';
     s+='<g pointer-events="none"><circle cx="40" cy="56" r="8" fill="var(--moon)" opacity=".92"/><circle cx="44" cy="52.5" r="7" fill="var(--sky)"/>';
@@ -517,10 +517,10 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     s+='<g filter="url(#pencil)">';
     var d='';
     d+=ln(0,0,125,14)+ln(125,14,400,14)+ln(125,14,125,392,.8)+ln(125,392,400,392)+ln(0,442,125,392);
-        d+=ln(0,530,400,528,1.2)+ln(150,528,144,560)+ln(330,528,334,560);
+        d+=ln(0,530,400,528,1.2)+ln(150,528,97,560)+ln(330,528,290,560);
     s+=SK(d,1.3);
     s+=K(ln(125,386,400,386,.6,1),.8,'k','opacity=".6"');
-    s+=K(ln(100,414,30,516)+ln(30,516,400,516),1.1);
+    s+=K(ln(215,404,0,497.7)+ln(215,404,400,404,.6,1)+ln(0,516,400,516),1.1);
     s+='</g>';
     /* окно */
     s+='<g class="hot" data-act="breath" tabindex="0" role="button" aria-label="Окно: подышать"><rect x="0" y="0" width="70" height="360" fill="transparent"/><g filter="url(#pencil)">';
