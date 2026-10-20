@@ -476,7 +476,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     var items=[
       {c:{c:'#f3eee6',p:'#d9d2e8',d:'#cfc6b8'},k:'stripes',w:46,dx:0},
       {c:{c:'#9fbbe0',p:'#8eabd4',d:'#7f9cc8'},k:'twill',w:44,dx:-1.6},
-      {c:{c:'#f2b8c6',p:'#fde9ef',d:'#d998aa'},k:'dots',w:45,dx:1.2},
+      {c:{c:'#f7f4f0',p:'#f7f4f0',d:'#d6cfc4'},k:'plain',w:45,dx:1.2},
       {c:{c:'#c9b6ea',p:'#ad98d8',d:'#a28ccf'},k:'knit',w:43,dx:-.4}
     ];
     items.forEach(function(it,i){var y=top+1-i*(h-.4);s+=slab(cx-it.w/2+it.dx,y,it.w,h,it.c,it.k,id,i)});
@@ -505,7 +505,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     if(done){s+=F('M'+(x0-1)+' '+top+' Q'+cx+' '+(top+10)+' '+(x1+1)+' '+top+' L'+(x1+1)+' '+(top+2.5)+' Q'+cx+' '+(top+12.5)+' '+(x0-1)+' '+(top+2.5)+' Z',WKR)+SK('M'+(x0-1)+' '+top+' Q'+cx+' '+(top+10)+' '+(x1+1)+' '+top+' M'+(x0-1)+' '+(top+2.5)+' Q'+cx+' '+(top+12.5)+' '+(x1+1)+' '+(top+2.5),1.1)}
     if(!done){
       /* рукав свисает через край */
-      s+=F('M'+(x0+2)+' '+(top+1)+' Q'+(x0-6)+' '+(top+8)+' '+(x0-4)+' '+(top+22)+' L'+(x0+3)+' '+(top+22)+' Q'+(x0+3)+' '+(top+10)+' '+(x0+10)+' '+(top+3)+' Z','#f2b8c6');
+      s+=F('M'+(x0+2)+' '+(top+1)+' Q'+(x0-6)+' '+(top+8)+' '+(x0-4)+' '+(top+22)+' L'+(x0+3)+' '+(top+22)+' Q'+(x0+3)+' '+(top+10)+' '+(x0+10)+' '+(top+3)+' Z','#f7f4f0');
       s+=SK('M'+(x0+2)+' '+(top+1)+' Q'+(x0-6)+' '+(top+8)+' '+(x0-4)+' '+(top+22)+' L'+(x0+3)+' '+(top+22)+' Q'+(x0+3)+' '+(top+10)+' '+(x0+10)+' '+(top+3),1);
       s+=SK(el(cx,top,w/2,4.5,.5,1,30),1.3);
       /* полотенце на полу */
@@ -897,13 +897,13 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 
   /* ---------- бельё ---------- */
   var GARMENTS=[
-    {c:'#f2b8c6',f:'url(#txDots)',pieces:[{p:[[78,30],[60,34],[28,60],[42,84],[62,72],[62,172],[138,172],[138,72],[158,84],[172,60],[140,34],[122,30],[112,40],[100,43],[88,40]]}],folds:[['R',72],['L',128],['U',104]]},
+    {c:'#f7f4f0',pieces:[{p:[[78,30],[60,34],[28,60],[42,84],[62,72],[62,172],[138,172],[138,72],[158,84],[172,60],[140,34],[122,30],[112,40],[100,43],[88,40]]}],folds:[['R',72],['L',128],['U',104]]},
     {c:'#c9b6ea',f:'url(#txKnit)',pieces:[{p:[[78,30],[60,34],[22,140],[38,148],[62,78],[62,172],[138,172],[138,78],[162,148],[178,140],[140,34],[122,30],[112,40],[100,43],[88,40]]},{p:[[62,160],[138,160],[138,172],[62,172]],c:'url(#txRib)'}],folds:[['R',70],['L',130],['U',104]]},
     {c:'#9fbbe0',f:'url(#txDenim)',pieces:[{p:[[58,22],[142,22],[150,182],[108,182],[100,84],[92,182],[50,182]]},{p:[[58,22],[142,22],[142.6,32],[57.4,32]],c:'url(#txDenimBand)'}],folds:[['R',100],['U',102]]},
     {c:'#f3eee6',f:'url(#txTerry)',pieces:[{p:[[40,36],[160,36],[160,164],[40,164]]},{p:[[40,138],[160,138],[160,148],[40,148]],c:'#d9d2e8'},{p:[[40,52],[160,52],[160,62],[40,62]],c:'#d9d2e8'}],folds:[['R',100],['U',100]]}
   ];
   var TEXDEFS='<defs>'+
-    '<pattern id="txDots" width="11" height="11" patternUnits="userSpaceOnUse"><rect width="11" height="11" fill="#f2b8c6"/><circle cx="3" cy="3" r="1.4" fill="#fde9ef"/><circle cx="8.5" cy="8.5" r="1.4" fill="#fde9ef"/></pattern>'+
+    '<pattern id="txDots" width="11" height="11" patternUnits="userSpaceOnUse"><rect width="11" height="11" fill="#f7f4f0"/><circle cx="3" cy="3" r="1.4" fill="#fde9ef"/><circle cx="8.5" cy="8.5" r="1.4" fill="#fde9ef"/></pattern>'+
     '<pattern id="txKnit" width="8" height="7" patternUnits="userSpaceOnUse"><rect width="8" height="7" fill="#c9b6ea"/><path d="M0 1.5 L2 5 L4 1.5 M4 1.5 L6 5 L8 1.5" fill="none" stroke="#ad98d8" stroke-width=".9" stroke-linecap="round"/></pattern>'+
     '<pattern id="txRib" width="4" height="10" patternUnits="userSpaceOnUse"><rect width="4" height="10" fill="#b8a3e0"/><path d="M1 0 V10" stroke="#a48fd2" stroke-width="1"/></pattern>'+
     '<pattern id="txDenim" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#9fbbe0"/><path d="M-1 7 L7 -1 M-1 1 L1 -1 M5 7 L7 5" stroke="#8eabd4" stroke-width=".8"/></pattern>'+
