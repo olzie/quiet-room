@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Тихая игра перед сном: погладить кота, подышать с луной, сложить бумажную звёздочку и погасить лампу.">
+<meta name="description" content="A tiny bedtime game: pet a sleepy cat, breathe with the moon, fold a paper star and turn off the lamp.">
 <meta name="theme-color" content="#120f22">
 <style>html{box-sizing:border-box;height:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:#120f22}*,*::before,*::after{box-sizing:inherit}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
-<title>Ночной набросок</title>
+<title>Quiet Room · Тихая комната</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap">
 <style>
@@ -56,6 +56,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 .meter svg{width:24px;height:24px}
 .round{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--panel);border:1.5px solid var(--line);color:var(--muted);cursor:pointer;padding:0}
 .round svg{width:20px;height:20px}
+.lang{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.04em;color:var(--ink)}
 .round[aria-pressed="true"]{color:var(--lamp);border-color:var(--lamp)}
 .stage{flex:1;min-height:0;position:relative}
 #scene{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -93,7 +94,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 .sheet{position:fixed;left:0;right:0;bottom:0;z-index:21;transform:translateY(105%);transition:transform .5s cubic-bezier(.2,.8,.2,1);max-height:92vh;overflow-y:auto;padding-left:max(10px, env(safe-area-inset-left, 0px));padding-right:max(10px, env(safe-area-inset-right, 0px));padding-bottom:calc(10px + env(safe-area-inset-bottom, 0px))}
 .sheet.on{transform:none}
 .card{max-width:520px;margin:0 auto;background:var(--panel);border:1.5px solid var(--ink-soft);border-radius:26px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;position:relative;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
-.card h2{font-family:var(--display);font-weight:700;font-size:1.15rem;margin:0;text-wrap:balance}
+.card h2{font-family:var(--display);font-weight:700;font-size:1.15rem;margin:0;padding:0 36px;text-wrap:balance}
 .card p{margin:0;color:var(--muted);font-size:.92rem;max-width:42ch}
 .x{position:absolute;top:10px;right:10px;width:34px;height:34px}
 .btn{font-family:var(--display);font-size:.95rem;font-weight:700;color:var(--night);background:var(--lamp);border:0;border-radius:16px;padding:11px 22px;cursor:pointer;box-shadow:0 3px 0 #a8743a}
@@ -173,9 +174,9 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 <body>
 <div class="game">
   <header class="hud">
-    <div class="title">Ночной набросок</div>
+    <div class="title" data-i18n="title">Тихая комната</div>
     <div class="hud-r">
-      <div class="meter" title="Сколько света ты накопила">
+      <div class="meter" data-i18n-title="meterTitle" title="Сколько света ты накопила">
         <svg viewBox="0 0 26 26" aria-hidden="true">
           <defs><clipPath id="moonClip"><rect id="moonFill" x="0" y="26" width="26" height="26"/></clipPath></defs>
           <circle cx="13" cy="13" r="10" fill="none" stroke="var(--ink-soft)" stroke-width="1.5"/>
@@ -183,7 +184,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
         </svg>
         <span id="lightText">свет</span>
       </div>
-      <button class="round" id="soundBtn" aria-pressed="false" aria-label="Тихий шум">
+      <button class="round lang" id="langBtn" data-i18n="langShort" data-i18n-aria="langAria" aria-label="Язык: русский">RU</button>
+      <button class="round" id="soundBtn" aria-pressed="false" data-i18n-aria="sound" aria-label="Тихий шум">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9.5q1.6 2.5 0 5M18 7.5q3.3 4.5 0 9"/></svg>
       </button>
     </div>
@@ -191,17 +193,17 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   <div class="caption" id="whisper">Ты в постели, и этого достаточно. Нажми на что-нибудь в комнате.</div>
 
   <main class="stage">
-    <svg id="scene" viewBox="0 0 400 560" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Ночная спальня, нарисованная карандашом"></svg>
+    <svg id="scene" viewBox="0 0 400 560" preserveAspectRatio="xMidYMid meet" role="img" data-i18n-aria="sceneAria" aria-label="Ночная спальня, нарисованная карандашом"></svg>
   </main>
 
-  <nav class="bar" id="bar" aria-label="Предметы в комнате">
-    <button class="tool" data-act="cat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 10 6 3.5l4 3.7h4L18 3.5l1 6.5q1.6 9-7 10Q3.4 19 5 10z"/><circle cx="9.5" cy="12" r=".9" fill="currentColor"/><circle cx="14.5" cy="12" r=".9" fill="currentColor"/></svg><span>Кот</span></button>
-    <button class="tool" data-act="breath"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M12 3v18M5 12h14"/><path d="M15.5 6.2a1.6 1.6 0 1 0 1.3 2.4 1.3 1.3 0 0 1-1.3-2.4z" fill="currentColor"/></svg><span>Окно</span></button>
-    <button class="tool" data-act="curtain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3.5h18M6 4q-1 8 0 17M10 4q1 8-1 17M14 4q-1 8 1 17M18 4q1 8 0 17"/></svg><span>Штора</span></button>
-    <button class="tool" data-act="plant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 21v-9M12 15 7 8.5M12 12l4-6.5"/><circle cx="7" cy="8" r="1.6"/><circle cx="16.3" cy="5.2" r="1.6"/><path d="M9 21h6"/></svg><span>Ветка</span></button>
-    <button class="tool" data-act="thoughts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5h8M8.5 7.5h7q3.5 1 3.5 4.5v7q0 2-2 2H7q-2 0-2-2v-7q0-3.5 3.5-4.5z"/><path d="m12 11.5.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z"/></svg><span>Банка</span></button>
-    <button class="tool" data-act="laundry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 3.5 4 5.5 2.5 10l3.2 1.3.8-2.1V20.5h11V9.2l.8 2.1 3.2-1.3L20 5.5l-4.5-2Q12 6.5 8.5 3.5z"/></svg><span>Бельё</span></button>
-    <button class="tool" data-act="lamp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 2v6"/><circle cx="12" cy="13.5" r="5.5"/><path d="M8 13.5q4-3 8 0M12 8v11"/></svg><span>Лампа</span></button>
+  <nav class="bar" id="bar" data-i18n-aria="navAria" aria-label="Предметы в комнате">
+    <button class="tool" data-act="cat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 10 6 3.5l4 3.7h4L18 3.5l1 6.5q1.6 9-7 10Q3.4 19 5 10z"/><circle cx="9.5" cy="12" r=".9" fill="currentColor"/><circle cx="14.5" cy="12" r=".9" fill="currentColor"/></svg><span data-i18n="t_cat">Кот</span></button>
+    <button class="tool" data-act="breath"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M12 3v18M5 12h14"/><path d="M15.5 6.2a1.6 1.6 0 1 0 1.3 2.4 1.3 1.3 0 0 1-1.3-2.4z" fill="currentColor"/></svg><span data-i18n="t_breath">Окно</span></button>
+    <button class="tool" data-act="curtain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3.5h18M6 4q-1 8 0 17M10 4q1 8-1 17M14 4q-1 8 1 17M18 4q1 8 0 17"/></svg><span data-i18n="t_curtain">Штора</span></button>
+    <button class="tool" data-act="plant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 21v-9M12 15 7 8.5M12 12l4-6.5"/><circle cx="7" cy="8" r="1.6"/><circle cx="16.3" cy="5.2" r="1.6"/><path d="M9 21h6"/></svg><span data-i18n="t_plant">Ветка</span></button>
+    <button class="tool" data-act="thoughts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5h8M8.5 7.5h7q3.5 1 3.5 4.5v7q0 2-2 2H7q-2 0-2-2v-7q0-3.5 3.5-4.5z"/><path d="m12 11.5.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z"/></svg><span data-i18n="t_thoughts">Банка</span></button>
+    <button class="tool" data-act="laundry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 3.5 4 5.5 2.5 10l3.2 1.3.8-2.1V20.5h11V9.2l.8 2.1 3.2-1.3L20 5.5l-4.5-2Q12 6.5 8.5 3.5z"/></svg><span data-i18n="t_laundry">Бельё</span></button>
+    <button class="tool" data-act="lamp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 2v6"/><circle cx="12" cy="13.5" r="5.5"/><path d="M8 13.5q4-3 8 0M12 8v11"/></svg><span data-i18n="t_lamp">Лампа</span></button>
   </nav>
 </div>
 
@@ -210,15 +212,36 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 
 <div class="night" id="night" aria-live="polite">
   <div class="slow-dot" aria-hidden="true"></div>
-  <p>Свет выключен. Кот уже спит. Можно закрыть глаза.</p>
-  <p class="soft">Дыши так же медленно, как эта точка.</p>
-  <button class="btn ghost" id="lightOn">Включить свет</button>
+  <p data-i18n="night1">Свет выключен. Кот уже спит. Можно закрыть глаза.</p>
+  <p class="soft" data-i18n="night2">Дыши так же медленно, как эта точка.</p>
+  <button class="btn ghost" id="lightOn" data-i18n="lightOn">Включить свет</button>
 </div>
 
 <script>
 (function(){
   var $=function(s,r){return (r||document).querySelector(s)};
   var store={get:function(k,d){try{var v=localStorage.getItem('nn_'+k);return v===null?d:JSON.parse(v)}catch(e){return d}},set:function(k,v){try{localStorage.setItem('nn_'+k,JSON.stringify(v))}catch(e){}}};
+  var I18N={"ru": {"title": "Тихая комната", "desc": "Тихая игра перед сном: погладить кота, подышать с луной, сложить бумажную звёздочку и погасить лампу.", "meterTitle": "Сколько света ты накопила", "light": "свет", "min": "мин", "sound": "Тихий шум", "langAria": "Язык: русский", "langShort": "RU", "sceneAria": "Ночная спальня, нарисованная карандашом", "navAria": "Предметы в комнате", "t_cat": "Кот", "t_breath": "Окно", "t_curtain": "Штора", "t_plant": "Ветка", "t_thoughts": "Банка", "t_laundry": "Бельё", "t_lamp": "Лампа", "a_breath": "Окно: подышать", "a_curtain": "Штора: открыть или закрыть", "a_lamp": "Лампа: выключить свет", "a_plant": "Ветка в вазе: полить", "a_thoughts": "Банка со звёздочками: отпустить мысли", "a_cat": "Кот: погладить", "a_laundry": "Бельё у корзины: собрать", "night1": "Свет выключен. Кот уже спит. Можно закрыть глаза.", "night2": "Дыши так же медленно, как эта точка.", "lightOn": "Включить свет", "close": "Закрыть", "back": "Вернуться в постель", "whispers": ["Ты в постели, и этого достаточно. Нажми на что-нибудь в комнате.", "Ничего не нужно доделывать сегодня.", "Плечи можно опустить. Челюсть тоже.", "Всё, что не случилось за день, подождёт до утра.", "Тут тихо. Можно просто полежать."], "curtainClosed": "Штора задёрнута. Луна всё равно немного просвечивает.", "curtainOpen": "Штора открыта. Там луна и пара звёзд.", "laundrySay": "У корзины теперь порядок.", "catSay": "Пирожок уснул на одеяле. Тише.", "plantTitle": "Ветка в вазе", "plantIntro": "Подлей ей воды. Больше ничего не требуется.", "water": "Полить", "plantLines": ["Ей нравится, когда о ней не забывают.", "Вода потемнела. Ветка пьёт.", "Первый цветок. Медленно, как и надо.", "Ветки раскрываются ночью. Ты тоже отдыхаешь не зря.", "Ещё один.", "Она не торопится. И ты не торопись.", "Почти вся в цвету.", "Ещё чуть-чуть.", "Расцвела. Просто так, без повода.", "Хватит воды на сегодня. Она сыта и спокойна."], "breathTitle": "Подыши с луной", "settle": "Устройся поудобнее", "breathIntro": "Луна растёт на вдохе и уменьшается на выдохе. Ничего не считай.", "phases": ["Вдох", "Подержи", "Выдох"], "breathLines": ["Хорошо. Ещё немного.", "Тело становится тяжелее. Это нормально.", "Можно продолжать сколько хочется."], "catTitle": "Это Пирожок", "catIntro": "Сегодня он в шляпе и очень серьёзный. Проведи пальцем по спинке, медленно, от головы к хвосту.", "catAria": "Рыжий кот в шляпе, которого можно гладить", "purr": ["мрр", "мррр", "мр-р", "…мрр"], "catLines": ["Шляпа съехала набок. Ему нравится.", "Глаза закрываются сами.", "Слышишь? Тихо мурчит.", "Он растёкся по одеялу. Ты тоже можешь.", "Кот уснул под твоей рукой. Можно лечь рядом."], "doneTitle": "Всё сложено", "doneText": "Пол чистый, вещи в корзине. Завтра это уже не твоя забота.", "messTitle": "Небольшой беспорядок", "messIntro": "Вещи разбросаны у корзины. Нажимай на них по одной, и каждая сама сложится и ляжет в корзину.", "left": "осталось: {n}", "tidy": "порядок", "laundryMsgs": ["Одна есть.", "Вот так, ровненько.", "Уже половина.", "Последняя осталась.", "Всё сложено. Завтра это уже не твоя забота."], "take": "Убрать:", "clothes": ["футболка", "свитер", "носок", "штаны", "полотенце"], "jarTitle": "Банка со звёздочками", "jarIntro": "Напиши, что крутится в голове. Записка сложится в бумажную звёздочку и останется в банке, а не в голове.", "inJar": "в банке {n} {w}", "stars": ["звёздочка", "звёздочки", "звёздочек"], "jarFull": "банка полная. Мыслей в голове стало меньше", "placeholder": "например: завтрашний созвон", "presets": ["работа", "завтрашний день", "переписка без ответа", "просто шумно в голове"], "fold": "Сложить звёздочку", "lampTitle": "Выключить свет?", "lampDid": "Ты сегодня уже позаботилась о себе. Этого достаточно.", "lampNone": "Можно и без всего остального. Иногда лучшее, что можно сделать, это просто погасить лампу.", "off": "Погасить"}, "en": {"title": "Quiet Room", "desc": "A tiny bedtime game: pet a sleepy cat, breathe with the moon, fold a paper star and turn off the lamp.", "meterTitle": "How much light you've gathered", "light": "light", "min": "min", "sound": "Soft noise", "langAria": "Language: English", "langShort": "EN", "sceneAria": "A night bedroom drawn in pencil", "navAria": "Things in the room", "t_cat": "Cat", "t_breath": "Window", "t_curtain": "Curtain", "t_plant": "Branch", "t_thoughts": "Jar", "t_laundry": "Laundry", "t_lamp": "Lamp", "a_breath": "Window: breathe", "a_curtain": "Curtain: open or close", "a_lamp": "Lamp: turn off the light", "a_plant": "Branch in a vase: water it", "a_thoughts": "Jar of stars: let your thoughts go", "a_cat": "Cat: pet him", "a_laundry": "Laundry by the basket: tidy up", "night1": "The light is off. The cat is already asleep. You can close your eyes.", "night2": "Breathe as slowly as this dot.", "lightOn": "Turn the light on", "close": "Close", "back": "Back to bed", "whispers": ["You're in bed, and that's enough. Tap anything in the room.", "Nothing needs finishing tonight.", "You can drop your shoulders. Your jaw too.", "Whatever didn't happen today can wait until morning.", "It's quiet here. You can just lie still."], "curtainClosed": "Curtain drawn. The moon still glows through a little.", "curtainOpen": "Curtain open. There's the moon and a couple of stars.", "laundrySay": "It's tidy by the basket now.", "catSay": "Dumpling fell asleep on the blanket. Shh.", "plantTitle": "Branch in a vase", "plantIntro": "Give it a little water. Nothing else is needed.", "water": "Water", "plantLines": ["It likes being remembered.", "The water darkened. The branch is drinking.", "First blossom. Slowly, the way it should be.", "Branches open up at night. Your rest counts too.", "Another one.", "It isn't in a hurry. Don't hurry either.", "Almost in full bloom.", "Just a little more.", "In bloom. For no reason at all.", "Enough water for tonight. It's full and calm."], "breathTitle": "Breathe with the moon", "settle": "Get comfortable", "breathIntro": "The moon grows as you breathe in and shrinks as you breathe out. No need to count.", "phases": ["Breathe in", "Hold", "Breathe out"], "breathLines": ["Good. A little more.", "Your body is getting heavier. That's normal.", "Keep going as long as you like."], "catTitle": "This is Dumpling", "catIntro": "Tonight he's wearing a hat and looking very serious. Stroke his back slowly, from head to tail.", "catAria": "A ginger cat in a hat you can pet", "purr": ["prrr", "purr", "prr-r", "…mrrr"], "catLines": ["His hat slipped sideways. He likes it.", "His eyes are closing on their own.", "Hear that? A quiet purr.", "He's melted into the blanket. You can too.", "The cat fell asleep under your hand. You can lie down next to him."], "doneTitle": "All folded", "doneText": "The floor is clear and everything's in the basket. Tomorrow it's not your problem.", "messTitle": "A little mess", "messIntro": "Clothes are scattered by the basket. Tap them one at a time and each one folds itself into the basket.", "left": "{n} left", "tidy": "all tidy", "laundryMsgs": ["That's one.", "There, nice and neat.", "Halfway there.", "Just the last one left.", "All folded. Tomorrow it's not your problem."], "take": "Put away:", "clothes": ["T-shirt", "sweater", "sock", "trousers", "towel"], "jarTitle": "Jar of paper stars", "jarIntro": "Write down what's spinning in your head. The note folds into a paper star and stays in the jar instead of your head.", "inJar": "{n} {w} in the jar", "stars": ["star", "stars", "stars"], "jarFull": "the jar is full. Fewer thoughts in your head now", "placeholder": "e.g. tomorrow's call", "presets": ["work", "tomorrow", "an unanswered message", "just noisy in my head"], "fold": "Fold a star", "lampTitle": "Turn off the light?", "lampDid": "You've already taken care of yourself tonight. That's enough.", "lampNone": "You can skip everything else. Sometimes the best thing to do is simply turn off the lamp.", "off": "Turn off"}, "uk": {"title": "Тиха кімната", "desc": "Тиха гра перед сном: погладити кота, подихати з місяцем, скласти паперову зірочку й вимкнути лампу.", "meterTitle": "Скільки світла ти накопичила", "light": "світло", "min": "хв", "sound": "Тихий шум", "langAria": "Мова: українська", "langShort": "UA", "sceneAria": "Нічна спальня, намальована олівцем", "navAria": "Речі в кімнаті", "t_cat": "Кіт", "t_breath": "Вікно", "t_curtain": "Штора", "t_plant": "Гілка", "t_thoughts": "Банка", "t_laundry": "Білизна", "t_lamp": "Лампа", "a_breath": "Вікно: подихати", "a_curtain": "Штора: відсунути або засунути", "a_lamp": "Лампа: вимкнути світло", "a_plant": "Гілка у вазі: полити", "a_thoughts": "Банка із зірочками: відпустити думки", "a_cat": "Кіт: погладити", "a_laundry": "Білизна біля кошика: прибрати", "night1": "Світло вимкнене. Кіт уже спить. Можна заплющити очі.", "night2": "Дихай так само повільно, як ця крапка.", "lightOn": "Увімкнути світло", "close": "Закрити", "back": "Повернутися в ліжко", "whispers": ["Ти в ліжку, і цього достатньо. Натисни на щось у кімнаті.", "Сьогодні нічого не треба доробляти.", "Плечі можна опустити. Щелепу теж.", "Усе, що не сталося за день, почекає до ранку.", "Тут тихо. Можна просто полежати."], "curtainClosed": "Штору засунуто. Місяць однаково трохи просвічує.", "curtainOpen": "Штору відсунуто. Там місяць і кілька зірок.", "laundrySay": "Біля кошика тепер порядок.", "catSay": "Пиріжок заснув на ковдрі. Тихіше.", "plantTitle": "Гілка у вазі", "plantIntro": "Підлий їй води. Більше нічого не треба.", "water": "Полити", "plantLines": ["Їй подобається, коли про неї не забувають.", "Вода потемніла. Гілка п’є.", "Перша квітка. Повільно, як і треба.", "Гілки розкриваються вночі. Ти теж відпочиваєш не дарма.", "Ще одна.", "Вона не поспішає. І ти не поспішай.", "Майже вся в цвіту.", "Ще трішки.", "Розквітла. Просто так, без приводу.", "Досить води на сьогодні. Вона сита й спокійна."], "breathTitle": "Подихай з місяцем", "settle": "Влаштуйся зручніше", "breathIntro": "Місяць росте на вдиху й меншає на видиху. Нічого не рахуй.", "phases": ["Вдих", "Затримай", "Видих"], "breathLines": ["Добре. Ще трохи.", "Тіло стає важчим. Це нормально.", "Можна продовжувати скільки хочеш."], "catTitle": "Це Пиріжок", "catIntro": "Сьогодні він у капелюсі й дуже серйозний. Проведи пальцем по спинці, повільно, від голови до хвоста.", "catAria": "Рудий кіт у капелюсі, якого можна гладити", "purr": ["мрр", "мррр", "мр-р", "…мрр"], "catLines": ["Капелюх з’їхав набік. Йому подобається.", "Очі заплющуються самі.", "Чуєш? Тихо муркоче.", "Він розтікся по ковдрі. Ти теж можеш.", "Кіт заснув під твоєю рукою. Можна лягти поруч."], "doneTitle": "Усе складено", "doneText": "Підлога чиста, речі в кошику. Завтра це вже не твій клопіт.", "messTitle": "Невеликий безлад", "messIntro": "Речі розкидані біля кошика. Натискай на них по одній, і кожна сама складеться й ляже в кошик.", "left": "лишилося: {n}", "tidy": "порядок", "laundryMsgs": ["Одна є.", "Ось так, рівненько.", "Уже половина.", "Лишилася остання.", "Усе складено. Завтра це вже не твій клопіт."], "take": "Прибрати:", "clothes": ["футболка", "светр", "шкарпетка", "штани", "рушник"], "jarTitle": "Банка з зірочками", "jarIntro": "Напиши, що крутиться в голові. Записка складеться в паперову зірочку й залишиться в банці, а не в голові.", "inJar": "у банці {n} {w}", "stars": ["зірочка", "зірочки", "зірочок"], "jarFull": "банка повна. Думок у голові поменшало", "placeholder": "наприклад: завтрашній дзвінок", "presets": ["робота", "завтрашній день", "листування без відповіді", "просто шумно в голові"], "fold": "Скласти зірочку", "lampTitle": "Вимкнути світло?", "lampDid": "Ти сьогодні вже подбала про себе. Цього достатньо.", "lampNone": "Можна й без усього іншого. Іноді найкраще, що можна зробити, це просто вимкнути лампу.", "off": "Вимкнути"}};
+  var LANGS=['ru','en','uk'];
+  function detectLang(){
+    try{var q=new URLSearchParams(location.search).get('lang');if(q&&I18N[q])return q}catch(e){}
+    var s=store.get('lang',null);if(s&&I18N[s])return s;
+    var ls=navigator.languages||[navigator.language||'en'];
+    for(var i=0;i<ls.length;i++){var c=String(ls[i]||'').slice(0,2).toLowerCase();if(c==='uk')return 'uk';if(c==='ru'||c==='be')return 'ru';if(c==='en')return 'en'}
+    return 'en';
+  }
+  var L=detectLang();
+  function T(k){var v=I18N[L][k];return v===undefined?I18N.ru[k]:v}
+  function plural(n){var w=T('stars');if(L==='en')return n===1?w[0]:w[1];var a=n%10,b=n%100;if(a===1&&b!==11)return w[0];if(a>=2&&a<=4&&(b<12||b>14))return w[1];return w[2]}
+  function inJar(n){return T('inJar').replace('{n}',n).replace('{w}',plural(n))}
+  function applyLang(){
+    document.documentElement.lang=L;document.title=T('title');
+    var md=document.querySelector('meta[name="description"]');if(md)md.setAttribute('content',T('desc'));
+    document.querySelectorAll('[data-i18n]').forEach(function(e){e.textContent=T(e.dataset.i18n)});
+    document.querySelectorAll('[data-i18n-aria]').forEach(function(e){e.setAttribute('aria-label',T(e.dataset.i18nAria))});
+    document.querySelectorAll('[data-i18n-title]').forEach(function(e){e.setAttribute('title',T(e.dataset.i18nTitle))});
+    document.querySelectorAll('#scene [data-act]').forEach(function(e){e.setAttribute('aria-label',T('a_'+e.dataset.act))});
+  }
   function today(){var d=new Date();d.setHours(d.getHours()-6);return d.toDateString()}
 
   /* ---------- карандаш ---------- */
@@ -316,7 +339,6 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     }
     return s;
   }
-  function plural(n){var a=n%10,b=n%100;if(a===1&&b!==11)return 'звёздочка';if(a>=2&&a<=4&&(b<12||b>14))return 'звёздочки';return 'звёздочек'}
 
   /* ---------- одежда ---------- */
   var CL=[
@@ -438,11 +460,11 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 
   /* ---------- свет и подписи ---------- */
   var started=Date.now(),acts={};
-  var whispers=["Ты в постели, и этого достаточно. Нажми на что-нибудь в комнате.","Ничего не нужно доделывать сегодня.","Плечи можно опустить. Челюсть тоже.","Всё, что не случилось за день, подождёт до утра.","Тут тихо. Можно просто полежать."],wi=0;
-  setInterval(function(){wi=(wi+1)%whispers.length;say(whispers[wi])},24000);
+  var wi=0;
+  setInterval(function(){var w=T('whispers');wi=(wi+1)%w.length;say(w[wi])},24000);
   var sayT=null;
   function say(t){var w=$('#whisper');w.style.opacity=0;clearTimeout(sayT);sayT=setTimeout(function(){w.textContent=t;w.style.opacity=1},500)}
-  function updLight(){var mins=(Date.now()-started)/60000,p=Math.min(1,mins/12+Object.keys(acts).length*.09);$('#moonFill').setAttribute('y',String(26-26*p));var m=Math.floor(mins);$('#lightText').textContent=m<1?'свет':(m+' мин')}
+  function updLight(){var mins=(Date.now()-started)/60000,p=Math.min(1,mins/12+Object.keys(acts).length*.09);$('#moonFill').setAttribute('y',String(26-26*p));var m=Math.floor(mins);$('#lightText').textContent=m<1?T('light'):(m+' '+T('min'))}
   setInterval(updLight,15000);updLight();
   function mark(a){acts[a]=1;var c=document.querySelector('.tool[data-act="'+a+'"]');if(c)c.classList.add('done');var h=document.querySelector('[data-hint="'+a+'"]');if(h)h.classList.add('seen');updLight()}
   if(laundryDone)mark('laundry');
@@ -462,8 +484,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 
   /* ---------- панель ---------- */
   var cleanup=null;
-  var XBTN='<button class="round x" id="closeX" aria-label="Закрыть"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg></button>';
-  function openSheet(html,after){if(cleanup){cleanup();cleanup=null}$('#card').innerHTML=XBTN+html+'<button class="btn ghost" id="closeSheet">Вернуться в постель</button>';$('#veil').classList.add('on');$('#sheet').classList.add('on');$('#closeSheet').addEventListener('click',closeSheet);$('#closeX').addEventListener('click',closeSheet);cleanup=after?after():null}
+  function XBTN(){return '<button class="round x" id="closeX" aria-label="'+T('close')+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg></button>'}
+  function openSheet(html,after){if(cleanup){cleanup();cleanup=null}$('#card').innerHTML=XBTN()+html+'<button class="btn ghost" id="closeSheet">'+T('back')+'</button>';$('#veil').classList.add('on');$('#sheet').classList.add('on');$('#closeSheet').addEventListener('click',closeSheet);$('#closeX').addEventListener('click',closeSheet);cleanup=after?after():null}
   function closeSheet(){if(cleanup){cleanup();cleanup=null}$('#veil').classList.remove('on');$('#sheet').classList.remove('on');if(purrGain&&ctx)purrGain.gain.setTargetAtTime(0,ctx.currentTime,.3)}
   $('#veil').addEventListener('click',closeSheet);
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet()});
@@ -476,13 +498,13 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     function step(now){var p=Math.min(1,(now-t0)/dur),e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;curtainT=from+(to-from)*e;drawCurtain(curtainT);if(p<1)anim=requestAnimationFrame(step)}
     anim=requestAnimationFrame(step);
     store.set('curtain',to);mark('curtain');
-    say(to?'Штора задёрнута. Луна всё равно немного просвечивает.':'Штора открыта. Там луна и пара звёзд.');
+    say(T(to?'curtainClosed':'curtainOpen'));
   }
 
   /* ---------- ветка ---------- */
-  var plantLines=["Ей нравится, когда о ней не забывают.","Вода потемнела. Ветка пьёт.","Первый цветок. Медленно, как и надо.","Ветки раскрываются ночью. Ты тоже отдыхаешь не зря.","Ещё один.","Она не торопится. И ты не торопись.","Почти вся в цвету.","Ещё чуть-чуть.","Расцвела. Просто так, без повода.","Хватит воды на сегодня. Она сыта и спокойна."];
   function actPlant(){
-    openSheet('<h2 id="sheetTitle">Ветка в вазе</h2><svg class="plantbox" viewBox="-50 -122 100 128" aria-hidden="true"><g id="bigVase"></g><g id="drops"></g></svg><p id="plantLine">Подлей ей воды. Больше ничего не требуется.</p><div class="row"><button class="btn" id="water">Полить</button></div>',function(){
+    var plantLines=T('plantLines');
+    openSheet('<h2 id="sheetTitle">'+T('plantTitle')+'</h2><svg class="plantbox" viewBox="-50 -122 100 128" aria-hidden="true"><g id="bigVase"></g><g id="drops"></g></svg><p id="plantLine">'+T('plantIntro')+'</p><div class="row"><button class="btn" id="water">'+T('water')+'</button></div>',function(){
       drawVase();
       var max=BL.length+1;
       if(plantLvl>=max){$('#water').disabled=true;$('#plantLine').textContent=plantLines[plantLines.length-1]}
@@ -505,10 +527,10 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     ring+=F(c2,'var(--panel)')+SK(c2,1.2)+K('M58 112 q-5 -5 0 -8 q6 -1 5 5 M76 108 q4 -5 8 -1 q2 5 -3 5 M10 114 q8 -3 16 -1',1);
     function spark(x,y,r,dl){return '<path class="twinkle" d="M'+x+' '+(y-r)+'Q'+x+' '+y+' '+(x+r)+' '+y+'Q'+x+' '+y+' '+x+' '+(y+r)+'Q'+x+' '+y+' '+(x-r)+' '+y+'Q'+x+' '+y+' '+x+' '+(y-r)+'Z" fill="var(--ink)" style="animation-delay:'+dl+'s"/>'}
     ring+=spark(16,28,8,0)+spark(126,30,9,1.6)+spark(146,14,5,3)+spark(130,136,7,2.2);
-    openSheet('<h2 id="sheetTitle">Подыши с луной</h2><div class="breath"><div class="orb" id="orb"><svg viewBox="0 0 150 150"><defs><radialGradient id="og"><stop offset="0" stop-color="#f6d9a8" stop-opacity=".9"/><stop offset=".6" stop-color="#f0b46a" stop-opacity=".5"/><stop offset="1" stop-color="#f0b46a" stop-opacity="0"/></radialGradient></defs><circle cx="62" cy="75" r="72" fill="url(#og)" opacity=".6"/>'+ring+'</svg></div></div><div class="breath-word" id="bw">Устройся поудобнее</div><p id="bcount">Луна растёт на вдохе и уменьшается на выдохе. Ничего не считай.</p>',function(){
-      var ph=[["Вдох",4,1],["Подержи",4,1],["Выдох",6,.62]],i=-1,t=null,cycles=0,alive=true;
+    openSheet('<h2 id="sheetTitle">'+T('breathTitle')+'</h2><div class="breath"><div class="orb" id="orb"><svg viewBox="0 0 150 150"><defs><radialGradient id="og"><stop offset="0" stop-color="#f6d9a8" stop-opacity=".9"/><stop offset=".6" stop-color="#f0b46a" stop-opacity=".5"/><stop offset="1" stop-color="#f0b46a" stop-opacity="0"/></radialGradient></defs><circle cx="62" cy="75" r="72" fill="url(#og)" opacity=".6"/>'+ring+'</svg></div></div><div class="breath-word" id="bw">'+T('settle')+'</div><p id="bcount">'+T('breathIntro')+'</p>',function(){
+      var PH=T('phases'),BLN=T('breathLines'),ph=[[PH[0],4,1],[PH[1],4,1],[PH[2],6,.62]],i=-1,t=null,cycles=0,alive=true;
       function step(){if(!alive)return;i=(i+1)%3;var p=ph[i],o=$('#orb');o.style.transitionDuration=p[1]+'s';o.style.transform='scale('+p[2]+')';$('#bw').textContent=p[0];
-        if(i===2){cycles++;setTimeout(function(){if(!alive)return;$('#bcount').textContent=cycles<3?'Хорошо. Ещё немного.':(cycles<6?'Тело становится тяжелее. Это нормально.':'Можно продолжать сколько хочется.');if(cycles>=2)mark('breath')},5500)}
+        if(i===2){cycles++;setTimeout(function(){if(!alive)return;$('#bcount').textContent=BLN[cycles<3?0:(cycles<6?1:2)];if(cycles>=2)mark('breath')},5500)}
         t=setTimeout(step,p[1]*1000)}
       t=setTimeout(step,1500);
       return function(){alive=false;clearTimeout(t)};
@@ -517,19 +539,19 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 
   /* ---------- кот ---------- */
   function actCat(){
-    openSheet('<h2 id="sheetTitle">Это Пирожок</h2><p id="catLine">Сегодня он в шляпе и очень серьёзный. Проведи пальцем по спинке, медленно, от головы к хвосту.</p><div class="catbox" id="catbox"><svg viewBox="0 0 206 240" id="bigCat" aria-label="Рыжий кот в шляпе, которого можно гладить">'+catSVG('b')+'</svg></div>',function(){
+    openSheet('<h2 id="sheetTitle">'+T('catTitle')+'</h2><p id="catLine">'+T('catIntro')+'</p><div class="catbox" id="catbox"><svg viewBox="0 0 206 240" id="bigCat" aria-label="'+T('catAria')+'">'+catSVG('b')+'</svg></div>',function(){
       var box=$('#catbox'),svg=$('#bigCat'),down=false,lx=0,ly=0,acc=0,calm=catAsleep?Math.max(40,store.get('catCalm',40)):0,lastPurr=0,said={};
-      var lines=[[15,"Шляпа съехала набок. Ему нравится."],[35,"Глаза закрываются сами."],[60,"Слышишь? Тихо мурчит."],[85,"Он растёкся по одеялу. Ты тоже можешь."],[100,"Кот уснул под твоей рукой. Можно лечь рядом."]];
+      var CLN=T('catLines'),lines=[[15,CLN[0]],[35,CLN[1]],[60,CLN[2]],[85,CLN[3]],[100,CLN[4]]];
       function setCalm(v){calm=Math.max(0,Math.min(100,v));svg.classList.toggle('sleepy',calm>32);for(var i=lines.length-1;i>=0;i--){if(calm>=lines[i][0]){if(!said[i]){said[i]=1;$('#catLine').textContent=lines[i][1]}break}}if(calm>20)mark('cat');if(soundOn&&purrGain)purrGain.gain.setTargetAtTime(down?Math.min(.35,calm/220):0,ctx.currentTime,.25)}
       setCalm(calm);
-      function purr(x,y){var n=Date.now();if(n-lastPurr<900)return;lastPurr=n;var s=document.createElement('span');s.className='purr';s.textContent=['мрр','мррр','мр-р','…мрр'][Math.floor(Math.random()*4)];s.style.left=(x-14)+'px';s.style.top=(y-30)+'px';box.appendChild(s);setTimeout(function(){s.remove()},2300)}
+      function purr(x,y){var n=Date.now();if(n-lastPurr<900)return;lastPurr=n;var s=document.createElement('span');s.className='purr';s.textContent=T('purr')[Math.floor(Math.random()*4)];s.style.left=(x-14)+'px';s.style.top=(y-30)+'px';box.appendChild(s);setTimeout(function(){s.remove()},2300)}
       function pos(e){var r=box.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top]}
       function onDown(e){down=true;var p=pos(e);lx=p[0];ly=p[1];try{box.setPointerCapture(e.pointerId)}catch(_){}if(Math.random()<.5){svg.classList.add('twitch');setTimeout(function(){svg.classList.remove('twitch')},480)}}
       function onMove(e){if(!down&&e.pointerType!=='mouse')return;var p=pos(e),d=Math.hypot(p[0]-lx,p[1]-ly);lx=p[0];ly=p[1];if(d>60)return;acc+=d*(down?1:.4);if(acc>38){acc=0;setCalm(calm+(down?2.2:1));purr(p[0],p[1])}}
       function onUp(){down=false;if(soundOn&&purrGain)purrGain.gain.setTargetAtTime(0,ctx.currentTime,.6)}
       box.addEventListener('pointerdown',onDown);box.addEventListener('pointermove',onMove);box.addEventListener('pointerup',onUp);box.addEventListener('pointercancel',onUp);box.addEventListener('pointerleave',onUp);
       var decay=setInterval(function(){if(!down&&calm>0&&calm<30)setCalm(calm-.6)},1200);
-      return function(){clearInterval(decay);store.set('catCalm',calm);var was=catAsleep;setSceneSleep(calm>32);if(calm>32&&!was)say('Пирожок уснул на одеяле. Тише.')};
+      return function(){clearInterval(decay);store.set('catCalm',calm);var was=catAsleep;setSceneSleep(calm>32);if(calm>32&&!was)say(T('catSay'))};
     });
   }
 
@@ -538,15 +560,15 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   function actLaundry(){
     if(laundryDone){
       seed=88;var sv='<svg viewBox="0 0 320 210" aria-hidden="true"><path d="M0 100 Q160 86 320 100 V210 H0Z" fill="var(--rug)"/><g filter="url(#pencil)" transform="translate(73 -560) scale(1.4)">'+basketSVG(true)+'</g></svg>';
-      openSheet('<h2 id="sheetTitle">Всё сложено</h2><div class="floorbox">'+sv+'</div><p>Пол чистый, вещи в корзине. Завтра это уже не твоя забота.</p>');
+      openSheet('<h2 id="sheetTitle">'+T('doneTitle')+'</h2><div class="floorbox">'+sv+'</div><p>'+T('doneText')+'</p>');
       return;
     }
     seed=60;var s='<svg viewBox="0 0 320 210" id="floorSvg"><path d="M0 26 Q160 10 320 26 V210 H0Z" fill="var(--rug)"/>'+K(ln(0,26,320,24,1.2),1,'k','opacity=".5"');
     s+='<g filter="url(#pencil)">'+F('M228 120 L304 120 L294 196 L238 196 Z','#5a4a3a')+SK(pl([[228,120],[304,120],[294,196],[238,196]],true,.7)+ln(231,146,301,146,.6)+ln(234,172,298,172,.6)+ln(248,120,250,196,.5)+ln(266,120,266,196,.5)+ln(284,120,282,196,.5),1.2)+'</g><g id="fstack"></g>';
-    CL.forEach(function(c,i){var p=FPOS[i];s+='<g class="cg" data-i="'+i+'" role="button" tabindex="0" aria-label="Убрать: '+c.n+'" style="transform:translate('+p[0]+'px,'+p[1]+'px) rotate('+p[2]+'deg)"><g filter="url(#pencil)">'+clothG(i,.85)+'</g><circle r="34" fill="transparent"/></g>'});
+    CL.forEach(function(c,i){var p=FPOS[i];s+='<g class="cg" data-i="'+i+'" role="button" tabindex="0" aria-label="'+T('take')+' '+T('clothes')[i]+'" style="transform:translate('+p[0]+'px,'+p[1]+'px) rotate('+p[2]+'deg)"><g filter="url(#pencil)">'+clothG(i,.85)+'</g><circle r="34" fill="transparent"/></g>'});
     s+='</svg>';
-    openSheet('<h2 id="sheetTitle">Небольшой беспорядок</h2><p id="lLine">Вещи разбросаны у корзины. Нажимай на них по одной, и каждая сама сложится и ляжет в корзину.</p><div class="floorbox">'+s+'</div><div class="status" id="lStat">осталось: 5</div>',function(){
-      var left=CL.length,k=0,msgs=["Одна есть.","Вот так, ровненько.","Уже половина.","Последняя осталась.","Всё сложено. Завтра это уже не твоя забота."];
+    openSheet('<h2 id="sheetTitle">'+T('messTitle')+'</h2><p id="lLine">'+T('messIntro')+'</p><div class="floorbox">'+s+'</div><div class="status" id="lStat">'+T('left').replace('{n}',CL.length)+'</div>',function(){
+      var left=CL.length,k=0,msgs=T('laundryMsgs');
       function take(g){
         if(g.dataset.taken)return;g.dataset.taken=1;var i=+g.dataset.i;
         g.style.transform='translate(266px,'+(112-k*9)+'px) rotate(0deg) scale(.3)';g.style.opacity='0';
@@ -554,8 +576,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
         setTimeout(function(){
           var w=62-my*4,y=110-my*9;seed=400+my;
           $('#fstack').insertAdjacentHTML('beforeend','<g class="fold-in">'+F('M'+(266-w/2)+' '+y+' h'+w+' v8 h-'+w+' Z',CL[i].c)+K(pl([[266-w/2,y],[266+w/2,y],[266+w/2,y+8],[266-w/2,y+8]],true,.5,1),1.1)+'</g>');
-          g.remove();left--;$('#lLine').textContent=msgs[CL.length-left-1];$('#lStat').textContent=left?('осталось: '+left):'порядок';
-          if(left===0){laundryDone=true;store.set('laundry',today());drawLaundry();mark('laundry');say('У корзины теперь порядок.')}
+          g.remove();left--;$('#lLine').textContent=msgs[CL.length-left-1];$('#lStat').textContent=left?T('left').replace('{n}',left):T('tidy');
+          if(left===0){laundryDone=true;store.set('laundry',today());drawLaundry();mark('laundry');say(T('laundrySay'))}
         },700);
       }
       document.querySelectorAll('.cg').forEach(function(g){g.addEventListener('click',function(){take(g)});g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();take(g)}})});
@@ -564,7 +586,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 
   /* ---------- банка со звёздочками ---------- */
   function actThoughts(){
-    openSheet('<h2 id="sheetTitle">Банка со звёздочками</h2><p>Напиши, что крутится в голове. Записка сложится в бумажную звёздочку и останется в банке, а не в голове.</p><div class="jarbox" id="jarbox"><svg viewBox="-75 -205 150 215" id="bigJar"><g transform="scale(1.65)" id="bigJarG">'+jarSVG(jarStars,true)+'</g></svg></div><div class="status" id="jStat">в банке '+jarStars+' '+plural(jarStars)+'</div><textarea class="thought-in" id="tin" maxlength="120" placeholder="например: завтрашний созвон"></textarea><div class="presets"><button class="preset">работа</button><button class="preset">завтрашний день</button><button class="preset">переписка без ответа</button><button class="preset">просто шумно в голове</button></div><div class="row"><button class="btn" id="tgo">Сложить звёздочку</button></div>',function(){
+    openSheet('<h2 id="sheetTitle">'+T('jarTitle')+'</h2><p>'+T('jarIntro')+'</p><div class="jarbox" id="jarbox"><svg viewBox="-75 -205 150 215" id="bigJar"><g transform="scale(1.65)" id="bigJarG">'+jarSVG(jarStars,true)+'</g></svg></div><div class="status" id="jStat">'+inJar(jarStars)+'</div><textarea class="thought-in" id="tin" maxlength="120" placeholder="'+T('placeholder')+'"></textarea><div class="presets">'+T('presets').map(function(x){return '<button class="preset">'+x+'</button>'}).join('')+'</div><div class="row"><button class="btn" id="tgo">'+T('fold')+'</button></div>',function(){
       var busy=false;
       function fold(t){
         t=(t||'').trim();if(!t||busy)return;busy=true;
@@ -580,7 +602,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
           requestAnimationFrame(function(){requestAnimationFrame(function(){g.style.transform='translate('+f(slot[0])+'px,'+f(slot[1])+'px)'})});
           setTimeout(function(){
             jarStars=Math.min(idx+1,SLOTS.length);store.set('stars',jarStars);drawJar();mark('thoughts');busy=false;
-            $('#jStat').textContent=jarStars>=SLOTS.length?'банка полная. Мыслей в голове стало меньше':('в банке '+jarStars+' '+plural(jarStars));
+            $('#jStat').textContent=jarStars>=SLOTS.length?T('jarFull'):inJar(jarStars);
           },1050);
         },1000);
       }
@@ -592,11 +614,18 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   /* ---------- лампа ---------- */
   function actLamp(){
     var n=Object.keys(acts).length;
-    openSheet('<h2 id="sheetTitle">Выключить свет?</h2><p>'+(n?'Ты сегодня уже позаботилась о себе. Этого достаточно.':'Можно и без всего остального. Иногда лучшее, что можно сделать, это просто погасить лампу.')+'</p><div class="row"><button class="btn" id="off">Погасить</button></div>');
+    openSheet('<h2 id="sheetTitle">'+T('lampTitle')+'</h2><p>'+T(n?'lampDid':'lampNone')+'</p><div class="row"><button class="btn" id="off">'+T('off')+'</button></div>');
     $('#off').addEventListener('click',function(){closeSheet();mark('lamp');$('#glowC').style.opacity=0;$('#bulb').style.opacity=.15;setTimeout(function(){$('#night').classList.add('on');if(soundOn&&noiseGain)noiseGain.gain.setTargetAtTime(.06,ctx.currentTime,3)},900)});
   }
   (function(){var n=$('#night');for(var i=0;i<40;i++){var s=document.createElement('span');s.className='star';s.style.left=(Math.random()*100)+'%';s.style.top=(Math.random()*100)+'%';s.style.opacity=(.2+Math.random()*.5);s.style.animationDelay=(Math.random()*6)+'s';n.appendChild(s)}})();
   $('#lightOn').addEventListener('click',function(){$('#night').classList.remove('on');$('#glowC').style.opacity=1;$('#bulb').style.opacity=.9;if(soundOn&&noiseGain)noiseGain.gain.setTargetAtTime(.09,ctx.currentTime,1)});
+
+  /* ---------- язык ---------- */
+  applyLang();$('#whisper').textContent=T('whispers')[0];
+  $('#langBtn').addEventListener('click',function(){
+    L=LANGS[(LANGS.indexOf(L)+1)%LANGS.length];store.set('lang',L);
+    closeSheet();applyLang();wi=0;say(T('whispers')[0]);
+  });
 
   /* ---------- привязка ---------- */
   var map={cat:actCat,breath:actBreath,curtain:actCurtain,plant:actPlant,laundry:actLaundry,thoughts:actThoughts,lamp:actLamp};
