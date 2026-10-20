@@ -262,12 +262,18 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 .bgb i{width:14px;height:14px;border-radius:4px;border:1.5px solid var(--ink-soft)}
 .bgb.on{background:var(--panel);color:var(--text);box-shadow:0 0 0 1.5px var(--lamp)}
 .bgb:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
+.pact{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
+.pact .btn{width:min(100%,300px)}
+.linkbtn{font:inherit;font-size:.85rem;color:var(--muted);background:none;border:0;padding:6px 10px;cursor:pointer;border-radius:10px}
+.linkbtn:hover{color:var(--text)}
+.linkbtn:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
 .easel{padding:7px;background:#7d6249;border-radius:4px;box-shadow:inset 0 0 0 2px #5e4a37}
 #cv{display:block;height:min(40dvh,340px);aspect-ratio:260/440;max-width:100%;background:#efe7da;touch-action:none;cursor:crosshair;border:5px solid #5a5376}
 .pal{display:flex;gap:7px;flex-wrap:wrap;justify-content:center}
 .sw{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);background:var(--sw);cursor:pointer;padding:0}
 .sw.on{border-color:var(--lamp);box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--lamp)}
-.ptools{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.ptools{display:flex;gap:5px;flex-wrap:wrap;justify-content:center}
+.ptools .pt{font-size:.76rem;padding:0 8px;min-width:34px}
 .pt{font:inherit;font-size:.8rem;color:var(--text);background:var(--wall);border:1.5px solid var(--line);border-radius:12px;min-width:36px;height:34px;padding:0 10px;cursor:pointer;display:grid;place-items:center}
 .pt i{display:block;border-radius:50%;background:var(--ink)}
 .pt.on{border-color:var(--lamp);color:var(--lamp)}
@@ -596,7 +602,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   var PAL=['#2a2147','#efe7da','#e6a9c0','#c9b3ee','#a9c4ea','#a6d6b8','#f0b46a','#cdb78c'];
   function actPainting(){
     var CW=260,CH=440,bg='night';
-    openSheet('<h2 id="sheetTitle">'+T('paintTitle')+'</h2><p>'+T('paintIntro')+'</p><div class="easel"><canvas id="cv" width="'+CW*2+'" height="'+CH*2+'"></canvas></div><div class="pal" id="pal">'+PAL.map(function(c){return '<button class="sw" data-c="'+c+'" style="--sw:'+c+'" aria-label="'+c+'"></button>'}).join('')+'</div><div class="ptools"><button class="pt on" data-w="4" aria-label="S"><i style="width:4px;height:4px"></i></button><button class="pt" data-w="10" aria-label="M"><i style="width:8px;height:8px"></i></button><button class="pt" data-w="22" aria-label="L"><i style="width:13px;height:13px"></i></button><button class="pt" id="eraser">'+T('eraser')+'</button><button class="pt" id="undo">'+T('undo')+'</button><button class="pt" id="clear">'+T('clear')+'</button></div><div class="row"><button class="btn" id="hang">'+T('hang')+'</button>'+(userArt?'<button class="btn ghost small" id="resetArt">'+T('resetArt')+'</button>':'')+'</div>',function(){
+    openSheet('<h2 id="sheetTitle">'+T('paintTitle')+'</h2><p>'+T('paintIntro')+'</p><div class="easel"><canvas id="cv" width="'+CW*2+'" height="'+CH*2+'"></canvas></div><div class="pal" id="pal">'+PAL.map(function(c){return '<button class="sw" data-c="'+c+'" style="--sw:'+c+'" aria-label="'+c+'"></button>'}).join('')+'</div><div class="ptools"><button class="pt on" data-w="4" aria-label="S"><i style="width:4px;height:4px"></i></button><button class="pt" data-w="10" aria-label="M"><i style="width:8px;height:8px"></i></button><button class="pt" data-w="22" aria-label="L"><i style="width:13px;height:13px"></i></button><button class="pt" id="eraser">'+T('eraser')+'</button><button class="pt" id="undo">'+T('undo')+'</button><button class="pt" id="clear">'+T('clear')+'</button></div><div class="pact"><button class="btn" id="hang">'+T('hang')+'</button>'+(userArt?'<button class="linkbtn" id="resetArt"><span aria-hidden="true">↺</span> '+T('resetArt')+'</button>':'')+'</div>',function(){
       var cv=$('#cv'),c2=cv.getContext('2d'),L=document.createElement('canvas');L.width=cv.width;L.height=cv.height;var lc=L.getContext('2d');
       var S=2,col=null,wid=4,er=false,down=false,last=null,mid=null,hist=[],dirty=false,clearArmed=null,alive=true;
       lc.lineCap='round';lc.lineJoin='round';
