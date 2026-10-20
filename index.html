@@ -213,6 +213,20 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 #jarform .presets::-webkit-scrollbar{display:none}
 #jarform .preset{flex:none}
 #jarform .thought-in{min-height:46px}
+.slip{position:absolute;top:3%;left:50%;width:min(78%,220px);height:30px;transform:translateX(-50%);transform-origin:25% 50%;perspective:700px;pointer-events:none;animation:slipIn .25s ease-out,slipOut .4s .95s ease-in forwards}
+@keyframes slipIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}}
+@keyframes slipOut{to{opacity:0;transform:translateX(-50%) scale(.2) rotate(160deg)}}
+.slip .h{position:absolute;top:0;width:50%;height:100%}
+.slip .l{left:0}
+.slip .r{left:50%;transform-origin:0 50%;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;animation:foldR .5s .35s cubic-bezier(.5,0,.3,1) forwards}
+@keyframes foldR{to{transform:rotateY(-180deg)}}
+.slip .face{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--c)}
+.slip .l .face{border-radius:3px 0 0 3px;box-shadow:inset -6px 0 8px -6px rgba(0,0,0,.35)}
+.slip .r .face{border-radius:0 3px 3px 0}
+.slip .back{transform:rotateY(180deg);background:color-mix(in srgb,var(--c) 78%,#2a2147)}
+.slip .txt{position:absolute;top:0;height:100%;width:200%;display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden;font-family:var(--display);font-weight:600;font-size:.78rem;color:#2a2147;padding:0 10px;box-sizing:border-box}
+.slip .l .txt{left:0}
+.slip .r .txt{left:-100%}
 .strip{position:absolute;top:6%;left:50%;transform:translateX(-50%);max-width:86%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--display);font-weight:600;font-size:.8rem;color:#2a2147;padding:4px 12px;border-radius:3px;animation:fold 1.1s ease-in forwards;pointer-events:none}
 @keyframes fold{0%{opacity:0;transform:translateX(-50%) scaleX(1)}15%{opacity:1}55%{transform:translateX(-50%) scaleX(1) rotate(0)}100%{opacity:0;transform:translateX(-50%) scaleX(.04) rotate(45deg)}}
 .fall{transition:transform 1s cubic-bezier(.45,0,.55,1.25)}
@@ -893,21 +907,22 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
       function fold(t){
         t=(t||'').trim();if(!t||busy||releasing)return;busy=true;
         var idx=jarStars,color=SC[idx%SC.length];
-        var strip=document.createElement('div');strip.className='strip';strip.textContent=t;strip.style.background=color;$('#jarbox').appendChild(strip);
+        var strip=document.createElement('div');strip.className='slip';strip.style.setProperty('--c',color);strip.innerHTML='<div class="h l"><div class="face"><span class="txt"></span></div></div><div class="h r"><div class="face"><span class="txt"></span></div><div class="face back"></div></div>';strip.querySelectorAll('.txt').forEach(function(s){s.textContent=t});$('#jarbox').appendChild(strip);
         $('#tin').value='';
         setTimeout(function(){
           strip.remove();
           var slot=SLOTS[Math.min(idx,SLOTS.length-1)];
           var holder=$('#bigJarG .newstars');
           holder.insertAdjacentHTML('beforeend',starG(-8,-122,idx,'fall'));
-          var g=holder.lastElementChild;
-          requestAnimationFrame(function(){requestAnimationFrame(function(){g.style.transform='translate('+f(slot[0])+'px,'+f(slot[1])+'px)';g.dataset.base=g.style.transform})});
+          var g=holder.lastElementChild;g.style.transition='transform .32s cubic-bezier(.3,1.6,.5,1)';g.style.transform='translate(-8px,-122px) scale(.15) rotate(-120deg)';
+          requestAnimationFrame(function(){requestAnimationFrame(function(){g.style.transform='translate(-8px,-122px) scale(1) rotate(0deg)'})});
+          setTimeout(function(){g.style.transition='';g.style.transform='translate('+f(slot[0])+'px,'+f(slot[1])+'px)';g.dataset.base=g.style.transform},380);
           setTimeout(function(){
             jarStars=Math.min(idx+1,SLOTS.length);store.set('stars',jarStars);drawJar();mark('thoughts');busy=false;
             $('#jStat').textContent=inJar(jarStars);
             if(jarStars>=SLOTS.length)setTimeout(release,700);
-          },1050);
-        },1000);
+          },1430);
+        },1250);
       }
       $('#tgo').addEventListener('click',function(){fold($('#tin').value)});
       document.querySelectorAll('.preset').forEach(function(p){p.addEventListener('click',function(){fold(p.textContent)})});
