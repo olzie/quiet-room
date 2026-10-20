@@ -168,7 +168,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 @keyframes zz{0%{opacity:0;transform:translate(0,0)}25%{opacity:.85}100%{opacity:0;transform:translate(-8px,-20px)}}
 #sceneCat .hat{transform-box:fill-box;transform-origin:30% 95%;transition:transform 1.2s ease}
 #sceneCat.catSleep .hat{transform:rotate(-9deg)}
-.floaty{position:absolute;left:0;top:0;color:#f7d7b1;text-shadow:0 0 12px rgba(229,170,123,.55);pointer-events:none;line-height:1;animation:floatyPop 1.6s ease-out forwards}
+.floaty{position:absolute;left:0;top:0;color:#f7d7b1;text-shadow:0 0 4px rgba(255,226,190,.95),0 0 12px rgba(240,180,120,.75),0 0 22px rgba(229,170,123,.45);filter:drop-shadow(0 0 5px rgba(246,200,150,.55));will-change:transform,opacity;pointer-events:none;line-height:1;animation:floatyPop 1.6s ease-out forwards}
 @keyframes floatyPop{0%{opacity:0;transform:translate(-50%,-20%) scale(.5)}25%{opacity:.95;transform:translate(-50%,-70%) scale(1.15)}80%{opacity:.8}100%{opacity:0;transform:translate(calc(-50% + var(--drift)),-100px) scale(.83)}}
 .purr{position:absolute;font-family:var(--display);font-weight:700;color:var(--cat-belly);font-size:.95rem;pointer-events:none;animation:float 2.2s ease-out forwards}
 @keyframes float{from{opacity:.9;transform:translateY(0)}to{opacity:0;transform:translateY(-46px)}}
