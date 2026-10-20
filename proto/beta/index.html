@@ -238,7 +238,9 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 .ob{position:fixed;inset:0;z-index:50}
 .showHints .hint.seen{opacity:1}
 .obDots .hint circle.ring{animation-duration:1.5s;stroke-width:2.2}
-.obDots .hint circle:last-child{r:3.2px;filter:drop-shadow(0 0 4px rgba(246,227,161,.9))}
+.hglow{opacity:0;transition:opacity .4s}
+.obDots .hglow{opacity:1;animation:hpulse 1.5s ease-in-out infinite}
+@keyframes hpulse{50%{opacity:.35}}
 .ob-demo{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--firefly);box-shadow:0 0 0 3px rgba(246,227,161,.25),0 0 12px rgba(246,227,161,.8);margin-right:8px;vertical-align:-1px;animation:obPing 1.5s ease-out infinite}
 @keyframes obPing{0%{box-shadow:0 0 0 0 rgba(246,227,161,.6),0 0 12px rgba(246,227,161,.8)}100%{box-shadow:0 0 0 12px rgba(246,227,161,0),0 0 12px rgba(246,227,161,.8)}}
 .ob-hole.round{border-radius:50%}
@@ -625,7 +627,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 
   /* ---------- сцена ---------- */
   function sceneSVG(){
-    seed=5;var s='<defs><clipPath id="frame"><rect y="'+(-SE)+'" width="400" height="'+(560+SE)+'" rx="22"/></clipPath><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#f0b46a" stop-opacity=".42"/><stop offset=".5" stop-color="#f0b46a" stop-opacity=".1"/><stop offset="1" stop-color="#f0b46a" stop-opacity="0"/></radialGradient><radialGradient id="mglow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#e9e1c4" stop-opacity=".5"/><stop offset=".3" stop-color="#e9e1c4" stop-opacity=".2"/><stop offset="1" stop-color="#e9e1c4" stop-opacity="0"/></radialGradient><filter id="pencil" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="1" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.5"/></filter></defs><g clip-path="url(#frame)">';
+    seed=5;var s='<defs><clipPath id="frame"><rect y="'+(-SE)+'" width="400" height="'+(560+SE)+'" rx="22"/></clipPath><radialGradient id="hglowG"><stop offset="0" stop-color="#f6e3a1" stop-opacity=".95"/><stop offset=".35" stop-color="#f6e3a1" stop-opacity=".45"/><stop offset="1" stop-color="#f6e3a1" stop-opacity="0"/></radialGradient><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#f0b46a" stop-opacity=".42"/><stop offset=".5" stop-color="#f0b46a" stop-opacity=".1"/><stop offset="1" stop-color="#f0b46a" stop-opacity="0"/></radialGradient><radialGradient id="mglow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#e9e1c4" stop-opacity=".5"/><stop offset=".3" stop-color="#e9e1c4" stop-opacity=".2"/><stop offset="1" stop-color="#e9e1c4" stop-opacity="0"/></radialGradient><filter id="pencil" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="1" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.5"/></filter></defs><g clip-path="url(#frame)">';
     var TB=14-SE;s+=F('M0 '+(-SE-2)+'H400V560H0Z','var(--wall)')+F('M0 '+(-SE-2)+' H400 V'+TB+' L125 '+TB+' L0 '+f(topL(0))+' Z','#16122a');
     s+=F('M0 '+f(topL(0))+' L125 '+TB+' L125 392 L0 442 Z','var(--wall-l)');
     s+=F('M0 442 L125 392 L400 392 L400 560 L0 560Z','var(--floor)');
@@ -686,7 +688,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     /* корзина */
     s+='<g class="hot" data-act="laundry" tabindex="0" role="button" aria-label="Корзина с бельём"><rect x="0" y="426" width="140" height="124" fill="transparent"/><g filter="url(#pencil)" id="sceneLaundry"></g></g>';
     /* подсказки */
-    [['cat',336,288],['breath',39,190],['curtain',106,230],['plant',178,250],['thoughts',214,312],['laundry',64,472],['lamp',232,182],['painting',328,182]].forEach(function(h){s+='<g class="hint" data-hint="'+h[0]+'"><circle class="ring" cx="'+h[1]+'" cy="'+h[2]+'" r="6"/><circle cx="'+h[1]+'" cy="'+h[2]+'" r="1.8" fill="var(--firefly)"/></g>'});
+    [['cat',336,288],['breath',39,190],['curtain',106,230],['plant',178,250],['thoughts',214,312],['laundry',64,472],['lamp',232,182],['painting',328,182]].forEach(function(h){s+='<g class="hint" data-hint="'+h[0]+'"><circle class="hglow" cx="'+h[1]+'" cy="'+h[2]+'" r="11" fill="url(#hglowG)"/><circle class="ring" cx="'+h[1]+'" cy="'+h[2]+'" r="6"/><circle cx="'+h[1]+'" cy="'+h[2]+'" r="1.8" fill="var(--firefly)"/></g>'});
     s+='</g>';
     return s;
   }
