@@ -1,7 +1,7 @@
 /* Quiet Room: работает без интернета.
    Страницы: сначала сеть (чтобы обновления приходили сразу), без сети — из кэша.
    Звуки, иконки, шрифты: из кэша, в фоне обновляются. */
-const CACHE = 'quiet-room-v1';
+const CACHE = 'quiet-room-v2';
 const CORE = ['./', 'index.html', 'purr.wav', 'meditation.mp3', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 
@@ -20,7 +20,7 @@ self.addEventListener('fetch', e => {
   const isFont = /fonts\.(googleapis|gstatic)\.com$/.test(url.hostname);
   if (url.origin !== location.origin && !isFont) return;
   if (isPage) {
-    e.respondWith(fetch(req).then(res => {
+    e.respondWith(fetch(req.url, {cache: 'no-cache', credentials: 'same-origin'}).then(res => {
       const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); return res;
     }).catch(() => caches.match(req).then(r => r || caches.match('./'))));
     return;

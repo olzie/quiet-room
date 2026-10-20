@@ -238,6 +238,9 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 .ob{position:fixed;inset:0;z-index:50}
 .showHints .hint.seen{opacity:1}
 .obDots .hint circle.ring{animation-duration:1.5s;stroke-width:2.2}
+.ob-mark{position:fixed;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#f6e3a1;box-shadow:0 0 10px 3px rgba(246,227,161,.75);pointer-events:none}
+.ob-mark::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid #f6e3a1;animation:markPing 1.5s ease-out infinite}
+@keyframes markPing{0%{transform:scale(.6);opacity:.95}100%{transform:scale(3.4);opacity:0}}
 .hglow{opacity:0;transition:opacity .4s}
 .obDots .hglow{opacity:1;animation:hpulse 1.5s ease-in-out infinite}
 @keyframes hpulse{50%{opacity:.35}}
@@ -324,7 +327,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 
 </div>
 
-<div class="ob" id="ob" hidden><div class="ob-hole" id="obHole"></div><div class="ob-card" id="obCard" role="dialog" aria-modal="true" aria-live="polite"><p id="obText"></p><div class="ob-foot"><div class="ob-dots" id="obDots"></div><div class="ob-btns"><button class="btn ghost small" id="obSkip"></button><button class="btn small" id="obNext"></button></div></div></div></div>
+<div class="ob" id="ob" hidden><div class="ob-hole" id="obHole"></div><div class="ob-mark" id="obMark" hidden></div><div class="ob-card" id="obCard" role="dialog" aria-modal="true" aria-live="polite"><p id="obText"></p><div class="ob-foot"><div class="ob-dots" id="obDots"></div><div class="ob-btns"><button class="btn ghost small" id="obSkip"></button><button class="btn small" id="obNext"></button></div></div></div></div>
 <div class="veil" id="veil"></div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"><div class="card" id="card"></div></div>
 
@@ -1144,9 +1147,9 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     var st=OB[obI],h=$('#obHole'),c=$('#obCard'),vh=innerHeight;
     $('#scene').classList.toggle('showHints',!!st.dots);document.body.classList.toggle('obDots',!!st.dots);
     if(st.sel){var el=document.querySelector(st.sel),b=el.getBoundingClientRect(),pd=st.pad||8;
-      h.classList.remove('none');h.classList.toggle('round',!!st.dots);h.style.left=(b.left-pd)+'px';h.style.top=(b.top-pd)+'px';h.style.width=(b.width+pd*2)+'px';h.style.height=(b.height+pd*2)+'px';
+      h.classList.remove('none');h.classList.toggle('round',!!st.dots);var mk=$('#obMark');mk.hidden=!st.dots;if(st.dots){mk.style.left=(b.left+b.width/2)+'px';mk.style.top=(b.top+b.height/2)+'px'}h.style.left=(b.left-pd)+'px';h.style.top=(b.top-pd)+'px';h.style.width=(b.width+pd*2)+'px';h.style.height=(b.height+pd*2)+'px';
       var mid=b.top+b.height/2;if(mid<vh*.5){c.style.top='auto';c.style.bottom='calc(16px + env(safe-area-inset-bottom, 0px))'}else{c.style.bottom='auto';c.style.top='calc(16px + env(safe-area-inset-top, 0px))'}}
-    else{h.classList.add('none');h.style.left='50%';h.style.top='45%';h.style.width='0';h.style.height='0';c.style.top='auto';c.style.bottom='calc(16px + env(safe-area-inset-bottom, 0px))'}
+    else{$('#obMark').hidden=true;h.classList.add('none');h.style.left='50%';h.style.top='45%';h.style.width='0';h.style.height='0';c.style.top='auto';c.style.bottom='calc(16px + env(safe-area-inset-bottom, 0px))'}
   }
   function obShow(){
     $('#obText').innerHTML=(OB[obI].dots?'<span class="ob-demo" aria-hidden="true"></span>':'')+'<span></span>';$('#obText').lastChild.textContent=T(OB[obI].k);
