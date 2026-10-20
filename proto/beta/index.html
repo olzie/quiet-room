@@ -548,6 +548,11 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   var SE=0;
   function topL(x){var s=(83+SE)/738;return (14-SE)-(125-x)*s}
   function cTop(x){return 8+topL(x)}
+  /* точка схода левой стены: пересечение линии потолка и пола */
+  function VPt(){var y0=topL(0),k=((14-SE)-y0)/125,x=(442-y0)/(k+.4);return [x,y0+k*x]}
+  function wy(X,y,x){var v=VPt();return v[1]+(y-v[1])*(v[0]-x)/(v[0]-X)}
+  function pmid(a,b){var v=VPt()[0];return v-2/(1/(v-a)+1/(v-b))}
+  var WO1=6,WI1=18,WI2=74,WO2=82,WMX=62;
   function cBot(x){return 438-x*.4}
   function curtainSVG(t){
     seed=55;var xr=120,xl=86-t*78,w=xr-xl,s='';
@@ -650,12 +655,12 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     s+=F('M0 '+f(topL(0))+' L125 '+TB+' L125 392 L0 442 Z','var(--wall-l)');
     s+=F('M0 442 L125 392 L400 392 L400 560 L0 560Z','var(--floor)');
     s+=F('M215 404 L400 404 L400 516 L0 516 L0 497.7 Z','var(--rug)');
-    s+=F('M26 '+f(topL(26))+' L52 '+f(topL(52))+' L52 322 L26 328 Z','var(--sky)');
+    s+=F('M'+WI1+' '+f(topL(WI1))+' L'+WI2+' '+f(topL(WI2))+' L'+WI2+' '+f(wy(WI1,330,WI2))+' L'+WI1+' 330 Z','var(--sky)');
     s+='<g transform="translate(8 0)">'+galleryStatic()+'<g class="hot" data-act="painting" tabindex="0" role="button" aria-label=""><rect x="290" y="136" width="60" height="92" fill="transparent"/><g id="bigArt"></g></g></g>';
     s+='<circle class="lampglow" id="glowC" cx="205" cy="185" r="190" fill="url(#glow)" pointer-events="none"/>';
-    s+='<g pointer-events="none"><circle cx="40" cy="56" r="8" fill="var(--moon)" opacity=".92"/><circle cx="44" cy="52.5" r="7" fill="var(--sky)"/>';
-    [[34,140,1.2,0],[46,200,1,1.5],[36,232,1.3,3],[44,290,1,2],[32,86,.9,4],[47,118,1,2.5]].forEach(function(p){s+='<circle class="twinkle" cx="'+p[0]+'" cy="'+p[1]+'" r="'+p[2]+'" fill="#d8d2f0" style="animation-delay:'+p[3]+'s"/>'});
-    for(var sy=60;sy<SE+40;sy+=46){s+='<circle class="twinkle" cx="'+(32+(sy*7)%16)+'" cy="'+(56-sy)+'" r="'+(.8+(sy%3)*.2)+'" fill="#d8d2f0" style="animation-delay:'+(sy%5)+'s"/>'}
+    s+='<g pointer-events="none"><circle cx="'+WMX+'" cy="56" r="8" fill="var(--moon)" opacity=".92"/><circle cx="'+(WMX+4)+'" cy="52.5" r="7" fill="var(--sky)"/>';
+    [[24,140,1.2,0],[66,200,1,1.5],[30,232,1.3,3],[60,290,1,2],[26,86,.9,4],[70,118,1,2.5],[38,170,1,3.5],[54,250,1.1,.5],[28,300,.9,1],[44,110,.8,2]].forEach(function(p){s+='<circle class="twinkle" cx="'+p[0]+'" cy="'+p[1]+'" r="'+p[2]+'" fill="#d8d2f0" style="animation-delay:'+p[3]+'s"/>'});
+    for(var sy=60;sy<SE+40;sy+=46){s+='<circle class="twinkle" cx="'+(24+(sy*7)%44)+'" cy="'+(56-sy)+'" r="'+(.8+(sy%3)*.2)+'" fill="#d8d2f0" style="animation-delay:'+(sy%5)+'s"/>'}
     s+='<g id="skyExtra"></g></g>';
     s+='<g filter="url(#pencil)">';
     var d='';
@@ -666,14 +671,17 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     s+=K(ln(215,404,0,497.7)+ln(215,404,400,404,.6,1)+ln(0,516,400,516),1.1);
     s+='</g>';
     /* окно */
-    s+='<g class="hot" data-act="breath" tabindex="0" role="button" aria-label="Окно: подышать"><rect x="0" y="'+(-SE)+'" width="70" height="'+(360+SE)+'" fill="transparent"/><g filter="url(#pencil)">';
-    d=ln(14,topL(14),14,334)+ln(26,topL(26),26,328,.7)+ln(52,topL(52),52,322,.7)+ln(62,topL(62),62,326)+ln(14,334,62,326);
-    for(var by=15;by>topL(52)+30;by-=80)d+=ln(26,by+1,52,by-1,.6)+ln(26,by+9,52,by+7,.6);
-    [[95,103],[175,183],[255,262]].forEach(function(m){d+=ln(26,m[0]+1,52,m[0]-1,.6)+ln(26,m[1]+1,52,m[1]-1,.6)});
-    d+=pl([[0,348],[90,334],[90,342],[0,358]],false);
+    s+='<g class="hot" data-act="breath" tabindex="0" role="button" aria-label="Окно: подышать"><rect x="0" y="'+(-SE)+'" width="'+(WO2+8)+'" height="'+(360+SE)+'" fill="transparent"/><g filter="url(#pencil)">';
+    var WB=335,GB=330,WC=pmid(WI1,WI2);
+    d=ln(WO1,topL(WO1),WO1,WB)+ln(WI1,topL(WI1),WI1,GB,.7)+ln(WI2,topL(WI2),WI2,wy(WI1,GB,WI2),.7)+ln(WO2,topL(WO2),WO2,wy(WO1,WB,WO2))+ln(WO1,WB,WO2,wy(WO1,WB,WO2));
+    [WC-1.6,WC+1.6].forEach(function(x,i){d+=ln(x,topL(x),x,wy(WI1,GB,x),.6-i*.1)});
+    function rail(y){return ln(WI1,y,WI2,wy(WI1,y,WI2),.5)+ln(WI1,y+8,WI2,wy(WI1,y+8,WI2),.5)}
+    /* перекладины поровну по всей высоте стекла */
+    var yT=topL(WI1),nP=Math.max(3,Math.round((GB-yT)/78));for(var k=1;k<nP;k++)d+=rail(yT+(GB-yT)*k/nP-4);
+    var SL=WO2+6;d+=pl([[0,346],[SL,wy(0,346,SL)],[SL,wy(0,354,SL)],[0,356]],false);
     s+=SK(d,1.3)+'</g></g>';
     /* штора */
-    s+='<g class="hot" data-act="curtain" tabindex="0" role="button" aria-label="Штора: открыть или закрыть"><rect id="curtainHit" x="80" y="'+f(topL(80)-4)+'" width="48" height="'+f(400-topL(80)+4)+'" fill="transparent"/><g filter="url(#pencil)" id="sceneCurtain"></g><g filter="url(#pencil)">'+rodSVG()+'</g><g class="moonglow" id="moonGlow" pointer-events="none"><circle cx="40" cy="56" r="46" fill="url(#mglow)"/><circle cx="40" cy="56" r="8" fill="var(--moon)" opacity=".38"/><circle cx="44" cy="52.5" r="7" fill="var(--curtain)" opacity=".5"/></g></g>';
+    s+='<g class="hot" data-act="curtain" tabindex="0" role="button" aria-label="Штора: открыть или закрыть"><rect id="curtainHit" x="80" y="'+f(topL(80)-4)+'" width="48" height="'+f(400-topL(80)+4)+'" fill="transparent"/><g filter="url(#pencil)" id="sceneCurtain"></g><g filter="url(#pencil)">'+rodSVG()+'</g><g class="moonglow" id="moonGlow" pointer-events="none"><circle cx="'+WMX+'" cy="56" r="46" fill="url(#mglow)"/><circle cx="'+WMX+'" cy="56" r="8" fill="var(--moon)" opacity=".38"/><circle cx="'+(WMX+4)+'" cy="52.5" r="7" fill="var(--curtain)" opacity=".5"/></g></g>';
     /* лампа */
     s+='<g class="hot" data-act="lamp" tabindex="0" role="button" aria-label="Лампа: выключить свет"><rect x="170" y="'+(-SE)+'" width="70" height="'+(217+SE)+'" fill="transparent"/>';
     s+='<circle class="bulb" id="bulb" cx="205" cy="185" r="9" fill="var(--lamp)" opacity=".9"/><g filter="url(#pencil)">';
@@ -706,7 +714,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
     /* корзина */
     s+='<g class="hot" data-act="laundry" tabindex="0" role="button" aria-label="Корзина с бельём"><rect x="0" y="426" width="140" height="124" fill="transparent"/><g filter="url(#pencil)" id="sceneLaundry"></g></g>';
     /* подсказки */
-    [['cat',336,288],['breath',39,190],['curtain',106,230],['plant',178,250],['thoughts',214,312],['laundry',64,472],['lamp',232,182],['painting',328,182]].forEach(function(h){s+='<g class="hint" data-hint="'+h[0]+'"><circle class="hglow" cx="'+h[1]+'" cy="'+h[2]+'" r="11" fill="url(#hglowG)"/><circle class="ring" cx="'+h[1]+'" cy="'+h[2]+'" r="6"/><circle cx="'+h[1]+'" cy="'+h[2]+'" r="1.8" fill="var(--firefly)"/></g>'});
+    [['cat',336,288],['breath',46,190],['curtain',106,230],['plant',178,250],['thoughts',214,312],['laundry',64,472],['lamp',232,182],['painting',328,182]].forEach(function(h){s+='<g class="hint" data-hint="'+h[0]+'"><circle class="hglow" cx="'+h[1]+'" cy="'+h[2]+'" r="11" fill="url(#hglowG)"/><circle class="ring" cx="'+h[1]+'" cy="'+h[2]+'" r="6"/><circle cx="'+h[1]+'" cy="'+h[2]+'" r="1.8" fill="var(--firefly)"/></g>'});
     s+='</g>';
     return s;
   }
@@ -720,7 +728,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   function drawLaundry(){$('#sceneLaundry').innerHTML=basketSVG(laundryDone)}
   function drawCurtain(t){$('#sceneCurtain').innerHTML=curtainSVG(t);var xl=86-t*78;var h=$('#curtainHit');h.setAttribute('x',xl-6);h.setAttribute('width',120-xl+10);$('#moonGlow').style.opacity=t;var hint=document.querySelector('[data-hint="curtain"] circle.ring');}
   var skyExtra=store.get('sky',0);
-  function drawSky(){seed=900;var s='';for(var i=0;i<skyExtra;i++){var x=28+rnd()*22,y=70+rnd()*245,rr=.5+rnd()*.8;s+='<circle class="twinkle" cx="'+f(x)+'" cy="'+f(y)+'" r="'+f(rr)+'" fill="'+SC[i%SC.length]+'" style="animation-delay:'+f(rnd()*5)+'s"/>'}$('#skyExtra').innerHTML=s}
+  function drawSky(){seed=900;var s='';for(var i=0;i<skyExtra;i++){var x=WI1+3+rnd()*(WI2-WI1-6),y=70+rnd()*245,rr=.5+rnd()*.8;s+='<circle class="twinkle" cx="'+f(x)+'" cy="'+f(y)+'" r="'+f(rr)+'" fill="'+SC[i%SC.length]+'" style="animation-delay:'+f(rnd()*5)+'s"/>'}$('#skyExtra').innerHTML=s}
   drawVase();drawJar();drawLaundry();drawCurtain(curtainT);drawSky();
   var catAsleep=store.get('catSleep','')===today();
   function setSceneSleep(v){catAsleep=v;var c=$('#sceneCat');c.classList.toggle('sleepy',v);c.classList.toggle('catSleep',v);store.set('catSleep',v?today():'')}
