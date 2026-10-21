@@ -82,7 +82,9 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 .meter:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
 .round[aria-pressed="true"]{color:var(--lamp);border-color:var(--lamp)}
 .stage{flex:1;min-height:0;position:relative}
-#scene{position:absolute;inset:0;width:100%;height:100%;display:block}
+#scene{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .5s ease}
+/* комната проявляется, когда размер экрана устоялся (на айфоне с главного экрана он уточняется после запуска) */
+.stage.ready #scene{opacity:1}
 .caption{min-height:calc(2 * 1.45em + 17px);display:flex;align-items:center;justify-content:center;line-height:1.45;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:2;width:100%;max-width:400px;box-sizing:border-box;text-align:center;background:rgba(18,15,34,.78);border:1.5px solid var(--line);border-radius:16px;padding:7px 14px;font-size:.85rem;color:var(--text);pointer-events:none;transition:opacity .6s;text-wrap:balance}
 .bar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
 .tool{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 6px;border-radius:16px;background:var(--panel);border:1.5px solid var(--line);color:var(--ink);font-family:var(--display);font-size:.62rem;font-weight:600;cursor:pointer;min-width:0}
@@ -1261,14 +1263,22 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   /* ---------- привязка ---------- */
   var map={painting:actPainting,cat:catTap,breath:actBreath,curtain:actCurtain,plant:actPlant,laundry:actLaundry,thoughts:actThoughts,lamp:actLamp};
   /* при повороте телефона или смене размера комната перестраивается под новую высоту */
-  var rsT=null;addEventListener('resize',function(){clearTimeout(rsT);rsT=setTimeout(function(){if(Math.abs(calcSE()-SE)<24)return;buildScene();
-    drawBigArt();drawVase();drawJar();drawLaundry();drawCurtain(curtainT);drawSky();setSceneSleep(catAsleep);applyLang();
-    applySeen();bindActs($('#scene'))},200)});
+  function rebuild(){buildScene();drawBigArt();drawVase();drawJar();drawLaundry();drawCurtain(curtainT);drawSky();setSceneSleep(catAsleep);applyLang();applySeen();bindActs($('#scene'));if(!$('#ob').hidden)obPlace()}
+  var bootT=Date.now(),rsT=null;
+  addEventListener('resize',function(){var early=Date.now()-bootT<3000;clearTimeout(rsT);rsT=setTimeout(function(){var d=Math.abs(calcSE()-SE);if(early?d===0:d<24)return;rebuild()},early?40:200)});
   function bindActs(root){root.querySelectorAll('[data-act]').forEach(function(el){
     el.addEventListener('click',function(){if(lightsOut)return;seeHint(el.dataset.act);map[el.dataset.act]()});
     el.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&el.tagName!=='BUTTON'){e.preventDefault();if(lightsOut)return;map[el.dataset.act]()}});
   })}
   bindActs(document);applySeen();
+  /* запуск: ждём, пока размер экрана перестанет меняться, перестраиваем комнату и только потом показываем */
+  (function(){var last=null,stable=0,t0=Date.now(),st=$('.stage');
+    function chk(){var k=calcSE()+'|'+Math.round(st.getBoundingClientRect().height)+'|'+$('#whisper').offsetHeight;
+      if(k===last)stable++;else{if(last!==null)rebuild();stable=0;last=k}
+      if(stable>=3||Date.now()-t0>1600){if(calcSE()!==SE)rebuild();st.classList.add('ready');return}
+      setTimeout(chk,80)}
+    requestAnimationFrame(chk)})();
+  addEventListener('pageshow',function(e){if(e.persisted&&calcSE()!==SE)rebuild()});
   if(0)document.querySelectorAll('[data-act]').forEach(function(el){
     el.addEventListener('click',function(){if(lightsOut)return;seeHint(el.dataset.act);map[el.dataset.act]()});
     el.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&el.tagName!=='BUTTON'){e.preventDefault();if(lightsOut)return;map[el.dataset.act]()}});
