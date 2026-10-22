@@ -735,7 +735,8 @@ body.relSky .sheet .card{box-shadow:0 -4px 16px rgba(0,0,0,.08)}
 
   /* ---------- картины на стене ---------- */
   var ART_N={paper:'#4c4565',mat:'#5a5376',wood:'#7d6249',moon:'#cdb78c',h:['#6c6072','#7b6d7c','#8a7b85','#5e556d'],sep:'#b8abc4',leaf:'#7f9c86',line:'#d6cce6'},
-      ART_D={paper:'#fbf8f2',mat:'#efe6d8',wood:'#7d6249',moon:'#e2b45f',h:['#ecd3c3','#e3c0b0','#d6ab9f','#efdccd'],sep:'#b99a88',leaf:'#86ab90',line:'#7d6b5d'},
+      /* днём все картины на одном полотне — того же цвета, что большой холст для рисования */
+      ART_D={paper:'#efe7da',mat:'#f8f3ea',wood:'#7d6249',moon:'#e2b45f',h:['#ecd3c3','#e3c0b0','#d6ab9f','#efdccd'],sep:'#b99a88',leaf:'#86ab90',line:'#7d6b5d'},
       ART=THEME==='night'?ART_N:ART_D;
   var userArt=store.get('painting',null),userBg=store.get('paintingBg','day');
   var BG={day:'#efe7da',night:'#3e3858'};
