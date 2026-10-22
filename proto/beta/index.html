@@ -777,6 +777,7 @@ body.relSky .veil.on{opacity:.25;transition:opacity .9s}
   function skyPos(n){seed=900;var a=[];for(var i=0;i<n;i++){var top=topL(WI1)+32,x=WI1+3+rnd()*(WI2-WI1-6),y=top+rnd()*(318-top),rr=.7+rnd()*.8,dl=rnd()*5;a.push([x,y,rr,dl])}return a}
   function drawSky(){var s='';skyPos(skyExtra).forEach(function(p,i){s+='<circle class="twinkle" cx="'+f(p[0])+'" cy="'+f(p[1])+'" r="'+f(p[2])+'" fill="'+SC[i%SC.length]+'" style="animation-delay:'+f(p[3])+'s"/>'});$('#skyExtra').innerHTML=s}
   drawVase();drawJar();drawLaundry();drawCurtain(curtainT);drawSky();
+  if(typeof betaFill==='function')betaFill();
   var catAsleep=store.get('catSleep','')===today();
   function setSceneSleep(v){catAsleep=v;var c=$('#sceneCat');c.classList.toggle('sleepy',v);c.classList.toggle('catSleep',v);store.set('catSleep',v?today():'')}
   setSceneSleep(catAsleep);
@@ -1105,7 +1106,10 @@ body.relSky .veil.on{opacity:.25;transition:opacity .9s}
   }
 
   /* ---------- банка со звёздочками ---------- */
+  /* только для беты: в банке всегда минимум 15 звёздочек, чтобы быстрее проверять улёт */
+  function betaFill(){if(/\/proto\/beta\//.test(location.pathname)&&jarStars<15&&jarStars<SLOTS.length){jarStars=15;jarOrder=null;fixOrder();store.set('stars',jarStars);store.set('jarOrder',jarOrder);drawJar()}}
   function actThoughts(){
+    betaFill();
     var coarse=false;try{coarse=matchMedia('(pointer:coarse)').matches}catch(e){}
     openSheet('<h2 id="sheetTitle">'+T('jarTitle')+'</h2><p>'+T('jarIntro')+'</p><div class="jarbox" id="jarbox" role="button" tabindex="0" aria-label="'+T('shake')+'"><svg viewBox="-75 -205 150 215" id="bigJar"><defs><filter id="sglow" x="-300%" y="-300%" width="700%" height="700%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g class="jarwob" id="jarWob"><g transform="scale(1.65)" id="bigJarG">'+jarSVG(jarStars,true)+'</g></g></svg></div><div class="status" id="jStat"></div><div class="jarform" id="jarform"><textarea class="thought-in" id="tin" rows="2" maxlength="80" enterkeyhint="done" autocomplete="off" placeholder="'+TR('placeholder')+'"></textarea><div class="presets">'+T('presets').map(function(x){return '<button class="preset">'+x+'</button>'}).join('')+'</div><div class="row"><button class="btn" id="tgo">'+T('fold')+'</button></div></div>',function(){
       var relCleanup=null,tinBlurAt=0,busy=false,releasing=false,shakes=0,dim=1,lastShake=0,alive=true,RX=/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/;
