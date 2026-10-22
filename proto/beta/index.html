@@ -176,8 +176,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 
 .floorbox{width:100%;max-width:360px}
 .floorbox svg{width:100%;height:auto;display:block}
-.foldbox{width:100%;display:flex;justify-content:center}
-#foldSvg{width:auto;max-width:100%;height:min(260px,30dvh);touch-action:none;cursor:grab;overflow:visible;outline:none}
+.foldbox{width:100%;display:flex;justify-content:center;margin:-4px 0}
+#foldSvg{width:auto;max-width:100%;height:min(218px,25.2dvh);touch-action:none;cursor:grab;overflow:visible;outline:none}
 #foldSvg:focus-visible{outline:2px solid var(--lamp);outline-offset:4px;border-radius:12px}
 #gWrap{transform-box:view-box}
 .fline{fill:none;stroke:var(--firefly);stroke-width:1.2;stroke-dasharray:4 4;opacity:.8}
@@ -1190,7 +1190,7 @@ body.relSky .sheet .card{box-shadow:0 -4px 16px rgba(0,0,0,.08)}
       });
       return;
     }
-    openSheet('<h2 id="sheetTitle">'+T('messTitle')+'</h2><p id="lLine">'+T('messIntro')+'</p><div class="foldbox"><svg viewBox="0 0 200 200" id="foldSvg" tabindex="0" role="button">'+TEXDEFS+'<g id="gWrap"><g id="gStatic"></g><g id="gFlap"></g></g><g id="gHint"></g></svg></div><div class="fdots" id="fdots"></div><div class="status" id="lStat"></div><div class="fstack" id="fstack"></div>',function(){
+    openSheet('<h2 id="sheetTitle">'+T('messTitle')+'</h2><p id="lLine">'+T('messIntro')+'</p><div class="foldbox"><svg viewBox="0 18 200 168" id="foldSvg" tabindex="0" role="button">'+TEXDEFS+'<g id="gWrap"><g id="gStatic"></g><g id="gFlap"></g></g><g id="gHint"></g></svg></div><div class="fdots" id="fdots"></div><div class="status" id="lStat"></div><div class="fstack" id="fstack"></div>',function(){
       var gi=0,step=0,pcs=null,parts=null,sp=null,drag=null,anim=null,alive=true,G,flapExt=1;
       var svg=$('#foldSvg'),msgs=T('laundryMsgs');
       function load(){G=GARMENTS[gi];G_FILL=G.f;pcs=G.pieces.map(function(pc){return {p:pc.p.map(function(q){return q.slice()}),c:pc.c,sh:0}});step=0;
@@ -1225,7 +1225,7 @@ body.relSky .sheet .card{box-shadow:0 -4px 16px rgba(0,0,0,.08)}
           $('#fstack').insertAdjacentHTML('afterbegin','<svg class="fold-in" viewBox="0 0 '+(ww+4)+' '+(hh+4)+'" style="width:'+(ww+4)+'px">'+F('M2 2 h'+ww+' v'+hh+' h-'+ww+' Z',G.c)+K(pl([[2,2],[2+ww,2],[2+ww,2+hh],[2,2+hh]],true,.5,1),1.1)+'</svg>');
           gi++;
           if(gi<GARMENTS.length){$('#lLine').textContent=msgs[gi-1];setTimeout(function(){if(alive)load()},450)}
-          else{$('#lLine').textContent=msgs[4];$('#lStat').textContent=T('tidy');$('#fdots').innerHTML='';svg.style.pointerEvents='none';var fbx=$('.foldbox');fbx.style.minHeight=Math.round(fbx.getBoundingClientRect().height)+'px';fbx.style.alignItems='center';fbx.innerHTML=doneBasket();$('#fstack').innerHTML='';
+          else{$('#lLine').textContent=msgs[4];$('#lStat').textContent=T('tidy');$('#fdots').innerHTML='';svg.style.pointerEvents='none';var fbx=$('.foldbox'),bh=Math.round(fbx.getBoundingClientRect().height);fbx.style.height=bh+'px';fbx.style.alignItems='center';fbx.innerHTML=doneBasket();var bsv=fbx.querySelector('svg');if(bsv){bsv.style.height=bh+'px';bsv.style.width='auto';bsv.style.maxWidth='100%'}$('#fstack').innerHTML='';
             laundryDone=true;store.set('laundry',today());drawLaundry();mark('laundry');say(T('laundrySay'))}
         },950);
       }
