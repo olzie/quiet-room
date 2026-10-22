@@ -1006,8 +1006,12 @@ body.relSky .sheet .card{box-shadow:0 -4px 16px rgba(0,0,0,.08)}
   function applyMode(){
     for(var k in bg){bg[k].gain.setTargetAtTime(k===soundMode?LEVEL[k]*nightDim:0,ctx.currentTime,k===soundMode?1.2:.5)}
   }
+  /* картинка «сейчас играет» (островок, пункт управления): днём светлая с солнцем, ночью тёмная с луной */
+  var ICONS=(function(){var l=document.querySelector('link[rel="apple-touch-icon"]');return l?l.href.replace(/apple-touch-icon\.png.*$/,''):'icons/'})();
+  function npMeta(){try{if(!('mediaSession' in navigator)||!window.MediaMetadata)return;var th=THEME,a=th==='night'?[{src:ICONS+'icon-192.png',sizes:'192x192',type:'image/png'},{src:ICONS+'icon-512.png',sizes:'512x512',type:'image/png'}]:[{src:ICONS+'np-'+th+'-192.png',sizes:'192x192',type:'image/png'},{src:ICONS+'np-'+th+'-512.png',sizes:'512x512',type:'image/png'}];
+    navigator.mediaSession.metadata=new MediaMetadata({title:TR('title'),artist:'',album:'',artwork:a})}catch(e){}}
   function setMode(m,user){
-    soundMode=m;store.set('sound',m);drawSoundUI();
+    soundMode=m;store.set('sound',m);drawSoundUI();if(m!=='silence')npMeta();
     if(m==='silence'&&!ctx)return;
     initAudio();if(!ctx)return;unlockIOS();if(ctx.state==='suspended')ctx.resume();
     if(m==='grey'&&!bg.grey)bg.grey=buildGrey(ctx,master);
@@ -1564,7 +1568,7 @@ body.relSky .sheet .card{box-shadow:0 -4px 16px rgba(0,0,0,.08)}
       var of=el.getAttribute('data-of');if(!day){if(of){el.setAttribute('fill',of);el.removeAttribute('data-of')}return}
       var c=of||el.getAttribute('fill'),mm=/^#([0-9a-f]{6})$/i.exec(c);if(!mm)return;var v=[0,2,4].map(function(i){return parseInt(mm[1].substr(i,2),16)});
       if((.3*v[0]+.59*v[1]+.11*v[2])/255>=.3)return;if(!of)el.setAttribute('data-of',c);el.setAttribute('fill','rgb('+v.map(function(x,i){return Math.round(x*.28+W[i]*.72)}).join(',')+')')})}
-  function setTheme(th){if(th===THEME)return;THEME=th;document.documentElement.setAttribute('data-theme',th);ART=th==='night'?ART_N:ART_D;
+  function setTheme(th){if(th===THEME)return;THEME=th;document.documentElement.setAttribute('data-theme',th);npMeta();ART=th==='night'?ART_N:ART_D;
     var mt=document.querySelector('meta[name="theme-color"]');if(mt)mt.setAttribute('content',getComputedStyle(document.documentElement).getPropertyValue('--night').trim());
     rebuild();updLight()}
   setInterval(function(){if(themePref==='auto'&&!lightsOut)setTheme(clockPhase())},60000);
