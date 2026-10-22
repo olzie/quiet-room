@@ -190,7 +190,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 .fdots i{width:7px;height:7px;border-radius:50%;border:1.5px solid var(--ink-soft)}
 .fdots i.cur{border-color:var(--firefly)}
 .fdots i.on{background:var(--firefly);border-color:var(--firefly)}
-.fstack{display:flex;flex-direction:column;align-items:center;gap:1px;min-height:12px}
+.fstack{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:1px;min-height:44px} /* место под всю стопку сразу — окно не растёт */
 .fstack svg{height:auto;display:block}
 .cg:hover .k{stroke:var(--lamp)}
 .fold-in{animation:land .45s ease-out}
@@ -1221,7 +1221,7 @@ body.relSky .sheet .card{box-shadow:0 -4px 16px rgba(0,0,0,.08)}
           $('#fstack').insertAdjacentHTML('afterbegin','<svg class="fold-in" viewBox="0 0 '+(ww+4)+' '+(hh+4)+'" style="width:'+(ww+4)+'px">'+F('M2 2 h'+ww+' v'+hh+' h-'+ww+' Z',G.c)+K(pl([[2,2],[2+ww,2],[2+ww,2+hh],[2,2+hh]],true,.5,1),1.1)+'</svg>');
           gi++;
           if(gi<GARMENTS.length){$('#lLine').textContent=msgs[gi-1];setTimeout(function(){if(alive)load()},450)}
-          else{$('#lLine').textContent=msgs[4];$('#lStat').textContent=T('tidy');$('#fdots').innerHTML='';svg.style.pointerEvents='none';$('.foldbox').innerHTML=doneBasket();$('#fstack').innerHTML='';
+          else{$('#lLine').textContent=msgs[4];$('#lStat').textContent=T('tidy');$('#fdots').innerHTML='';svg.style.pointerEvents='none';var fbx=$('.foldbox');fbx.style.minHeight=Math.round(fbx.getBoundingClientRect().height)+'px';fbx.style.alignItems='center';fbx.innerHTML=doneBasket();$('#fstack').innerHTML='';
             laundryDone=true;store.set('laundry',today());drawLaundry();mark('laundry');say(T('laundrySay'))}
         },950);
       }
