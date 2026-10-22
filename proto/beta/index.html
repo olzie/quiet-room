@@ -206,9 +206,15 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 .shaking{animation:jshake .7s ease-in-out}
 @keyframes jshake{0%,100%{transform:rotate(0)}15%{transform:rotate(-9deg)}35%{transform:rotate(8deg)}55%{transform:rotate(-6deg)}75%{transform:rotate(4deg)}}
 .jarform{display:flex;flex-direction:column;gap:8px;align-items:center;width:100%;max-height:300px;overflow:hidden;transition:max-height .7s ease,opacity .5s}
-.jarform.gone{max-height:0;opacity:0;pointer-events:none}
+.jarform{transition:opacity .5s}
+.jarform.gone{opacity:0;pointer-events:none}
 .shimmer>path.ks{animation:shim 1.1s linear infinite}
 .halo{fill:#f6e3a1;opacity:.4;animation:halo 1.3s ease-in-out infinite}
+/* улетающие звёзды — отдельные слои поверх банки, их двигает сам браузер */
+.flystar{position:absolute;left:0;top:0;pointer-events:none;will-change:transform,opacity;z-index:3}
+.flystar svg{position:relative;width:100%;height:100%;display:block;overflow:visible}
+.flystar::before{content:'';position:absolute;inset:-35%;border-radius:50%;background:radial-gradient(circle,rgba(246,227,161,.75) 0,rgba(246,227,161,.25) 35%,rgba(246,227,161,0) 70%);animation:flyHalo 1.3s ease-in-out infinite}
+@keyframes flyHalo{50%{opacity:.35}}
 @keyframes halo{50%{opacity:.1}}
 @keyframes shim{0%{fill:#f6e3a1}25%{fill:#e6a9c0}50%{fill:#a9c4ea}75%{fill:#c9b3ee}100%{fill:#f6e3a1}}
 .btn.small{font-size:.85rem;padding:7px 16px}
@@ -1135,22 +1141,26 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
         $('#jarform').classList.add('gone');
         setStat(T('releaseStart'));var ip=document.querySelector('#card > p');if(ip){ip.style.transition='opacity .8s';ip.style.opacity=.2}
         var st=starsNow().sort(function(a,b){return baseOf(a)[1]-baseOf(b)[1]});
-        var T0=performance.now()+600,flies=st.map(function(g,i){var b=baseOf(g);g.classList.add('shimmer');g.setAttribute('filter','url(#sglow)');g.insertAdjacentHTML('afterbegin','<circle class="halo" r="7.5" style="animation-delay:'+(-Math.random()*1.3).toFixed(2)+'s"/>');var pth=g.querySelector('path.ks');if(pth)pth.style.animationDelay=(-(i*0.17)%1.1).toFixed(2)+'s';g.style.transition='none';g.style.opacity=1;
-          return {g:g,x:b[0],y:b[1],tx:b[0]-50-Math.random()*60,ty:-150-Math.random()*60,start:i*70,dur:3000+Math.random()*700,ph:Math.random()*6.28,fr:1.4+Math.random()*1.4,rot:Math.random()*300}});
-        function fly(now){var tt=now-T0,live=false;flies.forEach(function(fl){var q=(tt-fl.start)/fl.dur;if(q<0){live=true;return}if(q>1){fl.g.style.opacity=0;return}live=true;
-          var e=1-Math.pow(1-q,2.2),dx=fl.tx-fl.x,dy=fl.ty-fl.y,L=Math.hypot(dx,dy)||1,w=Math.sin(q*fl.fr*6.283+fl.ph)*9*Math.sin(q*3.1416),x=fl.x+dx*e-dy/L*w,y=fl.y+dy*e+dx/L*w;
-          fl.g.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) rotate('+(fl.rot*e).toFixed(0)+'deg) scale('+(1+.3*Math.sin(q*3.1416)).toFixed(2)+')';
-          fl.g.style.opacity=((q<.72?1:(1-q)/.28)*(.62+.38*Math.sin(tt/170+fl.ph))).toFixed(2)});
-          if(live&&alive)requestAnimationFrame(fly)}
-        requestAnimationFrame(fly);
-        /* штора закрыта — открываем, чтобы звёзды улетели в окно, потом закрываем обратно */
+        /* штора закрыта — сначала открываем, потом звёзды летят в окно, потом закрываем обратно */
         var reopen=curtainT>.5,tok=0;if(reopen){curtainTo(0,1300);tok=curtainTok}
+        var LEAD=reopen?1400:600,jb=$('#jarbox'),jr=jb.getBoundingClientRect();
+        st.forEach(function(g,i){var b=baseOf(g),gr=g.getBoundingClientRect(),u=gr.width/24,
+            fl={x:b[0],y:b[1],tx:b[0]-50-Math.random()*60,ty:-150-Math.random()*60,start:i*70,dur:3000+Math.random()*700,ph:Math.random()*6.28,fr:1.4+Math.random()*1.4,rot:Math.random()*300};
+          var d=document.createElement('div');d.className='flystar';d.style.width=d.style.height=gr.width+'px';
+          var cx=gr.left-jr.left,cy=gr.top-jr.top;
+          d.innerHTML='<svg viewBox="-12 -12 24 24">'+g.innerHTML.replace(/<rect[^>]*>/,'')+'</svg>';
+          d.style.transform='translate3d('+cx.toFixed(1)+'px,'+cy.toFixed(1)+'px,0)';jb.appendChild(d);g.style.opacity=0;
+          if(!d.animate)return;
+          var kf=[],N=36;for(var k=0;k<=N;k++){var q=k/N,e=1-Math.pow(1-q,2.2),dx=fl.tx-fl.x,dy=fl.ty-fl.y,L=Math.hypot(dx,dy)||1,w=Math.sin(q*fl.fr*6.283+fl.ph)*9*Math.sin(q*3.1416),
+              x=cx+(dx*e-dy/L*w)*u,y=cy+(dy*e+dx/L*w)*u,o=(q<.72?1:(1-q)/.28)*(.7+.3*Math.sin(q*fl.dur/170+fl.ph));
+            kf.push({transform:'translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,0) rotate('+(fl.rot*e).toFixed(0)+'deg) scale('+(1+.3*Math.sin(q*3.1416)).toFixed(2)+')',opacity:Math.max(0,o).toFixed(2),offset:q})}
+          d.animate(kf,{duration:fl.dur,delay:LEAD+fl.start,easing:'linear',fill:'both'}).onfinish=function(){d.remove()}});
         setTimeout(function(){
           jarStars=0;store.set('stars',0);jarOrder=[];store.set('jarOrder',[]);skyExtra=Math.min(40,skyExtra+8);store.set('sky',skyExtra);drawJar();drawSky();say(T('releasedSay'));if(reopen)setTimeout(function(){if(curtainTok===tok&&store.get('curtain',0))curtainTo(1,1300)},3200);
           if(!alive)return;
           $('#bigJarG').innerHTML=jarSVG(0,true);repaint();setStat(T('released'),T('releasedHint'));
           $('#jarform').classList.remove('gone');releasing=false;dim=1;var ip2=document.querySelector('#card > p');if(ip2)ip2.style.opacity=1;
-        },600+st.length*70+3900);
+        },LEAD+st.length*70+3900);
       }
       function makeSlip(text,color){
         var V=['L','R'],H=['U','D'],f1=[ 'L','R','U','D'][Math.floor(Math.random()*4)],two=Math.random()<.6,f2=two?(V.indexOf(f1)>=0?H:V)[Math.floor(Math.random()*2)]:null;
