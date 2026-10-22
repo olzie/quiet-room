@@ -1231,14 +1231,19 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 
 
   /* ---------- знакомство с комнатой ---------- */
-  var OB=[{k:'ob0'},{k:'ob1',sel:'#scene [data-act="cat"] rect'},{k:'ob2',sel:'#scene [data-act="breath"] rect'},{k:'ob3',sel:'#scene [data-act="thoughts"] rect'},{k:'obLaundry',sel:'#scene [data-act="laundry"] rect'},{k:'obPaint',sel:'#scene [data-act="painting"] rect'},{k:'obDot',sel:'#scene [data-hint="plant"] circle:last-child',pad:18,dots:1},{k:'ob4',sel:'#meter'},{k:'obSound',sel:'#soundBtn'},{k:'ob5',sel:'#scene [data-act="lamp"] rect'}],obI=0;
+  /* шаги сгруппированы: сначала карточка сверху (предметы внизу комнаты), потом снизу (предметы наверху) */
+  var OB=[{k:'ob0',side:'top'},{k:'ob1',sel:'#scene [data-act="cat"] rect',side:'top'},{k:'ob3',sel:'#scene [data-act="thoughts"] rect',side:'top'},{k:'obLaundry',sel:'#scene [data-act="laundry"] rect',side:'top'},{k:'obDot',sel:'#scene [data-hint="plant"] circle:last-child',pad:18,dots:1,side:'top'},{k:'ob2',sel:'#scene [data-act="breath"] rect',side:'bottom'},{k:'obPaint',sel:'#scene [data-act="painting"] rect',side:'bottom'},{k:'ob4',sel:'#meter',side:'bottom'},{k:'obSound',sel:'#soundBtn',side:'bottom'},{k:'ob5',sel:'#scene [data-act="lamp"] rect',side:'bottom'}],obI=0;
+  function obSide(c,s){if(s==='top'){c.style.bottom='auto';c.style.top='calc(16px + env(safe-area-inset-top, 0px))'}else{c.style.top='auto';c.style.bottom='calc(16px + env(safe-area-inset-bottom, 0px))'}}
   function obPlace(){
     var st=OB[obI],h=$('#obHole'),c=$('#obCard'),vh=innerHeight;
     $('#scene').classList.toggle('showHints',!!st.dots);document.body.classList.toggle('obDots',!!st.dots);
     if(st.sel){var el=document.querySelector(st.sel),b=el.getBoundingClientRect(),pd=st.pad||8;
       h.classList.remove('none');h.classList.toggle('round',!!st.dots);var mk=$('#obMark');mk.hidden=!st.dots;if(st.dots){mk.style.left=(b.left+b.width/2)+'px';mk.style.top=(b.top+b.height/2)+'px'}h.style.left=(b.left-pd)+'px';h.style.top=(b.top-pd)+'px';h.style.width=(b.width+pd*2)+'px';h.style.height=(b.height+pd*2)+'px';
-      var mid=b.top+b.height/2;if(mid<vh*.5){c.style.top='auto';c.style.bottom='calc(16px + env(safe-area-inset-bottom, 0px))'}else{c.style.bottom='auto';c.style.top='calc(16px + env(safe-area-inset-top, 0px))'}}
-    else{$('#obMark').hidden=true;h.classList.add('none');h.style.left='50%';h.style.top='45%';h.style.width='0';h.style.height='0';c.style.top='auto';c.style.bottom='calc(16px + env(safe-area-inset-bottom, 0px))'}
+      var side=st.side||((b.top+b.height/2)<vh*.5?'bottom':'top'),ch=c.offsetHeight+28;
+      /* если карточка на своей стороне закрыла бы предмет — переносим её на другую */
+      var hitT=b.top-pd<ch,hitB=b.bottom+pd>vh-ch;if(side==='top'&&hitT&&!hitB)side='bottom';else if(side==='bottom'&&hitB&&!hitT)side='top';
+      obSide(c,side)}
+    else{$('#obMark').hidden=true;h.classList.add('none');h.style.left='50%';h.style.top='45%';h.style.width='0';h.style.height='0';obSide(c,st.side||'bottom')}
   }
   function obShow(){
     $('#obText').innerHTML=(OB[obI].dots?'<span class="ob-demo" aria-hidden="true"></span>':'')+'<span></span>';$('#obText').lastChild.textContent=T(OB[obI].k);
