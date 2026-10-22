@@ -753,8 +753,11 @@ html[data-theme=dawn]{--sunfill:#f7b88e;--sunring:#e59a78}
       var rq=0;function reqRender(){if(!rq)rq=requestAnimationFrame(function(){rq=0;render()})}
       function render(){c2.globalCompositeOperation='source-over';c2.fillStyle=BG[bg];c2.fillRect(0,0,cv.width,cv.height);c2.drawImage(L,0,0)}
       function pickCol(c){col=c;er=false;var e=$('#eraser');if(e)e.classList.remove('on');document.querySelectorAll('#pal .sw').forEach(function(x){x.classList.toggle('on',x.dataset.c===c)})}
+      /* светлая краска всегда чуть светлее светлого холста, как тёмная темнее ночного */
+      var LIGHT={day:'#fffdf9',night:PAL[1]};
       function setBg(v){bg=v;document.querySelectorAll('.bgb').forEach(function(b){var on=b.dataset.bg===v;b.classList.toggle('on',on);b.setAttribute('aria-checked',on)});
-        if(!col||(v==='night'&&col===PAL[0])||(v==='day'&&col===PAL[1]))pickCol(v==='night'?PAL[1]:PAL[0]);render()}
+        var lw=$('#pal .sw:nth-child(2)'),wasL=lw&&col===lw.dataset.c;if(lw){lw.dataset.c=LIGHT[v];lw.style.setProperty('--sw',LIGHT[v]);lw.setAttribute('aria-label',LIGHT[v])}if(wasL)col=LIGHT[v];
+        if(!col||(v==='night'&&col===PAL[0]))pickCol(v==='night'?LIGHT.night:PAL[0]);else pickCol(col);render()}
       setBg(bg);
       var srcLayer=store.get('paintingLayer',null);
       var hasSrc=!!(srcLayer||userArt),loaded=!hasSrc;
