@@ -1244,7 +1244,8 @@ html[data-theme=dawn]{--sunfill:#f7b88e;--sunring:#e59a78}
         if(n<2){setStat(T(n?'shakeOne':'shakeNone')[shakes%2]);shakes++;
           st.forEach(function(g){var b=baseOf(g),from=g.dataset.base;if(g.animate)g.animate([{transform:from},{transform:'translate('+f(b[0]+(Math.random()-.5)*10)+'px,'+f(b[1]-6)+'px) rotate(40deg)',offset:.4},{transform:from}],{duration:600,delay:W,easing:'ease-in-out'})});
           done();return}
-        dim=Math.max(.5,dim-.1);
+        /* ночью перемешанные звёздочки немного гаснут; днём на светлом фоне это выглядит как выцветание — оставляем яркими */
+        if(THEME==='night')dim=Math.max(.5,dim-.1);else dim=1;
         fixOrder();var perm=jarOrder.slice();for(var k=perm.length-1;k>0;k--){var q=Math.floor(Math.random()*(k+1)),tmp=perm[k];perm[k]=perm[q];perm[q]=tmp}
         st.forEach(function(g){var b=baseOf(g),i=+g.dataset.i,ns=SLOTS[perm[i]!=null?perm[i]:0],from=g.dataset.base,
             mid='translate('+f(b[0]+(Math.random()-.5)*10)+'px,'+f(b[1]-4-Math.random()*10)+'px) rotate('+Math.round((Math.random()-.5)*120)+'deg)',
