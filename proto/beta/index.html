@@ -604,7 +604,7 @@ html[data-theme=dawn]{--sunfill:#f7b88e;--sunring:#e59a78}
     /* бант */
     s+=SK('M14 -86 Q26 -96 30 -88 Q26 -82 14 -86 M14 -86 Q24 -78 30 -80 Q26 -88 14 -86 M14 -86 Q20 -72 18 -62 M14 -86 Q28 -74 30 -66',.9);
     if(open){
-      s+='<g class="jlid" style="transform:translate(-31px,-112px) rotate(-32deg)">'+F('M-15 0 L15 0 L13 10 L-13 10 Z','#b98a5e')+SK(pl([[-15,0],[15,0],[13,10],[-13,10]],true,.5)+el(0,0,15,3,.4,1,20),1.1)+'<circle cx="-6" cy="5" r=".8" fill="#7a5638"/><circle cx="4" cy="6.5" r=".8" fill="#7a5638"/><circle cx="8" cy="3.5" r=".6" fill="#7a5638"/></g>';
+      s+='<g class="jlid" style="transform:translate(-35px,-109px) rotate(-26deg)">'+F('M-16 4.5 L-14 -4.5 L14 -4.5 L16 4.5 Z','#b98a5e')+SK(pl([[-16,4.5],[-14,-4.5],[14,-4.5],[16,4.5]],true,.5),1.1)+'<circle cx="-6" cy="-.5" r=".9" fill="#7a5638"/><circle cx="5" cy="1.5" r=".9" fill="#7a5638"/></g>';
     }else{
       s+=F('M-16 -92 L-14 -101 L14 -101 L16 -92 Z','#b98a5e')+SK(pl([[-16,-92],[-14,-101],[14,-101],[16,-92]],true,.5),1.1)+'<circle cx="-6" cy="-97" r=".9" fill="#7a5638"/><circle cx="5" cy="-95" r=".9" fill="#7a5638"/>';
     }
@@ -1234,10 +1234,10 @@ html[data-theme=dawn]{--sunfill:#f7b88e;--sunring:#e59a78}
       function baseOf(g){if(!g.dataset.base)g.dataset.base=g.style.transform;var m=RX.exec(g.dataset.base);return m?[+m[1],+m[2]]:[0,0]}
       function shake(){
         if(busy||releasing||!alive)return;busy=true;
-        var jb=$('#jarbox'),lid=$('#bigJarG .jlid'),OPEN='translate(-31px,-112px) rotate(-32deg)',SHUT='translate(0px,-92px) rotate(-180deg)',W=230,SD=900;
+        var jb=$('#jarbox'),lid=$('#bigJarG .jlid'),OPEN='translate(-35px,-109px) rotate(-26deg)',UP='translate(0px,-104px) rotate(0deg)',SHUT='translate(0px,-96.5px) rotate(0deg)',W=300,SD=900;
         try{if(navigator.vibrate)navigator.vibrate(35)}catch(e){}
         /* крышка захлопывается, банку трясут, крышка снова открывается */
-        if(lid&&lid.animate)lid.animate([{transform:OPEN},{transform:SHUT,offset:.17},{transform:SHUT,offset:.83},{transform:OPEN}],{duration:W+SD+330,easing:'ease-in-out'});
+        if(lid&&lid.animate)lid.animate([{transform:OPEN,easing:'ease-out'},{transform:UP,offset:.12,easing:'ease-in'},{transform:SHUT,offset:.19},{transform:SHUT,offset:.84,easing:'ease-out'},{transform:UP,offset:.9,easing:'ease-in-out'},{transform:OPEN}],{duration:W+SD+330,easing:'linear'});
         if(jb.animate)jb.animate([{transform:'rotate(0deg)'},{transform:'rotate(-8deg)',offset:.17},{transform:'rotate(7deg)',offset:.38},{transform:'rotate(-5deg)',offset:.58},{transform:'rotate(3deg)',offset:.78},{transform:'rotate(0deg)'}],{duration:760,delay:W,easing:'ease-in-out'});
         var st=starsNow(),n=st.length;
         function done(){setTimeout(function(){busy=false;if(alive)repaint()},W+SD+360)}
@@ -1287,11 +1287,11 @@ html[data-theme=dawn]{--sunfill:#f7b88e;--sunring:#e59a78}
             var dir=k===1?1:-1,dx=dir*20/M.a/CS,dy=-18/M.a/CS,start=c.last-350,D=5600;cloudEnd=Math.max(cloudEnd,start+D);
             if(a.animate)a.animate([{transform:'translate(0px,0px) scale(.5)',opacity:0},{transform:'translate(0px,0px) scale(1)',opacity:1,offset:.24},{transform:'translate(0px,0px) scale(1)',opacity:1,offset:.4},
               {transform:'translate('+dx.toFixed(1)+'px,'+dy.toFixed(1)+'px) scale(1.1)',opacity:0}],{duration:D,delay:start,easing:'ease-in-out',fill:'both'}).onfinish=function(){e.remove()};else e.remove()})}
-        function dust(x,y,col,c,delay){var e=document.createElement('div');e.className='stardust';e.style.color=col;fx.push(e);
-          var sh=[];for(var k=0;k<9;k++){var a=k*.7+Math.random(),rr=3+Math.random()*7;sh.push((Math.cos(a)*rr).toFixed(1)+'px '+(Math.sin(a)*rr).toFixed(1)+'px 0 '+(Math.random()<.4?'.6px':'0')+' currentColor')}e.style.boxShadow=sh.join(',');
-          var P0='translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,0)',mx=x+(c.p[0]-x)*.55,my=y+(c.p[1]-y)*.55;e.style.transform=P0+' scale(.3)';e.style.opacity=0;document.body.appendChild(e);
-          if(e.animate)e.animate([{transform:P0+' scale(.3)',opacity:0},{transform:P0+' scale(1.5)',opacity:1,offset:.18},{transform:'translate3d('+mx.toFixed(1)+'px,'+my.toFixed(1)+'px,0) scale(1.2)',opacity:.85,offset:.55},
-            {transform:'translate3d('+c.p[0].toFixed(1)+'px,'+c.p[1].toFixed(1)+'px,0) scale(.5)',opacity:0}],{duration:1900,delay:delay,easing:'ease-out',fill:'both'}).onfinish=function(){e.remove()}}
+        function dust(tp,col,c,delay){var dcl=$('#dayClouds');if(!dcl)return;var NS='http://www.w3.org/2000/svg',e=document.createElementNS(NS,'g');e.setAttribute('transform','translate('+f(tp[0])+' '+f(tp[1])+')');
+          var s='<g><circle r="4.5" fill="'+col+'" opacity=".22"/>';for(var k=0;k<9;k++){var an=k*.7+Math.random(),rr=(3+Math.random()*7)/M.a;s+='<circle cx="'+f(Math.cos(an)*rr)+'" cy="'+f(Math.sin(an)*rr)+'" r="'+f((Math.random()<.4?1.6:1.1)/M.a)+'" fill="'+col+'"/>'}
+          e.innerHTML=s+'</g>';dcl.appendChild(e);fx.push(e);var g=e.firstChild;g.style.opacity=0;var dx=c.s[0]-tp[0],dy=c.s[1]-tp[1];
+          if(g.animate)g.animate([{transform:'translate(0px,0px) scale(.3)',opacity:0},{transform:'translate(0px,0px) scale(1.5)',opacity:1,offset:.18},{transform:'translate('+f(dx*.55)+'px,'+f(dy*.55)+'px) scale(1.2)',opacity:.85,offset:.55},
+            {transform:'translate('+f(dx)+'px,'+f(dy)+'px) scale(.5)',opacity:0}],{duration:1900,delay:delay,easing:'ease-out',fill:'both'}).onfinish=function(){e.remove()};else e.remove()}
         function makeFlyer(g,i){var gr=rects[i],sz=gr.width;
           var d=document.createElement('div');d.className='flystar';d.style.width=d.style.height=sz+'px';
           d.innerHTML='<svg viewBox="-12 -12 24 24">'+g.innerHTML.replace(/<rect[^>]*>/,'')+'</svg>';
@@ -1309,7 +1309,7 @@ html[data-theme=dawn]{--sunfill:#f7b88e;--sunring:#e59a78}
             if(cloudy)o=q<.88?1:Math.max(0,(1-q)/.12);
             kf.push({transform:'translate3d('+(bx+w).toFixed(1)+'px,'+(by-w*.5).toFixed(1)+'px,0) rotate('+(rot*e).toFixed(0)+'deg) scale('+Math.max(.1,sc).toFixed(3)+')',opacity:Math.max(0,o).toFixed(2),offset:q})}
           var dl=Math.max(0,LEAD+i*65-(performance.now()-tRel));d.animate(kf,{duration:dur,delay:dl,easing:'linear',fill:'forwards'});
-          if(cloudy)dust(tx+sz/2,ty+sz/2,SC[(+g.dataset.i||i)%SC.length],cc,dl+dur*.9)}
+          if(cloudy)dust(tp,SC[(+g.dataset.i||i)%SC.length],cc,dl+dur*.9)}
         /* летящие звёзды создаём понемногу в следующих кадрах, чтобы не тормозить начало опускания окна */
         var tRel=performance.now();st.forEach(function(g,i){setTimeout(function(){requestAnimationFrame(function(){makeFlyer(g,i)})},Math.max(0,LEAD-260+i*65))});
         relCleanup=function(){flyers.forEach(function(d){d.remove()});flyers=[];sh.style.transform='';document.body.classList.remove('relSky');setTimeout(function(){sh.classList.remove('relDown')},950)};
