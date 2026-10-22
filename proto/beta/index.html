@@ -213,7 +213,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 @keyframes shim{0%{fill:#f6e3a1}25%{fill:#e6a9c0}50%{fill:#a9c4ea}75%{fill:#c9b3ee}100%{fill:#f6e3a1}}
 .btn.small{font-size:.85rem;padding:7px 16px}
 .mhint{font-size:.75rem;color:var(--ink-soft);margin-top:-4px}
-#jarform .presets{flex-wrap:nowrap;overflow-x:auto;justify-content:safe center;max-width:100%;scrollbar-width:none;padding-bottom:2px}
+#jarform .presets{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x;justify-content:safe center;max-width:100%;scrollbar-width:none;padding:2px 0;margin-top:8px}
 #jarform .presets::-webkit-scrollbar{display:none}
 #jarform .preset{flex:none}
 #jarform .thought-in{min-height:0;height:calc(2 * 1.35em + 20px);line-height:1.35;padding:10px 14px;font-size:16px;overflow-y:auto}
@@ -1178,7 +1178,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
         t=(t||'').trim();if(!t||busy||releasing)return;busy=true;
         var idx=jarStars,color=SC[idx%SC.length];
         var strip=makeSlip(t,color);$('#jarbox').appendChild(strip);strip._fit();
-        $('#tin').value='';
+        $('#tin').value='';try{$('#tin').blur()}catch(e){}
         setTimeout(function(){
           strip.remove();
           var holder=alive&&$('#bigJarG .newstars');
@@ -1198,8 +1198,6 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
       }
       var tin=$('#tin'),sh=$('#sheet');
       tin.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();fold(tin.value)}});
-      /* кнопки не забирают фокус у поля — клавиатура не прячется, окно не прыгает */
-      [].forEach.call(document.querySelectorAll('#tgo, #jarform .preset'),function(b){b.addEventListener('pointerdown',function(e){if(document.activeElement===tin)e.preventDefault()})});
       $('#tgo').addEventListener('click',function(){fold($('#tin').value)});
       document.querySelectorAll('.preset').forEach(function(p){p.addEventListener('click',function(){fold(p.textContent)})});
       if(jarStars>=SLOTS.length)setTimeout(release,900);
