@@ -914,12 +914,14 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 
   /* ---------- штора ---------- */
   var anim=null;
-  function actCurtain(){
-    var from=curtainT,to=curtainT>.5?0:1,t0=performance.now(),dur=1100;
+  var curtainTok=0;
+  function curtainTo(to,dur){curtainTok++;var from=curtainT,t0=performance.now();dur=dur||1100;
     cancelAnimationFrame(anim);
     var sc=$('#sceneCurtain');sc.removeAttribute('filter');
     function step(now){var p=Math.min(1,(now-t0)/dur),e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;curtainT=from+(to-from)*e;drawCurtain(curtainT);if(p<1)anim=requestAnimationFrame(step);else sc.setAttribute('filter','url(#pencil)')}
-    anim=requestAnimationFrame(step);
+    anim=requestAnimationFrame(step)}
+  function actCurtain(){
+    var to=curtainT>.5?0:1;curtainTo(to,1100);
     store.set('curtain',to);mark('curtain');
     say(T(to?'curtainClosed':'curtainOpen'));
   }
@@ -1096,7 +1098,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
   function actThoughts(){
     var coarse=false;try{coarse=matchMedia('(pointer:coarse)').matches}catch(e){}
     openSheet('<h2 id="sheetTitle">'+T('jarTitle')+'</h2><p>'+T('jarIntro')+'</p><div class="jarbox" id="jarbox" role="button" tabindex="0" aria-label="'+T('shake')+'"><svg viewBox="-75 -205 150 215" id="bigJar"><defs><filter id="sglow" x="-300%" y="-300%" width="700%" height="700%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g class="jarwob" id="jarWob"><g transform="scale(1.65)" id="bigJarG">'+jarSVG(jarStars,true)+'</g></g></svg></div><div class="status" id="jStat"></div><div class="jarform" id="jarform"><textarea class="thought-in" id="tin" rows="2" maxlength="80" enterkeyhint="done" autocomplete="off" placeholder="'+TR('placeholder')+'"></textarea><div class="presets">'+T('presets').map(function(x){return '<button class="preset">'+x+'</button>'}).join('')+'</div><div class="row"><button class="btn" id="tgo">'+T('fold')+'</button></div></div>',function(){
-      var busy=false,releasing=false,shakes=0,dim=1,lastShake=0,alive=true,RX=/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/;
+      var tinBlurAt=0,busy=false,releasing=false,shakes=0,dim=1,lastShake=0,alive=true,RX=/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/;
       /* Safari иногда не стирает след от движущихся звёздочек — один раз перерисовываем банку целиком */
       function repaint(){var sv=$('#bigJar'),bx=$('#jarbox');if(!sv)return;sv.style.transform='translateZ(0)';if(bx)bx.style.transform='translateZ(0)';requestAnimationFrame(function(){requestAnimationFrame(function(){sv.style.transform='';if(bx)bx.style.transform=''})})}
       var HINT=T(coarse?'shakeTapM':'shakeTap');function setStat(x,hint){var e=$('#jStat');if(!e)return;e.textContent='';var s=document.createElement('span');s.textContent=x;e.appendChild(s);if(hint){var h=document.createElement('span');h.className='mhint';h.textContent=hint===true?HINT:hint;e.appendChild(h)}e.style.transform='translateZ(0)';requestAnimationFrame(function(){requestAnimationFrame(function(){e.style.transform=''})})}
@@ -1141,8 +1143,10 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
           fl.g.style.opacity=((q<.72?1:(1-q)/.28)*(.62+.38*Math.sin(tt/170+fl.ph))).toFixed(2)});
           if(live&&alive)requestAnimationFrame(fly)}
         requestAnimationFrame(fly);
+        /* штора закрыта — открываем, чтобы звёзды улетели в окно, потом закрываем обратно */
+        var reopen=curtainT>.5,tok=0;if(reopen){curtainTo(0,1300);tok=curtainTok}
         setTimeout(function(){
-          jarStars=0;store.set('stars',0);jarOrder=[];store.set('jarOrder',[]);skyExtra=Math.min(40,skyExtra+8);store.set('sky',skyExtra);drawJar();drawSky();say(T('releasedSay'));
+          jarStars=0;store.set('stars',0);jarOrder=[];store.set('jarOrder',[]);skyExtra=Math.min(40,skyExtra+8);store.set('sky',skyExtra);drawJar();drawSky();say(T('releasedSay'));if(reopen)setTimeout(function(){if(curtainTok===tok&&store.get('curtain',0))curtainTo(1,1300)},3200);
           if(!alive)return;
           $('#bigJarG').innerHTML=jarSVG(0,true);repaint();setStat(T('released'),T('releasedHint'));
           $('#jarform').classList.remove('gone');releasing=false;dim=1;var ip2=document.querySelector('#card > p');if(ip2)ip2.style.opacity=1;
@@ -1181,8 +1185,12 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
       function fold(t){
         t=(t||'').trim();if(!t||busy||releasing)return;busy=true;
         var idx=jarStars,color=SC[idx%SC.length];
-        var strip=makeSlip(t,color);$('#jarbox').appendChild(strip);strip._fit();
+        var sinceBlur=Date.now()-tinBlurAt,kb=coarse&&(document.activeElement===$('#tin')||sinceBlur<450),kbWait=document.activeElement===$('#tin')?520:Math.max(120,520-sinceBlur);
         $('#tin').value='';try{$('#tin').blur()}catch(e){}
+        /* если была открыта клавиатура — сначала даём ей уехать, потом показываем бумажку */
+        function go(){var jb=$('#jarbox');
+        if(!alive||!jb){fixOrder();jarOrder.push(nextSlot());store.set('jarOrder',jarOrder);jarStars=Math.min(idx+1,SLOTS.length);store.set('stars',jarStars);drawJar();busy=false;return}
+        var strip=makeSlip(t,color);jb.appendChild(strip);strip._fit();
         setTimeout(function(){
           strip.remove();
           var holder=alive&&$('#bigJarG .newstars');
@@ -1198,9 +1206,10 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
             setStat(inJar(jarStars),true);repaint();
             if(jarStars>=SLOTS.length)setTimeout(release,700);
           },1330);
-        },Math.round(strip._total*1000)-60);
+        },Math.round(strip._total*1000)-60)}
+        if(kb)setTimeout(go,kbWait);else go();
       }
-      var tin=$('#tin'),sh=$('#sheet');
+      var tin=$('#tin'),sh=$('#sheet');tin.addEventListener('blur',function(){tinBlurAt=Date.now()});
       tin.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();fold(tin.value)}});
       $('#tgo').addEventListener('click',function(){fold($('#tin').value)});
       document.querySelectorAll('.preset').forEach(function(p){p.addEventListener('click',function(){fold(p.textContent)})});
