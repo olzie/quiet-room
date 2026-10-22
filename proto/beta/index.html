@@ -202,6 +202,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 .jarbox svg{width:100%;height:auto;display:block;overflow:visible}
 .jarbox{cursor:pointer}
 #catLine,#plantLine,#lLine{min-height:calc(3 * 1.5em);line-height:1.5;display:flex;align-items:center;justify-content:center;text-wrap:balance}
+/* в стирке все фразы помещаются в две строки — над вещью без лишней пустоты */
+#lLine{min-height:calc(2 * 1.5em)}
 #bcount{min-height:calc(3 * 1.5em);line-height:1.5;display:flex;align-items:center;justify-content:center;text-wrap:balance}
 #bw{white-space:nowrap}
 #jStat{min-height:calc(2 * 1.45em);line-height:1.45;display:flex;align-items:center;justify-content:center;width:100%;max-width:min(100%,44ch);padding:0 6px;box-sizing:border-box;text-align:center}
