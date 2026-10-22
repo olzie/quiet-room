@@ -213,7 +213,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 @keyframes shim{0%{fill:#f6e3a1}25%{fill:#e6a9c0}50%{fill:#a9c4ea}75%{fill:#c9b3ee}100%{fill:#f6e3a1}}
 .btn.small{font-size:.85rem;padding:7px 16px}
 .mhint{font-size:.75rem;color:var(--ink-soft);margin-top:-4px}
-#jarform .presets{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x;justify-content:safe center;max-width:100%;scrollbar-width:none;padding:2px 0;margin-top:8px}
+#jarform .presets{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x;justify-content:safe center;max-width:100%;scrollbar-width:none;padding:2px 0;margin:8px 0}
 #jarform .presets::-webkit-scrollbar{display:none}
 #jarform .preset{flex:none}
 #jarform .thought-in{min-height:0;height:calc(2 * 1.35em + 20px);line-height:1.35;padding:10px 14px;font-size:16px;overflow-y:auto}
@@ -301,7 +301,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 
 .night{position:fixed;inset:0;z-index:40;background:#06050c;opacity:0;pointer-events:none;transition:opacity 3s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:24px}
 .night.on{opacity:1;pointer-events:auto}
-.night p{margin:0;color:#7d76a0;font-family:var(--display);font-size:1.05rem;max-width:26ch;line-height:1.4}
+.night p{margin:0;color:#7d76a0;font-family:var(--display);font-size:1.05rem;max-width:min(90vw,24em);line-height:1.4;text-wrap:balance}
 .night .soft{font-size:.82rem;color:#4f4a6c;font-family:var(--body)}
 .night .btn.ghost{color:#4f4a6c;border-color:#221f38}
 .star{position:absolute;width:2px;height:2px;border-radius:50%;background:#bfb8e0;animation:tw 6s ease-in-out infinite}
@@ -309,7 +309,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 @keyframes nmb{0%,100%{transform:scale(.84);opacity:.72}45%{transform:scale(1.16);opacity:1}}
 .nmglow{transform-origin:60px 60px;animation:nmg 8s ease-in-out infinite}
 @keyframes nmg{0%,100%{opacity:.35}45%{opacity:1}}
-.night .nphase{font-family:var(--display);color:#8d86ad;font-size:1.15rem;line-height:1.35;max-width:24ch;margin-top:4px}
+.night .nphase{font-family:var(--display);color:#8d86ad;font-size:1.15rem;line-height:1.35;max-width:min(88vw,19em);margin-top:4px;text-wrap:balance}
 /* плашка «Пирожок уже спит» */
 .night .ncat{display:inline-flex;align-items:center;gap:6px;padding:5px 14px 5px 8px;border:1px solid rgba(141,134,173,.22);border-radius:999px;background:rgba(141,134,173,.06);color:#8d86ad;font-size:.8rem;font-family:var(--body);margin-top:-4px;position:relative}
 .night .ncat svg{width:34px;height:21px;flex:none}
