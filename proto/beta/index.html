@@ -1250,8 +1250,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 
 
   /* ---------- знакомство с комнатой ---------- */
-  /* шаги сгруппированы: сначала карточка сверху (предметы внизу комнаты), потом снизу (предметы наверху) */
-  var OB=[{k:'ob0',side:'top'},{k:'ob1',sel:'#scene [data-act="cat"] rect',side:'top'},{k:'ob3',sel:'#scene [data-act="thoughts"] rect',side:'top'},{k:'obLaundry',sel:'#scene [data-act="laundry"] rect',side:'top'},{k:'obDot',sel:'#scene [data-hint="plant"] circle:last-child',pad:18,dots:1,side:'top'},{k:'ob2',sel:'#scene [data-act="breath"] rect',side:'bottom'},{k:'obPaint',sel:'#scene [data-act="painting"] rect',side:'bottom'},{k:'ob4',sel:'#meter',side:'bottom'},{k:'obSound',sel:'#soundBtn',side:'bottom'},{k:'ob5',sel:'#scene [data-act="lamp"] rect',side:'bottom'}],obI=0;
+  /* карточка онбординга всегда снизу; наверх уходит только если внизу закрыла бы предмет */
+  var OB=[{k:'ob0',side:'bottom'},{k:'ob1',sel:'#scene [data-act="cat"] rect',side:'bottom'},{k:'ob3',sel:'#scene [data-act="thoughts"] rect',side:'bottom'},{k:'obLaundry',sel:'#scene [data-act="laundry"] rect',side:'bottom'},{k:'obDot',sel:'#scene [data-hint="plant"] circle:last-child',pad:18,dots:1,side:'bottom'},{k:'ob2',sel:'#scene [data-act="breath"] rect',side:'bottom'},{k:'obPaint',sel:'#scene [data-act="painting"] rect',side:'bottom'},{k:'ob4',sel:'#meter',side:'bottom'},{k:'obSound',sel:'#soundBtn',side:'bottom'},{k:'ob5',sel:'#scene [data-act="lamp"] rect',side:'bottom'}],obI=0;
   function obSide(c,s){if(s==='top'){c.style.bottom='auto';c.style.top='calc(16px + env(safe-area-inset-top, 0px))'}else{c.style.top='auto';c.style.bottom='calc(16px + env(safe-area-inset-bottom, 0px))'}}
   function obPlace(){
     var st=OB[obI],h=$('#obHole'),c=$('#obCard'),vh=innerHeight;
