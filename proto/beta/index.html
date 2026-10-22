@@ -379,7 +379,14 @@ html[data-theme=dawn]{--sunfill:#f7b88e;--sunring:#e59a78}
 .bgb:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
 .pact{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
 .pact .btn{width:min(100%,300px)}
-.freebtn{margin-top:-6px}
+.freebtn{margin-top:-6px;padding-top:2px!important;padding-bottom:2px!important}
+/* строка под банкой держит место под три строки (после улёта текст длиннее) — окно не прыгает */
+#jStat{min-height:4.2em}
+/* ссылка «отпустить» всегда занимает своё место, даже когда скрыта — окно не прыгает */
+#tfree[hidden]{display:inline-block!important;visibility:hidden}
+/* в светлых темах и пока окно опущено тень карточки мягче: без серых полос по бокам */
+html:not([data-theme=night]) .sheet .card{box-shadow:0 -6px 22px rgba(90,70,60,.12)}
+body.relSky .sheet .card{box-shadow:0 -4px 16px rgba(0,0,0,.08)}
 .jarform{position:relative}
 /* вопрос «отпустить?» ложится поверх поля и кнопок, высота окна не меняется */
 .freeask{position:absolute;inset:-4px 0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:var(--panel);border-radius:18px;text-align:center;animation:faIn .22s ease-out}
