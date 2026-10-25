@@ -943,7 +943,7 @@ body.relSky .sheet .card{box-shadow:0 -4px 16px rgba(0,0,0,.08)}
   function silentWav(){var n=800,b=new Uint8Array(44+n),v=new DataView(b.buffer);function s(o,x){for(var i=0;i<x.length;i++)b[o+i]=x.charCodeAt(i)}s(0,'RIFF');v.setUint32(4,36+n,true);s(8,'WAVEfmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,8000,true);v.setUint32(28,8000,true);v.setUint16(32,1,true);v.setUint16(34,8,true);s(36,'data');v.setUint32(40,n,true);for(var i=0;i<n;i++)b[44+i]=128;var str='';for(var k=0;k<b.length;k++)str+=String.fromCharCode(b[k]);return 'data:audio/wav;base64,'+btoa(str)}
   function unlockIOS(){
     try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
-    try{if(!unlockEl){unlockEl=new Audio(silentWav());unlockEl.loop=true;unlockEl.setAttribute('playsinline','');unlockEl.volume=0.01}var pr=unlockEl.play();if(pr&&pr.catch)pr.catch(function(){})}catch(e){}
+    try{if(!unlockEl){unlockEl=new Audio(silentWav());unlockEl.loop=true;unlockEl.setAttribute('playsinline','');unlockEl.volume=0.01}npMeta();var pr=unlockEl.play();if(pr&&pr.then)pr.then(function(){npMeta()},function(){})}catch(e){}
   }
   function buildGrey(c,dest){
     var len=c.sampleRate*4,b=c.createBuffer(2,len,c.sampleRate);
@@ -998,7 +998,11 @@ body.relSky .sheet .card{box-shadow:0 -4px 16px rgba(0,0,0,.08)}
   /* картинка «сейчас играет» (островок, пункт управления): днём светлая с солнцем, ночью тёмная с луной */
   var ICONS=(function(){var l=document.querySelector('link[rel="apple-touch-icon"]');return l?l.href.replace(/apple-touch-icon\.png.*$/,''):'icons/'})();
   function npMeta(){try{if(!('mediaSession' in navigator)||!window.MediaMetadata)return;var th=THEME,a=th==='night'?[{src:ICONS+'icon-192.png',sizes:'192x192',type:'image/png'},{src:ICONS+'icon-512.png',sizes:'512x512',type:'image/png'}]:[{src:ICONS+'np-'+th+'-192.png',sizes:'192x192',type:'image/png'},{src:ICONS+'np-'+th+'-512.png',sizes:'512x512',type:'image/png'}];
-    navigator.mediaSession.metadata=new MediaMetadata({title:TR('title'),artist:'',album:'',artwork:a})}catch(e){}}
+    navigator.mediaSession.metadata=new MediaMetadata({title:TR('title'),artist:'',album:'',artwork:a});
+    try{navigator.mediaSession.playbackState=soundMode==='silence'?'paused':'playing'}catch(e){}
+    /* кнопки на экране блокировки: пауза выключает звук, плей возвращает прежний */
+    if(!npMeta.h){npMeta.h=1;try{navigator.mediaSession.setActionHandler('pause',function(){if(soundMode!=='silence'){npMeta.last=soundMode;setMode('silence',true);try{unlockEl&&unlockEl.pause()}catch(e){}npMeta()}});
+      navigator.mediaSession.setActionHandler('play',function(){setMode(npMeta.last||'grey',true);npMeta()})}catch(e){}}}catch(e){}}
   function setMode(m,user){
     soundMode=m;store.set('sound',m);drawSoundUI();if(m!=='silence')npMeta();
     if(m==='silence'&&!ctx)return;
