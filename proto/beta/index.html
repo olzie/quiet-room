@@ -277,8 +277,13 @@ html[data-theme=night] #dayClouds{display:none}
 #dayClouds .dcd{animation:dcd 11s ease-in-out infinite alternate}
 @keyframes dcd{from{transform:translateX(-4px)}to{transform:translateX(5px)}}
 @media (prefers-reduced-motion: reduce){#dayClouds .dcd{animation:none}}
-.sunG{display:none}
-html[data-theme=dawn] .sun-dawn,html[data-theme=day] .sun-day,html[data-theme=sunset] .sun-sunset{display:inline}
+#sunMove{display:none}
+html:not([data-theme=night]) #sunMove{display:inline}
+/* сумерки: перед ночью комната понемногу темнеет, на рассвете светлеет */
+#duskVeil{pointer-events:none}
+/* смена времени суток при открытой игре — мягкое перетекание, а не щелчок */
+::view-transition-old(root),::view-transition-new(root){animation-duration:2.6s;animation-timing-function:ease-in-out}
+@media (prefers-reduced-motion: reduce){::view-transition-old(root),::view-transition-new(root){animation-duration:.01s}}
 html:not([data-theme=night]) .moonG,html:not([data-theme=night]) #moonGlow{display:none}
 html[data-theme=day] #scene .twinkle{animation:none;opacity:0}
 html[data-theme=dawn] #scene .twinkle,html[data-theme=sunset] #scene .twinkle{animation:none;opacity:.35}
@@ -829,7 +834,7 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
     s+='<g transform="translate(8 0)" data-gal="1">'+galleryStatic()+'<g class="hot" data-act="painting" tabindex="0" role="button" aria-label=""><rect x="290" y="136" width="60" height="92" fill="transparent"/><g id="bigArt"></g></g></g>';
     s+='<circle class="lampglow" id="glowC" cx="205" cy="185" r="190" fill="url(#glow)" pointer-events="none"/>';
     function sunG(c,x,y,rr){return '<g class="sunG '+c+'"><circle cx="'+x+'" cy="'+f(y)+'" r="'+f(rr*2.7)+'" fill="var(--sun)" opacity=".32"/><circle cx="'+x+'" cy="'+f(y)+'" r="'+rr+'" fill="var(--sun)" stroke="#fff" stroke-opacity=".6"/></g>'}
-    s+='<g pointer-events="none" clip-path="url(#skyclip)"><g class="moonG"><circle cx="'+WMX+'" cy="56" r="8" fill="var(--moon)" opacity=".92"/><circle cx="'+(WMX+4)+'" cy="52.5" r="7" fill="var(--sky)"/></g>'+sunG('sun-dawn',46,300,11)+sunG('sun-day',36,GT+46,12)+sunG('sun-sunset',54,292,12);
+    s+='<g pointer-events="none" clip-path="url(#skyclip)"><g class="moonG"><circle cx="'+WMX+'" cy="56" r="8" fill="var(--moon)" opacity=".1"/><path id="moonLit" fill="var(--moon)" opacity=".92"/></g><g id="sunMove"><circle id="sunHalo" cx="40" cy="200" r="31" fill="var(--sun)" opacity=".32"/><circle id="sunDisc" cx="40" cy="200" r="12" fill="var(--sun)" stroke="#fff" stroke-opacity=".6"/></g>';
     [[24,140,1.2,0],[66,200,1,1.5],[30,232,1.3,3],[60,290,1,2],[26,86,.9,4],[70,118,1,2.5],[38,170,1,3.5],[54,250,1.1,.5],[28,300,.9,1],[44,110,.8,2]].forEach(function(p){s+='<circle class="twinkle" cx="'+p[0]+'" cy="'+p[1]+'" r="'+p[2]+'" fill="#d8d2f0" style="animation-delay:'+p[3]+'s"/>'});
     for(var sy=60;sy<SE+40;sy+=46){s+='<circle class="twinkle" cx="'+(24+(sy*7)%44)+'" cy="'+(56-sy)+'" r="'+(.8+(sy%3)*.2)+'" fill="#d8d2f0" style="animation-delay:'+(sy%5)+'s"/>'}
     s+='<g id="skyExtra"></g><g id="dayClouds"></g></g>';
@@ -1565,7 +1570,33 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
   /* ---------- привязка ---------- */
   var map={painting:actPainting,cat:catTap,breath:actBreath,curtain:actCurtain,plant:actPlant,laundry:actLaundry,thoughts:actThoughts,lamp:actLamp};
   /* при повороте телефона или смене размера комната перестраивается под новую высоту */
-  function rebuild(){buildScene();drawBigArt();drawVase();drawJar();drawLaundry();drawCurtain(curtainT);drawSky();drawClouds();setSceneSleep(catAsleep);applyLang();applySeen();bindActs($('#scene'));themeFix();if(!$('#ob').hidden)obPlace()}
+  /* ---------- небо по часам: солнце идёт по дуге от рассвета к закату, луна в настоящей фазе ---------- */
+  var SKYK=[[4.5,['#0c1530','#0c1530','#0c1530'],'#ffd3a4'],[5.6,['#9fb1e6','#f3c6d6','#ffe0bd'],'#ffd3a4'],[7.4,['#9fb1e6','#f3c6d6','#ffe0bd'],'#ffd3a4'],[8.6,['#b7d6ec','#f4e6d2','#fde4c4'],'#ffe7a1'],
+    [16.4,['#b7d6ec','#f4e6d2','#fde4c4'],'#ffe7a1'],[17.6,['#b9a2df','#f2a5b6','#ffcb92'],'#ffb27c'],[19.2,['#b9a2df','#f2a5b6','#ffcb92'],'#ffb27c'],[20.3,['#0c1530','#0c1530','#0c1530'],'#ffb27c']];
+  function hx(c){return [1,3,5].map(function(i){return parseInt(c.substr(i,2),16)})}
+  function mixC(a,b,k){var A=hx(a),B=hx(b);return '#'+A.map(function(v,i){return ('0'+Math.round(v+(B[i]-v)*k).toString(16)).slice(-2)}).join('')}
+  /* для выбранного вручную времени суток берём его середину */
+  function skyHour(){if(themePref!=='auto')return {dawn:6.5,day:12.5,sunset:18.4,night:23}[THEME]||12.5;var d=new Date();return d.getHours()+d.getMinutes()/60}
+  function skyAt(h){var K=SKYK,i;if(h<K[0][0]||h>=K[K.length-1][0])return {c:K[0][1],s:K[0][2]};
+    for(i=0;i<K.length-1;i++)if(h<K[i+1][0])break;var a=K[i],b=K[i+1],k=(h-a[0])/(b[0]-a[0]);k=k*k*(3-2*k);
+    return {c:a[1].map(function(c,j){return mixC(c,b[1][j],k)}),s:mixC(a[2],b[2],k)}}
+  /* фаза луны как на настоящем небе: от новолуния 6 января 2000 */
+  function moonAge(){var T=29.530588853,d=(Date.now()-Date.UTC(2000,0,6,18,14))/864e5;return ((d%T)+T)%T}
+  function moonPath(cx,cy,R,age){var T=29.530588853,ph=age/T*6.2832,s=age<T/2?1:-1,c=Math.cos(ph),p=[],i,a;
+    for(i=0;i<=16;i++){a=-1.5708+3.1416*i/16;p.push([cx+s*R*Math.cos(a),cy+R*Math.sin(a)])}
+    for(i=16;i>=0;i--){a=-1.5708+3.1416*i/16;p.push([cx+s*R*Math.cos(a)*c,cy+R*Math.sin(a)])}
+    return 'M'+p.map(function(q){return q[0].toFixed(2)+' '+q[1].toFixed(2)}).join('L')+'Z'}
+  function updSky(){var h=skyHour(),k=skyAt(h),de=document.documentElement.style;
+    de.setProperty('--sky1',k.c[0]);de.setProperty('--sky2',k.c[1]);de.setProperty('--sky3',k.c[2]);de.setProperty('--sun',k.s);
+    var GT=topL(WI1)+24,sp=Math.max(0,Math.min(1,(h-5)/15)),Y0=348,Yt=GT+40,y=Y0-(Y0-Yt)*Math.pow(Math.sin(Math.PI*sp),.85),x=30+28*sp,r=11+Math.sin(Math.PI*sp);
+    var sd=$('#sunDisc'),sh=$('#sunHalo');if(sd){sd.setAttribute('cx',x.toFixed(1));sd.setAttribute('cy',y.toFixed(1));sd.setAttribute('r',r.toFixed(1))}if(sh){sh.setAttribute('cx',x.toFixed(1));sh.setAttribute('cy',y.toFixed(1));sh.setAttribute('r',(r*2.7).toFixed(1))}
+    var ml=$('#moonLit');if(ml)ml.setAttribute('d',moonPath(WMX,56,8,moonAge()));
+    /* сумерки: за час до ночи комната темнеет, в первый час рассвета светлеет */
+    var dv=$('#duskVeil'),o=0;if(THEME==='sunset')o=Math.max(0,Math.min(1,(h-19)/1))*.3;else if(THEME==='dawn')o=Math.max(0,Math.min(1,(6-h)/1))*.3;if(dv)dv.setAttribute('opacity',o.toFixed(3))}
+  function addDusk(){var sv=$('#scene');if(!sv||$('#duskVeil'))return;var r=document.createElementNS('http://www.w3.org/2000/svg','rect');r.id='duskVeil';r.setAttribute('x','-10');r.setAttribute('y',String(-SE-10));r.setAttribute('width','420');r.setAttribute('height',String(580+SE));r.setAttribute('fill','#2a2147');r.setAttribute('opacity','0');
+    sv.appendChild(r)}
+  function rebuild(){buildScene();addDusk();drawBigArt();drawVase();drawJar();drawLaundry();drawCurtain(curtainT);drawSky();drawClouds();setSceneSleep(catAsleep);applyLang();applySeen();bindActs($('#scene'));themeFix();updSky();if(!$('#ob').hidden)obPlace()}
+  addDusk();updSky();
   /* днём тёмные заливки в комнате (потолок, книги, тени) смешиваем с цветом стены; ночью возвращаем как было */
   function themeFix(){var sv=$('#scene');if(!sv)return;var day=THEME!=='night',W=null;
     if(day){var m=/^#([0-9a-f]{6})$/i.exec(getComputedStyle(document.documentElement).getPropertyValue('--wall').trim());W=m?[0,2,4].map(function(i){return parseInt(m[1].substr(i,2),16)}):[250,241,227]}
@@ -1573,10 +1604,12 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
       var of=el.getAttribute('data-of');if(!day){if(of){el.setAttribute('fill',of);el.removeAttribute('data-of')}return}
       var c=of||el.getAttribute('fill'),mm=/^#([0-9a-f]{6})$/i.exec(c);if(!mm)return;var v=[0,2,4].map(function(i){return parseInt(mm[1].substr(i,2),16)});
       if((.3*v[0]+.59*v[1]+.11*v[2])/255>=.3)return;if(!of)el.setAttribute('data-of',c);el.setAttribute('fill','rgb('+v.map(function(x,i){return Math.round(x*.28+W[i]*.72)}).join(',')+')')})}
-  function setTheme(th){if(th===THEME)return;THEME=th;document.documentElement.setAttribute('data-theme',th);npMeta();ART=th==='night'?ART_N:ART_D;
+  var themeBoot=Date.now();
+  function setTheme(th){if(th===THEME)return;if(document.startViewTransition&&!document.hidden&&Date.now()-themeBoot>4000&&!setTheme.busy){setTheme.busy=1;try{var vt=document.startViewTransition(function(){setTheme.busy=0;setThemeNow(th)});vt.finished.then(function(){setTheme.busy=0},function(){setTheme.busy=0})}catch(e){setTheme.busy=0;setThemeNow(th)}return}setThemeNow(th)}
+  function setThemeNow(th){if(th===THEME)return;THEME=th;document.documentElement.setAttribute('data-theme',th);npMeta();ART=th==='night'?ART_N:ART_D;
     var mt=document.querySelector('meta[name="theme-color"]');if(mt)mt.setAttribute('content',getComputedStyle(document.documentElement).getPropertyValue('--night').trim());
     rebuild();updLight()}
-  setInterval(function(){if(themePref==='auto'&&!lightsOut)setTheme(clockPhase())},60000);
+  setInterval(function(){if(themePref==='auto'&&!lightsOut)setTheme(clockPhase());updSky()},60000);
   document.addEventListener('visibilitychange',function(){if(!document.hidden&&themePref==='auto'&&!lightsOut)setTheme(clockPhase())});
   var bootT=Date.now(),rsT=null;
   addEventListener('resize',function(){var spl=$('#splash');if(spl&&!spl.classList.contains('out'))return;var early=Date.now()-bootT<3000;clearTimeout(rsT);rsT=setTimeout(function(){var d=Math.abs(calcSE()-SE);if(early?d===0:d<24)return;rebuild()},early?40:200)});
