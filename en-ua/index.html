@@ -929,6 +929,8 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
   var started=Date.now(),acts={},lightsOut=false,restCurt=false;
   /* огоньки-подсказки гаснут после первого нажатия на предмет и не возвращаются */
   var hintsSeen=store.get('hintsSeen',{});if(!hintsSeen||typeof hintsSeen!=='object'||Array.isArray(hintsSeen))hintsSeen={};
+  /* новый день: стирка снова в корзине, ветка снова голая — на них опять загораются огоньки, остальное не трогаем */
+  if(store.get('hintsDay','')!==today()){delete hintsSeen.laundry;delete hintsSeen.plant;store.set('hintsSeen',hintsSeen);store.set('hintsDay',today())}
   function seeHint(a){if(!a)return;if(!hintsSeen[a]){hintsSeen[a]=1;store.set('hintsSeen',hintsSeen)}var h=document.querySelector('[data-hint="'+a+'"]');if(h)h.classList.add('seen')}
   function applySeen(){Object.keys(acts).concat(Object.keys(hintsSeen)).forEach(function(a){var h=document.querySelector('[data-hint="'+a+'"]');if(h)h.classList.add('seen')})}
   var wi=0;
