@@ -33,7 +33,7 @@ s+=F('M398 '+(-SE-2)+'H'+W+'V561H398Z','var(--wall)');
 s+=F('M398 '+(-SE-2)+'H'+W+'V'+f(ceilR(W))+'L'+RC+' '+TB+'H398Z',CEIL);
 s+=F('M'+RC+' '+TB+'L'+W+' '+f(ceilR(W))+'L'+W+' '+f(floorR(W))+'L'+RC+' 392Z','var(--wall-l)');
 s+=F('M398 392L'+RC+' 392L'+W+' '+f(floorR(W))+'L'+W+' 561L398 561Z','var(--floor)');
-var D0=734,D1=800,DT=150;
+var D0=724,D1=804,DT=150;
 if(night)s+='<path d="M'+(D0+2)+' 392 L'+(D1-2)+' 392 L'+(D1+70)+' 486 L'+(D0-70)+' 486 Z" fill="url(#pdoor)"/>';
 var RT=600,RB=toVP(RT,410,516);
 s+=F('M398 410L'+RT+' 410L'+f(RB)+' 516L398 516Z','var(--rug)');
@@ -114,7 +114,7 @@ wall+=K(ln(54,294,84,294,.3,1)+ln(54,308,84,308,.3,1),.8,'k','opacity=".6"');
 wall+=F('M44 326H94V334H44Z','var(--table)')+SK(pl([[44,326],[94,326],[94,334],[44,334]],true,.3,1),1.1)+SK(ln(48,334,46,400,.4)+ln(90,334,92,400,.4),1.1);
 wall+='</g>';
 /* ---------- полка-вешалка у двери ---------- */
-wall+='<g transform="translate(600 4)">'+K(ln(78,168,108,168,.4),1.3)+'<circle cx="84" cy="170" r="1.8" fill="var(--ink)"/><circle cx="102" cy="170" r="1.8" fill="var(--ink)"/>';
+wall+='<g transform="translate(592 4)">'+K(ln(78,168,108,168,.4),1.3)+'<circle cx="84" cy="170" r="1.8" fill="var(--ink)"/><circle cx="102" cy="170" r="1.8" fill="var(--ink)"/>';
 wall+=F('M80 170 Q76 208 82 248 L90 248 Q86 210 88 170Z','var(--blossom)','opacity=".85"')+K('M80 170 Q76 208 82 248 L90 248 Q86 210 88 170',1)+K('M82 248 l-1 6 M85 248 l0 6 M88 248 l1 6',.8);
 wall+=F('M94 194 L112 194 L115 224 L91 224Z','var(--table)')+SK(pl([[94,194],[112,194],[115,224],[91,224]],true,.4,1),1)+K('M97 194 Q102 176 109 194',1)+'</g>';
 /* ---------- дверь ---------- */
@@ -125,12 +125,14 @@ wall+='<circle cx="'+(D1-9)+'" cy="276" r="3.4" fill="var(--lamp)"/>'+K(el(D1-9,
 if(night)wall+=K(ln(D0+2,391,D1-2,391,.2,1),1.8,'k','style="stroke:#f6d9a8"');
 wall+=plant(850,392,1.0);
 /* ---------- шкаф на правой стене; вещи сверху стоят ровно по его крышке ---------- */
-var x1=RC+16,x2=RC+82,FR=.74,A=wpR(x1,0),B=wpR(x1,FR),C=wpR(x2,FR),Dd=wpR(x2,0),xm=(x1+x2)/2,M1=wpR(xm,0),M2=wpR(xm,FR);
+var x1=RC+10,x2=RC+96,FR=.86,A=wpR(x1,0),B=wpR(x1,FR),C=wpR(x2,FR),Dd=wpR(x2,0),xm=(x1+x2)/2,M1=wpR(xm,0),M2=wpR(xm,FR);
 wall+=F(Pp([A,B,C,Dd]),'var(--headboard)')+SK(pl([A,B,C,Dd],true,.5),1.4)+SK(ln(M1[0],M1[1],M2[0],M2[1],.4),1.1);
-var k1=wpR(xm-5,.4),k2=wpR(xm+5,.4);wall+='<circle cx="'+f(k1[0])+'" cy="'+f(k1[1])+'" r="2.3" fill="var(--lamp)"/><circle cx="'+f(k2[0])+'" cy="'+f(k2[1])+'" r="2.3" fill="var(--lamp)"/>';
-function onTop(xa,xb,h,fill){var a=wpR(xa,FR),b=wpR(xb,FR),p=[a,[a[0],a[1]-h],[b[0],b[1]-h],b];return F(Pp(p),fill)+SK(pl(p,true,.3,1),1)}
-wall+=onTop(x1+6,x1+30,22,'var(--table)')+onTop(x1+36,x2-4,7,'var(--blanket)');
-var t1=wpR(x1+38,FR),t2=wpR(x2-6,FR);wall+=F(Pp([[t1[0],t1[1]-7],[t1[0],t1[1]-13],[t2[0],t2[1]-13],[t2[0],t2[1]-7]]),'var(--blanket2)')+SK(pl([[t1[0],t1[1]-7],[t1[0],t1[1]-13],[t2[0],t2[1]-13],[t2[0],t2[1]-7]],true,.3,1),1);
+
+/* встроенный шкаф: доходит почти до потолка, сверху ниша-карниз, снизу цоколь, ничего не стоит сверху */
+var T1=wpR(x1,1),T2=wpR(x2,1);wall+=F(Pp([B,T1,T2,C]),'var(--wall-l)')+K(pl([B,C],false,.3,1),1)+K(pl([wpR(x1,.92),wpR(x2,.92)],false,.3,1),.8,'k','opacity=".5"');
+var Z1=wpR(x1,.035),Z2=wpR(x2,.035);wall+=K(pl([Z1,Z2],false,.3,1),.9,'k','opacity=".7"');
+var h1=wpR(xm-4,.62),h2=wpR(xm-4,.30),h3=wpR(xm+4,.62),h4=wpR(xm+4,.30);
+wall+=SK(ln(h1[0],h1[1],h2[0],h2[1],.3,1)+ln(h3[0],h3[1],h4[0],h4[1],.3,1),1.6);
 /* ---------- вещи Пирожка ---------- */
 front+=bowls(668,420)+catBed(830,492,1.05)+yarn(752,496,9)+mouse(690,508);
 s+='<defs><radialGradient id="pbulb"><stop offset="0" stop-color="#f6e3a1" stop-opacity=".9"/><stop offset="1" stop-color="#f6e3a1" stop-opacity="0"/></radialGradient><radialGradient id="pdoor" cx=".5" cy="0" r="1"><stop offset="0" stop-color="#f6d9a8" stop-opacity=".5"/><stop offset="1" stop-color="#f6d9a8" stop-opacity="0"/></radialGradient></defs>';
