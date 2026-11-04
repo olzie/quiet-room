@@ -475,7 +475,7 @@ html:not([data-theme=night]){--pet-rim:#efb3a0;--pet-cush:#fbe0d3;--bowl1:#ef9f7
 /* игра с мышкой: прижался, лапа вверх — и хлоп по мышке, мышка отпрыгивает и снова подкрадывается */
 #sceneCat.play .pcat{transform-box:fill-box;transform-origin:50% 100%}
 #sceneCat.play.toy-mouse .pcat{animation:lean 2.4s ease-in-out infinite}
-#sceneCat.play .pawL{visibility:hidden}#sceneCat .pleg{display:none}#sceneCat.play .pleg{display:inline;transform-box:fill-box;transform-origin:4.3% 4%}
+#sceneCat.play .pawL,#sceneCat.play .legL{visibility:hidden}#sceneCat .pleg{display:none}#sceneCat.play .pleg{display:inline;transform-box:fill-box;transform-origin:4.3% 4%}
 #sceneCat.play.toy-mouse .pleg{animation:pounce 2.4s ease-in-out infinite}
 @keyframes lean{0%,30%{transform:none}48%{transform:rotate(-4deg) translateY(2px)}62%{transform:rotate(-3deg) translateY(2px)}86%,100%{transform:none}}
 @keyframes pounce{0%,30%{transform:none}42%{transform:rotate(62deg) scale(1,.86)}50%{transform:rotate(6deg) scale(1,1.12)}62%{transform:rotate(6deg) scale(1,1.12)}78%{transform:rotate(18deg) scale(1,.95)}90%,100%{transform:none}}
@@ -654,7 +654,7 @@ noteTheme(THEME);document.documentElement.setAttribute('data-theme',THEME);
     s+=K(fur(L,-1,5),.8,'kd')+K(fur(R,1,5),.8,'kd')+K(fur(L,-1,3),.6,'kc','opacity=".5"');
     s+=K(fur(sq(84,152,100,160,116,152,12),1,5),.7,'kb','opacity=".7"');
     s+=SK('M136 188 Q160 198 152 224',1.3,'kc');
-    s+=SK('M72 194 Q69 210 72 226',1.1,'kc')+SK('M85 189 Q82 207 85 226',1.3,'kc')+SK('M110 191 Q108 208 112 226',1.3,'kc')+SK('M121 194 Q123 210 122 226',1,'kc');
+    s+='<g class="legL">'+SK('M72 194 Q69 210 72 226',1.1,'kc')+SK('M85 189 Q82 207 85 226',1.3,'kc')+'</g>'+SK('M110 191 Q108 208 112 226',1.3,'kc')+SK('M121 194 Q123 210 122 226',1,'kc');
     s+='</g>';
     /* передние лапки — перебирают при поглаживании */
     [[78.5,'pawL'],[116.5,'pawR']].forEach(function(q){var x=q[0];
@@ -937,8 +937,8 @@ noteTheme(THEME);document.documentElement.setAttribute('data-theme',THEME);
       o+=K(BODY,1.1,'k')+K(elFill(x,y-9,R,RY),1,'k');
       /* значки на мисках: рыбка с хвостом и глазком, капля с бликом */
       var X=function(v){return f(x+v)},Y=function(v){return f(y+v)};
-      if(b[2])o+='<path d="M'+X(-5.6)+' '+Y(-3.2)+' Q'+X(-1.8)+' '+Y(-6.6)+' '+X(2)+' '+Y(-3.2)+' Q'+X(-1.8)+' '+Y(.2)+' '+X(-5.6)+' '+Y(-3.2)+'Z M'+X(1.4)+' '+Y(-3.2)+' L'+X(5.2)+' '+Y(-5.8)+' Q'+X(4.2)+' '+Y(-3.2)+' '+X(5.2)+' '+Y(-.6)+'Z" fill="#fff" opacity=".92"/><circle cx="'+X(-3.4)+'" cy="'+Y(-3.7)+'" r=".6" fill="var(--bowl1)"/>';
-      else o+='<path d="M'+X(0)+' '+Y(-7)+' C'+X(1.1)+' '+Y(-5.2)+' '+X(2.5)+' '+Y(-3.9)+' '+X(2.5)+' '+Y(-2.7)+' A2.5 2.5 0 0 1 '+X(-2.5)+' '+Y(-2.7)+' C'+X(-2.5)+' '+Y(-3.9)+' '+X(-1.1)+' '+Y(-5.2)+' '+X(0)+' '+Y(-7)+'Z" fill="#fff" opacity=".92"/>'});
+      if(b[2])o+='<path d="M'+X(-5)+' '+Y(-1.9)+' Q'+X(-1.6)+' '+Y(-4.7)+' '+X(1.8)+' '+Y(-1.9)+' Q'+X(-1.6)+' '+Y(.9)+' '+X(-5)+' '+Y(-1.9)+'Z M'+X(1.3)+' '+Y(-1.9)+' L'+X(4.6)+' '+Y(-4)+' Q'+X(3.7)+' '+Y(-1.9)+' '+X(4.6)+' '+Y(.2)+'Z" fill="#fff" opacity=".92"/><circle cx="'+X(-3)+'" cy="'+Y(-2.3)+'" r=".55" fill="var(--bowl1)"/>';
+      else o+='<path d="M'+X(0)+' '+Y(-4.6)+' C'+X(.9)+' '+Y(-3.3)+' '+X(2.1)+' '+Y(-2.3)+' '+X(2.1)+' '+Y(-1.2)+' A2.1 2.1 0 0 1 '+X(-2.1)+' '+Y(-1.2)+' C'+X(-2.1)+' '+Y(-2.3)+' '+X(-.9)+' '+Y(-3.3)+' '+X(0)+' '+Y(-4.6)+'Z" fill="#fff" opacity=".92"/>'});
     return o}
   function yarnSVG(cx,cy,r){var o=F(elFill(cx,cy+r*.85,r*1.1,r*.28),'#000','opacity=".16"')+F(elFill(cx,cy,r,r),'var(--yarn)');
     o+=SK(el(cx,cy,r,r,.4,1),1.1)+K('M'+(cx-r*.9)+' '+(cy-r*.3)+' Q'+cx+' '+(cy-r*1.1)+' '+(cx+r*.8)+' '+(cy+r*.5)+' M'+(cx-r*.6)+' '+(cy+r*.75)+' Q'+(cx-r*.1)+' '+(cy-r*.3)+' '+(cx+r*.55)+' '+(cy-r*.8)+' M'+(cx-r*.95)+' '+(cy+r*.2)+' Q'+(cx+r*.1)+' '+(cy+r*.05)+' '+(cx+r*.9)+' '+(cy-r*.15),.8,'k','opacity=".7"');
