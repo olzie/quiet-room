@@ -15,8 +15,15 @@
 <style>html{box-sizing:border-box;height:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:#120f22}html[data-theme=dawn]{background:#efe6f4}html[data-theme=day]{background:#f8f0e3}html[data-theme=sunset]{background:#f6e4dc}*,*::before,*::after{box-sizing:inherit}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Quiet Room · beta</title>
 <meta name="robots" content="noindex">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap">
+<!-- шрифты лежат рядом с игрой: без запроса к Google, быстрее первый кадр и работает офлайн -->
+<link rel="preload" href="../../fonts/comfortaa-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../fonts/comfortaa-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:'Comfortaa';font-style:normal;font-display:swap;font-weight:300 700;src:url(../../fonts/comfortaa-cyrillic-wght-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:'Comfortaa';font-style:normal;font-display:swap;font-weight:300 700;src:url(../../fonts/comfortaa-latin-wght-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Nunito';font-style:normal;font-display:swap;font-weight:200 1000;src:url(../../fonts/nunito-cyrillic-wght-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:'Nunito';font-style:normal;font-display:swap;font-weight:200 1000;src:url(../../fonts/nunito-latin-wght-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+</style>
 <style>
 /* Игровой экран: шапка-индикатор, сцена на всю высоту, панель предметов снизу. Спальня светлым карандашом по глубокой ночи. Намеренно только тёмная тема. */
 :root{
@@ -123,6 +130,11 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 /* панель занятия */
 .veil{position:fixed;inset:0;background:rgba(8,6,18,.62);opacity:0;pointer-events:none;transition:opacity .45s;z-index:20}
 .veil.on{opacity:1;pointer-events:auto}
+/* приложение на домашнем экране iOS: окно короче экрана на высоту статус-бара, затемнение и окна дотягиваем до низа */
+html .veil,html .night,html .ob{bottom:calc(0px - var(--vgap,0px))}html .sheet{bottom:calc(0px - var(--vgap,0px))}
+/* пока плавно меняется время суток, кнопки остаются живыми (можно закрыть настройки) */
+::view-transition{pointer-events:none}
+html.thfade .sheet,html.thfade .sheet *{transition:background-color .5s,color .5s,border-color .5s,fill .5s,stroke .5s!important}
 .sheet{position:fixed;left:0;right:0;bottom:0;z-index:21;transform:translateY(105%);transition:transform .5s cubic-bezier(.2,.8,.2,1);max-height:92vh;max-height:calc(100dvh - 10px);overflow-y:auto;overscroll-behavior:contain;padding-left:max(10px, env(safe-area-inset-left, 0px));padding-right:max(10px, env(safe-area-inset-right, 0px));padding-bottom:calc(10px + env(safe-area-inset-bottom, 0px))}
 .sheet.on{transform:none}
 .card{max-width:520px;margin:0 auto;background:var(--panel);border:1.5px solid var(--ink-soft);border-radius:26px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;position:relative;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
@@ -569,7 +581,7 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
   function TR(k){var v=I18N[L][k];return v===undefined?I18N.ru[k]:v}
   function plural(n){var w=T('stars');if(L==='en')return n===1?w[0]:w[1];var a=n%10,b=n%100;if(a===1&&b!==11)return w[0];if(a>=2&&a<=4&&(b<12||b>14))return w[1];return w[2]}
   function inJar(n){return T('inJar').replace('{n}',n).replace('{w}',plural(n))}
-  function applyLang(){
+  function applyLang(){var _sh=document.getElementById('sheet'),_oc=document.getElementById('obCard');if(_sh)_sh.setAttribute('aria-label',T('title'));if(_oc)_oc.setAttribute('aria-label',T('title'));
     document.documentElement.lang=L;document.title=T('title');
     var md=document.querySelector('meta[name="description"]');if(md)md.setAttribute('content',T('desc'));
     document.querySelectorAll('[data-i18n]').forEach(function(e){e.textContent=T(e.dataset.i18n)});
@@ -1883,8 +1895,12 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
       var of=el.getAttribute('data-of');if(!day){if(of){el.setAttribute('fill',of);el.removeAttribute('data-of')}return}
       var c=of||el.getAttribute('fill'),mm=/^#([0-9a-f]{6})$/i.exec(c);if(!mm)return;var v=[0,2,4].map(function(i){return parseInt(mm[1].substr(i,2),16)});
       if((.3*v[0]+.59*v[1]+.11*v[2])/255>=.3)return;if(!of)el.setAttribute('data-of',c);el.setAttribute('fill','rgb('+v.map(function(x,i){return Math.round(x*.28+W[i]*.72)}).join(',')+')')})}
+  function vgap(){var g=0;try{var sa=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone;
+    if(sa&&innerHeight>innerWidth&&screen.height>screen.width){g=Math.round(screen.height-innerHeight);if(g<0||g>90)g=0}}catch(e){}document.documentElement.style.setProperty('--vgap',g+'px')}
+  vgap();addEventListener('resize',vgap);addEventListener('orientationchange',function(){setTimeout(vgap,300)});
   var themeBoot=Date.now();
-  function setTheme(th){if(th===THEME)return;if(document.startViewTransition&&!document.hidden&&Date.now()-themeBoot>4000&&!setTheme.busy){setTheme.busy=1;try{var vt=document.startViewTransition(function(){setTheme.busy=0;setThemeNow(th)});vt.finished.then(function(){setTheme.busy=0},function(){setTheme.busy=0})}catch(e){setTheme.busy=0;setThemeNow(th)}return}setThemeNow(th)}
+  /* время суток выбрали в открытых настройках: меняем сразу, без долгого перехода, который на это время блокирует экран (иначе окно не закрыть) */
+  function setTheme(th){if(th===THEME)return;if($('#sheet').classList.contains('on')){var de=document.documentElement;de.classList.add('thfade');setThemeNow(th);clearTimeout(setTheme.f);setTheme.f=setTimeout(function(){de.classList.remove('thfade')},700);return}if(document.startViewTransition&&!document.hidden&&Date.now()-themeBoot>4000&&!setTheme.busy){setTheme.busy=1;try{var vt=document.startViewTransition(function(){setTheme.busy=0;setThemeNow(th)});vt.finished.then(function(){setTheme.busy=0},function(){setTheme.busy=0})}catch(e){setTheme.busy=0;setThemeNow(th)}return}setThemeNow(th)}
   function setThemeNow(th){if(th===THEME)return;THEME=th;document.documentElement.setAttribute('data-theme',th);npMeta();ART=th==='night'?ART_N:ART_D;
     var mt=document.querySelector('meta[name="theme-color"]');if(mt)mt.setAttribute('content',getComputedStyle(document.documentElement).getPropertyValue('--night').trim());
     rebuild();updLight()}
@@ -1898,21 +1914,30 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
   })}
   bindActs(document);applySeen();
   if(store.get('fedDay','')===today())mark('feed');
-  /* свайп пальцем: комната едет за пальцем, отпускаешь — доезжает до ближайшей части */
-  var swipedAt=0,ptrAt=0;(function(){var wr=$('#sceneWrap'),sv=$('#scenePan'),st=null;
+  /* свайп пальцем: комната едет за пальцем, отпускаешь — доезжает до ближайшей части.
+     На телефоне слушаем сами касания (touch): Safari с pointer-событиями обрывал жест после первого движения */
+  var swipedAt=0,ptrAt=0;(function(){var wr=$('#sceneWrap'),sv=$('#scenePan'),st=null,TOUCH='ontouchstart' in window;
     function curT(){var m=/translate3d\(([-\d.]+)px/.exec(sv.style.transform||'');return m?+m[1]:0}
-    wr.addEventListener('pointerdown',function(e){if(lightsOut||e.button>0)return;if(st&&st.drag)end(null);ptrAt=Date.now();st={x:e.clientX,y:e.clientY,lx:e.clientX,t:performance.now(),T:curT(),drag:false,id:e.pointerId,hist:[[performance.now(),e.clientX]]}});
-    /* старый iOS не всегда слушает touch-action: горизонтальное движение пальца по комнате забираем себе */
-    wr.addEventListener('touchmove',function(e){if(st&&st.drag&&e.cancelable)e.preventDefault()},{passive:false});
-    wr.addEventListener('pointermove',function(e){if(!st||e.pointerId!==st.id)return;var dx=e.clientX-st.x,dy=e.clientY-st.y;
-      var now=performance.now();st.hist.push([now,e.clientX]);while(st.hist.length>2&&now-st.hist[0][0]>120)st.hist.shift();
-      if(!st.drag){if(Math.abs(dx)>8&&Math.abs(dx)>Math.abs(dy)){st.drag=true;st.lo=viewT(VIEWS.length-1);st.hi=viewT(0);try{wr.setPointerCapture(e.pointerId)}catch(_){}sv.style.transition='none';clearTimeout(applyView.t);roomMoving=Date.now();viewAnims(true)}else return}
-      st.lx=e.clientX;clearTimeout(st.wd);st.wd=setTimeout(function(){end(null)},1200);
-      var T=Math.max(st.lo,Math.min(st.hi,st.T+dx));sv.style.transform='translate3d('+T.toFixed(1)+'px,0,0)'});
-    function end(e){if(!st)return;var s0=st;st=null;clearTimeout(s0.wd);if(!s0.drag)return;swipedAt=Date.now();sv.style.transition='';var ex=e&&e.type!=='pointercancel'&&e.clientX?e.clientX:s0.lx,dx=ex-s0.x,h0=s0.hist[0],h1=s0.hist[s0.hist.length-1],v=performance.now()-h1[0]>100?0:(h1[1]-h0[1])/Math.max(16,h1[0]-h0[0]),wpx=$('#sceneWrap').clientWidth;
-      var to=curView,far=Math.min(50,wpx*.12);if(dx<-far||(v<-.25&&dx<-18))to=curView+1;else if(dx>far||(v>.25&&dx>18))to=curView-1;to=Math.max(0,Math.min(VIEWS.length-1,to));if(to!==curView){curView=to}applyView(true)}
-    /* палец отпустили где угодно (или браузер забрал жест) — комната всё равно доезжает до ближайшей части */
-    ['pointerup','pointercancel'].forEach(function(n){window.addEventListener(n,function(e){if(st&&e.pointerId===st.id)end(e)},true)});wr.addEventListener('lostpointercapture',function(e){if(st&&st.drag&&e.target===wr&&e.pointerId===st.id)end(e)});
+    function begin(x,y,id){if(lightsOut)return;if(st&&st.drag)finish(null);ptrAt=Date.now();st={x:x,y:y,lx:x,drag:false,id:id,hist:[[performance.now(),x]]}}
+    function move(x,y,id){if(!st||id!==st.id)return false;var dx=x-st.x,dy=y-st.y,now=performance.now();st.hist.push([now,x]);while(st.hist.length>2&&now-st.hist[0][0]>120)st.hist.shift();
+      if(!st.drag){if(Math.abs(dx)>7&&Math.abs(dx)>Math.abs(dy)){st.drag=true;st.lo=viewT(VIEWS.length-1);st.hi=viewT(0);st.T=curT();st.x=x-(dx>0?7:-7);sv.style.transition='none';clearTimeout(applyView.t);roomMoving=Date.now();viewAnims(true)}else return false}
+      st.lx=x;clearTimeout(st.wd);st.wd=setTimeout(function(){finish(null)},1500);
+      var T=Math.max(st.lo,Math.min(st.hi,st.T+x-st.x));sv.style.transform='translate3d('+T.toFixed(1)+'px,0,0)';return true}
+    function finish(x){if(!st)return;var s0=st;st=null;clearTimeout(s0.wd);if(!s0.drag)return;swipedAt=Date.now();sv.style.transition='';
+      var ex=x==null?s0.lx:x,dx=ex-s0.x,h0=s0.hist[0],h1=s0.hist[s0.hist.length-1],v=performance.now()-h1[0]>100?0:(h1[1]-h0[1])/Math.max(16,h1[0]-h0[0]),wpx=wr.clientWidth;
+      var to=curView,far=Math.min(44,wpx*.1);if(dx<-far||(v<-.25&&dx<-16))to=curView+1;else if(dx>far||(v>.25&&dx>16))to=curView-1;to=Math.max(0,Math.min(VIEWS.length-1,to));curView=to;applyView(true)}
+    function touchOf(e){if(!st)return null;for(var i=0;i<e.changedTouches.length;i++)if(e.changedTouches[i].identifier===st.id)return e.changedTouches[i];return null}
+    if(TOUCH){
+      wr.addEventListener('touchstart',function(e){if(e.touches.length>1){if(st)finish(null);return}var t=e.changedTouches[0];begin(t.clientX,t.clientY,'t'+t.identifier);if(st)st.id=t.identifier},{passive:true});
+      wr.addEventListener('touchmove',function(e){var t=touchOf(e);if(t&&move(t.clientX,t.clientY,t.identifier)&&e.cancelable)e.preventDefault()},{passive:false});
+      wr.addEventListener('touchend',function(e){var t=touchOf(e);if(t)finish(t.clientX)});
+      wr.addEventListener('touchcancel',function(e){if(touchOf(e))finish(null)});
+    }
+    /* мышь и стилус */
+    function mine(e){return !(TOUCH&&e.pointerType==='touch')}
+    wr.addEventListener('pointerdown',function(e){if(!mine(e)||e.button>0)return;begin(e.clientX,e.clientY,'p'+e.pointerId)});
+    wr.addEventListener('pointermove',function(e){if(!mine(e))return;var was=st&&st.drag;if(move(e.clientX,e.clientY,'p'+e.pointerId)&&!was){try{wr.setPointerCapture(e.pointerId)}catch(_){}}});
+    ['pointerup','pointercancel'].forEach(function(n){window.addEventListener(n,function(e){if(!mine(e))return;if(st&&st.id==='p'+e.pointerId)finish(n==='pointerup'?e.clientX:null)},true)});
     /* фокус на предмете не должен прокручивать комнату сам: показываем нужную часть сами */
     wr.addEventListener('scroll',function(){if(wr.scrollLeft||wr.scrollTop){wr.scrollLeft=0;wr.scrollTop=0}});
     wr.addEventListener('focusin',function(e){if(Date.now()-ptrAt<800)return;var v=viewOfEl(e.target);if(v!==curView)goView(v)})})();
