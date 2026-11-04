@@ -897,17 +897,18 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
     var px=cx+rx*.55,py=cy+ry*.62;o+='<g opacity=".9"><ellipse cx="'+f(px)+'" cy="'+f(py+1.5)+'" rx="'+f(3.2*sc)+'" ry="'+f(2.4*sc)+'" fill="var(--pet-cush)"/>'+[[-3.6,-2.2],[-1.2,-3.6],[1.4,-3.6],[3.6,-2.2]].map(function(q){return '<circle cx="'+f(px+q[0]*sc)+'" cy="'+f(py+q[1]*sc)+'" r="'+f(1.15*sc)+'" fill="var(--pet-cush)"/>'}).join('')+'</g>';
     return o}
   /* две миски на коврике: еда (рыбка) и вода (капля); корм виден, только когда Пирожок сегодня накормлен */
-  function bowlsSVG(cx,cy){var o='';
-    o+=F('M'+(cx-38)+' '+(cy+2)+' Q'+(cx-40)+' '+(cy-8)+' '+(cx-30)+' '+(cy-9)+' L'+(cx+30)+' '+(cy-9)+' Q'+(cx+40)+' '+(cy-8)+' '+(cx+38)+' '+(cy+2)+'Z','var(--pet-cush)','opacity=".75"');
-    o+=SK('M'+(cx-38)+' '+(cy+2)+' Q'+(cx-40)+' '+(cy-8)+' '+(cx-30)+' '+(cy-9)+' L'+(cx+30)+' '+(cy-9)+' Q'+(cx+40)+' '+(cy-8)+' '+(cx+38)+' '+(cy+2)+'Z',1);
-    [[cx-17,'var(--bowl1)',1],[cx+17,'var(--bowl2)',0]].forEach(function(b){var x=b[0],y=cy-4;
-      o+=F('M'+(x-13)+' '+(y-9)+' L'+(x+13)+' '+(y-9)+' L'+(x+10)+' '+(y+2)+' Q'+x+' '+(y+5)+' '+(x-10)+' '+(y+2)+'Z',b[1]);
-      o+=F(elFill(x,y-9,13,3.6),b[2]?'var(--bowl-in)':'var(--water)');
-      if(b[2])o+='<g class="kibs">'+F(elFill(x,y-9.4,11,3),'var(--kib)')+[[-6,-10],[-2,-11],[3,-10],[7,-9],[0,-8.5],[-4,-8.4],[5,-11.2]].map(function(q){return '<circle cx="'+f(x+q[0])+'" cy="'+f(y+q[1])+'" r="1.6" fill="var(--kib2)"/>'}).join('')+'</g>';
-      else o+='<path d="M'+(x-6)+' '+(y-10)+' q4 -1.6 9 0" stroke="#fff" stroke-width="1.1" fill="none" opacity=".75" stroke-linecap="round"/>';
-      o+=SK('M'+(x-13)+' '+(y-9)+' L'+(x-10)+' '+(y+2)+' Q'+x+' '+(y+5)+' '+(x+10)+' '+(y+2)+' L'+(x+13)+' '+(y-9),1.1)+K(el(x,y-9,13,3.6,.3,1),1);
-      if(b[2])o+='<path d="M'+(x-5)+' '+(y-3)+' q4 -3.5 8 0 q-4 3.5 -8 0 M'+(x+3)+' '+(y-3)+' l3 -2.4 v4.8z" fill="#fff" opacity=".85"/>';
-      else o+='<path d="M'+x+' '+(y-6.5)+' q3 4 0 6 q-3 -2 0 -6z" fill="#fff" opacity=".85"/>'});
+  /* миски Пирожка: чистые ровные формы без двойных обводок — мелкие вещи от «дрожащего» карандаша рябят */
+  function bowlsSVG(cx,cy){var o='',MAT='M'+(cx-37)+' '+(cy+2)+' Q'+(cx-39)+' '+(cy-8)+' '+(cx-29)+' '+(cy-9)+' L'+(cx+29)+' '+(cy-9)+' Q'+(cx+39)+' '+(cy-8)+' '+(cx+37)+' '+(cy+2)+' Z';
+    o+=F(elFill(cx,cy+2.6,39,2.6),'#000','opacity=".13"')+F(MAT,'var(--pet-cush)','opacity=".8"')+K(MAT,1,'k','opacity=".8"');
+    [[cx-17,'var(--bowl1)',1],[cx+17,'var(--bowl2)',0]].forEach(function(b){var x=b[0],y=cy-4,R=12.5,RY=3.4,
+        BODY='M'+(x-R)+' '+(y-9)+' L'+(x-R+2.6)+' '+(y+1.6)+' Q'+x+' '+(y+4.6)+' '+(x+R-2.6)+' '+(y+1.6)+' L'+(x+R)+' '+(y-9);
+      o+=F(BODY+' Z',b[1]);
+      o+=F(elFill(x,y-9,R,RY),b[2]?'var(--bowl-in)':'var(--water)');
+      if(b[2])o+='<g class="kibs">'+F(elFill(x,y-9.3,R-2,RY-.8),'var(--kib)')+[[-6,-9.6],[-2,-10.4],[2.5,-9.8],[6.5,-9.2],[0,-8.4],[-4,-8.4],[4.5,-10.8]].map(function(q){return '<circle cx="'+f(x+q[0])+'" cy="'+f(y+q[1])+'" r="1.35" fill="var(--kib2)"/>'}).join('')+'</g>';
+      else o+='<path d="M'+(x-6)+' '+(y-9.6)+' q4 -1.4 8.5 0" stroke="#fff" stroke-width="1" fill="none" opacity=".75" stroke-linecap="round"/>';
+      o+=K(BODY,1.1,'k')+K(elFill(x,y-9,R,RY),1,'k');
+      if(b[2])o+='<path d="M'+(x-5)+' '+(y-3)+' q4 -3.2 8 0 q-4 3.2 -8 0 M'+(x+3)+' '+(y-3)+' l3 -2.2 v4.4z" fill="#fff" opacity=".85"/>';
+      else o+='<path d="M'+x+' '+(y-6.4)+' q2.8 3.8 0 5.6 q-2.8 -1.8 0 -5.6z" fill="#fff" opacity=".85"/>'});
     return o}
   function yarnSVG(cx,cy,r){var o=F(elFill(cx,cy+r*.85,r*1.1,r*.28),'#000','opacity=".16"')+F(elFill(cx,cy,r,r),'var(--yarn)');
     o+=SK(el(cx,cy,r,r,.4,1),1.1)+K('M'+(cx-r*.9)+' '+(cy-r*.3)+' Q'+cx+' '+(cy-r*1.1)+' '+(cx+r*.8)+' '+(cy+r*.5)+' M'+(cx-r*.6)+' '+(cy+r*.75)+' Q'+(cx-r*.1)+' '+(cy-r*.3)+' '+(cx+r*.55)+' '+(cy-r*.8)+' M'+(cx-r*.95)+' '+(cy+r*.2)+' Q'+(cx+r*.1)+' '+(cy+r*.05)+' '+(cx+r*.9)+' '+(cy-r*.15),.8,'k','opacity=".7"');
@@ -918,26 +919,43 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
     o+=K('M'+(cx-9)+' '+(cy+2)+' q-8 -2 -10 -8 q-1 -4 3 -5',1);return o}
   function garlandSVG(x0,x1,y,sag){var GP=[],lit=evening();for(var i=0;i<=11;i++){var t=i/11;GP.push([x0+(x1-x0)*t,y+Math.sin(t*3.1416)*sag])}
     var o=K('M'+GP.map(function(q){return f(q[0])+' '+f(q[1])}).join('L'),.9,'k','opacity=".7"');
-    GP.slice(1,-1).forEach(function(q){if(lit)o+='<circle cx="'+f(q[0])+'" cy="'+f(q[1]+5)+'" r="9" fill="url(#pbulb)"/>';o+=F(elFill(q[0],q[1]+5,2.6,3.2),lit?'#f6e3a1':'var(--pillow)')+K(el(q[0],q[1]+5,2.6,3.2,.2,1),.7)});return o}
+    GP.slice(1,-1).forEach(function(q){if(lit)o+='<circle cx="'+f(q[0])+'" cy="'+f(q[1]+5)+'" r="9" fill="url(#pbulb)"/>';o+=F(elFill(q[0],q[1]+5,2.6,3.2),lit?'#f6e3a1':'var(--pillow)')+K(el(q[0],q[1]+5,2.6,3.2,.2,1),.7)});
+    /* концы привязаны к гвоздикам: петелька вокруг шляпки и короткий хвостик провода */
+    [[x0,1],[x1,-1]].forEach(function(e){var x=e[0],d=e[1];o+='<circle cx="'+f(x)+'" cy="'+f(y-1.5)+'" r="2.1" fill="var(--ink)"/>'+K('M'+f(x-2.8)+' '+f(y-.5)+' Q'+f(x)+' '+f(y-5.5)+' '+f(x+2.8)+' '+f(y-.5),.8,'k','opacity=".75"')+K('M'+f(x)+' '+f(y+.5)+' q'+f(-d*3)+' 6 '+f(-d*1.5)+' 13',.8,'k','opacity=".6"')});return o}
   function tallPlantSVG(x,base,sc){var o=F('M'+(x-13*sc)+' '+(base-30*sc)+' L'+(x+13*sc)+' '+(base-30*sc)+' L'+(x+9*sc)+' '+base+' L'+(x-9*sc)+' '+base+'Z','var(--table)')+SK(pl([[x-13*sc,base-30*sc],[x+13*sc,base-30*sc],[x+9*sc,base],[x-9*sc,base]],true,.4,1),1.1);
     [[-16,-58],[10,-70],[-4,-84],[18,-46],[-22,-38],[4,-54]].forEach(function(l){var x0=x,y0=base-30*sc,x1=x0+l[0]*sc,y1=y0+l[1]*sc,q='M'+f(x0)+' '+f(y0)+' Q'+f((x0+x1)/2-7*sc)+' '+f((y0+y1)/2)+' '+f(x1)+' '+f(y1)+' Q'+f((x0+x1)/2+7*sc)+' '+f((y0+y1)/2)+' '+f(x0)+' '+f(y0);o+=F(q+'Z','var(--leaf)','opacity=".88"')+K(q,.8)});return o}
-  /* Пирожок спит клубком на своей лежанке */
-  function loafSVG(){var s='',BD='M22 74 Q14 50 40 40 Q66 32 86 44 Q100 54 94 70 Q92 78 82 78 L30 78 Q22 78 22 74Z',TL='M90 66 Q99 78 80 81 Q56 85 36 81';
-    s+='<defs><clipPath id="loafC"><path d="'+BD+'"/></clipPath><clipPath id="loafH"><path d="M60 88 Q86 50 112 26 Q132 8 148 14 Q156 18 152 30 Q142 22 138 34 Q132 58 142 90 Z"/></clipPath></defs>';
-    s+='<g class="lbody">'+F(BD,'var(--cat)')+'<g clip-path="url(#loafC)">'+K(hatch(50,36,100,80,6,.4),.8,'kd','opacity=".7"')+F(elFill(58,74,22,6),'var(--cat-belly)','opacity=".45"')+'</g>'+SK(BD,1.3,'kc')+K('M60 44 Q66 40 72 44 M70 49 Q76 45 82 51',.8,'kd','opacity=".7"')+'</g>';
-    s+='<path d="'+TL+'" fill="none" stroke="var(--cat-ink)" stroke-width="7.4" stroke-linecap="round"/><path d="'+TL+'" fill="none" stroke="var(--cat)" stroke-width="5.4" stroke-linecap="round"/>';
-    s+=F(elFill(36,77,8,4),'var(--cat)')+F(elFill(50,78,8,4),'var(--cat)')+K(el(36,77,8,4,.3,1)+el(50,78,8,4,.3,1),1,'kc');
-    s+='<g class="lear">'+F('M17 50 L15 35 L27 44Z','var(--cat)')+SK('M17 50 L15 35 L27 44',1.1,'kc')+'</g>'+F('M34 44 L45 34 L47 51Z','var(--cat)')+SK('M34 44 L45 34 L47 51',1.1,'kc');
-    s+=F(elFill(31,57,17,14),'var(--cat)')+F(elFill(31,63,10,6),'var(--cat-belly)','opacity=".6"')+SK(el(31,57,17,14,.4,1),1.2,'kc');
-    s+=K('M22 58 Q25 61 28 58 M34 58 Q37 61 40 58',1.1,'kc')+K('M30 63 Q31 64.6 32 63',1,'kc')+K('M21 64 L9 62 M21 66 L10 68 M41 64 L53 62 M41 66 L52 68',.6,'kb','opacity=".85"');
-    /* шляпа — та же, что у сидящего Пирожка */
-    s+='<g transform="translate(31 57) rotate(-16) scale(.34) translate(-100 -114)"><g class="hat">'+F('M60 88 Q86 50 112 26 Q132 8 148 14 Q156 18 152 30 Q142 22 138 34 Q132 58 142 90 Z','var(--hat)')+'<g clip-path="url(#loafH)">'+K(hatch(60,8,160,92,6,-.55),.8,'kh')+'</g>'+SK('M60 88 Q86 50 112 26 Q132 8 148 14 Q156 18 152 30 Q142 22 138 34 Q132 58 142 90',1.4,'kk')+F('M14 98 Q30 72 100 80 Q170 76 188 102 Q170 112 128 102 Q80 94 14 98 Z','var(--hat)')+SK('M14 98 Q30 72 100 80 Q170 76 188 102 Q170 112 128 102 Q80 94 14 98',1.4,'kk')+SK('M64 84 Q100 76 140 86',1.6,'kk')+'</g></g>';
+  /* Пирожок спит клубком на своей лежанке: голова та же, что у сидящего Пирожка (щёки, светлая мордочка, нос, усы, шляпа),
+     только глаза закрыты, а тело лежит «буханкой» и хвост обёрнут вокруг лапок. Рамка та же 200×240, что у сидящего */
+  function loafSVG(){var s='',BD='M108 150 Q150 116 212 126 Q262 136 266 184 Q268 226 236 230 L122 230 Q98 228 100 200 Z';
+    seed=44;
+    s+='<defs><clipPath id="loafC"><path d="'+BD+'"/></clipPath><clipPath id="loafH"><path d="M60 88 Q86 50 112 26 Q132 8 148 14 Q156 18 152 30 Q142 22 138 34 Q132 58 142 90 Z"/></clipPath><clipPath id="loafB2"><path d="M14 98 Q30 72 100 80 Q170 76 188 102 Q170 112 128 102 Q80 94 14 98 Z"/></clipPath></defs>';
+    /* тело: та же штриховка и контур, что у сидящего */
+    s+='<g class="lbody">'+F(BD,'var(--cat)')+'<g clip-path="url(#loafC)">'+K(hatch(150,118,272,232,5,.45),.8,'kd','opacity=".8"')+'</g>';
+    var TOP=sq(108,150,150,116,212,126,24).concat(sq(212,126,262,136,266,184,16).slice(1));
+    s+=SK('M108 150 Q150 116 212 126 Q262 136 266 184 Q268 226 236 230',1.5,'kc')+K(fur(TOP,-1,3.4),.7,'kd','opacity=".75"');
+    s+=SK('M206 168 Q236 164 242 200 Q244 222 226 228',1.3,'kc')+'</g>';
+    /* хвост обёрнут спереди */
+    var TL='M248 224 Q252 242 208 242 Q160 244 132 236';
+    s+='<path d="'+TL+'" fill="none" stroke="var(--cat-ink)" stroke-width="13.8" stroke-linecap="round"/><path d="'+TL+'" fill="none" stroke="var(--cat)" stroke-width="11" stroke-linecap="round"/>'+K('M244 228 Q246 238 208 238 Q170 240 140 234',.8,'kc','opacity=".35"');
+    /* передние лапки под подбородком */
+    [[96,226],[126,230]].forEach(function(q){var x=q[0],y=q[1];s+=F(elFill(x,y,12,7),'var(--cat)')+F(elFill(x,y+1.5,7.5,3.6),'var(--cat-belly)','opacity=".55"')+K(el(x,y,12,7,.35,1,22),1.3,'kc')+K('M'+(x-4)+' '+(y+5.5)+' Q'+(x-4.6)+' '+(y+1)+' '+(x-3.6)+' '+(y-2.5)+' M'+(x+3.6)+' '+(y+5.5)+' Q'+(x+4.4)+' '+(y+1)+' '+(x+3.6)+' '+(y-2.5),1,'kc','opacity=".8"')});
+    /* голова чуть склонена */
+    s+='<g transform="translate(-6 66) rotate(-7 100 114)">';
+    s+=F(elFill(100,114,48,36),'var(--cat)')+F(elFill(100,128,30,16),'var(--cat-belly)','opacity=".6"');
+    s+=K(fur(elPts(100,114,48,36,.15,2.99,34),-1,5),.8,'kd');
+    s+=SK('M'+elPts(100,114,48,36,2.5,6.92,40).map(function(q){return f(q[0])+' '+f(q[1])}).join('L'),1.4,'kc');
+    s+=K('M76 115 Q82 120 88 115',1.6,'kc')+K('M112 115 Q118 120 124 115',1.6,'kc');
+    s+='<path d="M96 123 L104 123 L100 128 Z" fill="#9c5a4c"/>'+K('M100 128 Q97 133 93 131 M100 128 Q103 133 107 131',1,'kc');
+    s+=K(ln(76,124,52,120,.6,1)+ln(76,128,54,132,.6,1)+ln(124,124,148,119,.6,1)+ln(124,128,146,133,.6,1),.8,'kb','opacity=".85"');
+    s+='<g class="hat">'+F('M60 88 Q86 50 112 26 Q132 8 148 14 Q156 18 152 30 Q142 22 138 34 Q132 58 142 90 Z','var(--hat)')+'<g clip-path="url(#loafH)">'+K(hatch(60,8,160,92,6,-.55),.8,'kh')+'</g>'+SK('M60 88 Q86 50 112 26 Q132 8 148 14 Q156 18 152 30 Q142 22 138 34 Q132 58 142 90',1.4,'kk');
+    s+=F('M14 98 Q30 72 100 80 Q170 76 188 102 Q170 112 128 102 Q80 94 14 98 Z','var(--hat)')+'<g clip-path="url(#loafB2)">'+K(hatch(10,72,192,112,5,.7),.7,'kh')+'</g>'+SK('M14 98 Q30 72 100 80 Q170 76 188 102 Q170 112 128 102 Q80 94 14 98',1.4,'kk')+SK('M64 84 Q100 76 140 86',1.6,'kk')+'</g>';
+    s+='</g>';
     return s}
   /* где сейчас Пирожок: ночью и на рассвете — на кровати, днём спит на лежанке, на закате играет с мышкой */
   var CATBED=[830,478];
   function catSpot(){if(THEME==='day')return 'bed';if(THEME==='sunset')return 'play';return 'sleep'}
   function catGroupSVG(){var sp=catSpot(),zz=function(x,y){return '<g><text class="zz" x="'+x+'" y="'+y+'" font-size="8">z</text><text class="zz" x="'+(x-6)+'" y="'+(y-6)+'" font-size="10">z</text><text class="zz" x="'+(x-13)+'" y="'+(y-13)+'" font-size="12">z</text></g>'};
-    if(sp==='bed'){var lx=CATBED[0]-45,ly=CATBED[1]-74;return {hint:[CATBED[0],CATBED[1]-46],s:'<g class="hot" data-act="cat" tabindex="0" role="button" aria-label=""><rect x="'+(CATBED[0]-58)+'" y="'+(CATBED[1]-70)+'" width="116" height="92" fill="transparent"/><g id="sceneCat" class="loaf"><g filter="url(#pencil)" transform="translate('+lx+' '+ly+') scale(.9)">'+loafSVG()+'</g>'+zz(CATBED[0]-10,CATBED[1]-50)+'</g></g>'}}
+    if(sp==='bed'){var LS=.41,lx=CATBED[0]-155*LS,ly=CATBED[1]-2-240*LS;return {hint:[CATBED[0],CATBED[1]-46],s:'<g class="hot" data-act="cat" tabindex="0" role="button" aria-label=""><rect x="'+(CATBED[0]-58)+'" y="'+(CATBED[1]-70)+'" width="116" height="92" fill="transparent"/><g id="sceneCat" class="loaf"><g filter="url(#pencil)" transform="translate('+f(lx)+' '+f(ly)+') scale('+LS+')">'+loafSVG()+'</g>'+zz(CATBED[0]+30,CATBED[1]-62)+'</g></g>'}}
     if(sp==='play'){return {hint:[748,430],s:'<g class="hot" data-act="cat" tabindex="0" role="button" aria-label=""><rect x="672" y="394" width="118" height="112" fill="transparent"/><g id="sceneCat"><g filter="url(#pencil)" transform="translate(705 406) scale(.37)">'+catSVG('s')+'</g>'+zz(764,420)+'</g><g class="toyMouse" filter="url(#pencil)">'+mouseSVG(704,498)+'</g></g>'}}
     return {hint:[336,288],s:'<g class="hot" data-act="cat" tabindex="0" role="button" aria-label=""><rect x="278" y="248" width="96" height="110" fill="transparent"/><g id="sceneCat"><g filter="url(#pencil)" transform="translate(290 262) scale(.37)">'+catSVG('s')+'</g>'+zz(312,276)+'</g></g>'}}
   /* кровать целиком: справа одеяло и плед мягко свисают через край */
@@ -956,7 +974,8 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
     return s+'</g>'}
   /* стена справа от кровати: гирлянда, столик с зеркалом, вешалка, дверь, растение, встроенный шкаф */
   function roomWallSVG(){var s='',w='',TB=14-SE,DX=526,D0=724,D1=804,DT=150;
-    s+='<g filter="url(#pencil)">'+garlandSVG(512,RC-16,TB+46,26)+'</g>';
+    /* гирлянда ниже, над зеркалом и дверью, концы на гвоздиках */
+    s+='<g filter="url(#pencil)">'+garlandSVG(548,878,98,24)+'</g>';
     w+='<g transform="translate('+DX+' 0)">';
     w+=F('M0 300H128V308H0Z','var(--table)')+SK(pl([[0,300],[128,300],[128,308],[0,308]],true,.4,1),1.2)+SK(ln(6,308,6,392,.4)+ln(122,308,122,392,.4),1.1);
     w+=F(elFill(18,299,9,2.4),'var(--ink-soft)','opacity=".6"')+SK('M18 298 L18 268 L32 254',1.2)+'<circle cx="18" cy="268" r="1.6" fill="var(--ink)"/>';
@@ -990,7 +1009,7 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
     return s}
   /* миски, лежанка, клубок и мышка — на полу перед стеной */
   function roomFloorSVG(){var fed=store.get('fedDay','')===today(),s='';
-    s+='<g class="hot" data-act="feed" tabindex="0" role="button" aria-label=""><rect x="612" y="392" width="112" height="44" fill="transparent"/><g id="sceneBowls" class="'+(fed?'fed':'')+'" filter="url(#pencil)"><g transform="translate(668 420) scale(1.3) translate(-668 -420)">'+bowlsSVG(668,420)+'</g></g></g>';
+    s+='<g class="hot" data-act="feed" tabindex="0" role="button" aria-label=""><rect x="612" y="392" width="112" height="44" fill="transparent"/><g id="sceneBowls" class="'+(fed?'fed':'')+'" filter="url(#pencilS)"><g transform="translate(668 420) scale(1.3) translate(-668 -420)">'+bowlsSVG(668,420)+'</g></g></g>';
     s+='<g filter="url(#pencil)">'+catBedSVG(CATBED[0],CATBED[1],1.05)+'</g><g filter="url(#pencil)">'+yarnSVG(910,494,9)+'</g>'+(catSpot()==='play'?'':'<g filter="url(#pencil)">'+mouseSVG(704,498)+'</g>');
     return s}
   function viewOfX(cx){var b=0;for(var i=1;i<VIEWS.length;i++)if(Math.abs(cx-(VIEWS[i]+200))<Math.abs(cx-(VIEWS[b]+200)))b=i;return b}
@@ -1018,7 +1037,7 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
     clearTimeout(applyView.t);if(!moving)applyView.t=setTimeout(function(){viewAnims(false)},60)}
   function goView(v){v=Math.max(0,Math.min(VIEWS.length-1,v));if(v===curView)return;curView=v;applyView(true)}
   function sceneSVG(){
-    seed=5;var s='<defs><linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--sky1)"/><stop offset=".55" style="stop-color:var(--sky2)"/><stop offset="1" style="stop-color:var(--sky3)"/></linearGradient><clipPath id="frame"><rect y="'+(-SE)+'" width="'+ROOMW+'" height="'+(560+SE)+'" rx="22"/></clipPath><radialGradient id="hglowG"><stop offset="0" stop-color="#f6e3a1" stop-opacity=".95"/><stop offset=".35" stop-color="#f6e3a1" stop-opacity=".45"/><stop offset="1" stop-color="#f6e3a1" stop-opacity="0"/></radialGradient><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#f0b46a" stop-opacity=".42"/><stop offset=".5" stop-color="#f0b46a" stop-opacity=".1"/><stop offset="1" stop-color="#f0b46a" stop-opacity="0"/></radialGradient><radialGradient id="mglow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#e9e1c4" stop-opacity=".5"/><stop offset=".3" stop-color="#e9e1c4" stop-opacity=".2"/><stop offset="1" stop-color="#e9e1c4" stop-opacity="0"/></radialGradient><filter id="pencil" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="1" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.5"/></filter></defs><g clip-path="url(#frame)">';
+    seed=5;var s='<defs><linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--sky1)"/><stop offset=".55" style="stop-color:var(--sky2)"/><stop offset="1" style="stop-color:var(--sky3)"/></linearGradient><clipPath id="frame"><rect y="'+(-SE)+'" width="'+ROOMW+'" height="'+(560+SE)+'" rx="22"/></clipPath><radialGradient id="hglowG"><stop offset="0" stop-color="#f6e3a1" stop-opacity=".95"/><stop offset=".35" stop-color="#f6e3a1" stop-opacity=".45"/><stop offset="1" stop-color="#f6e3a1" stop-opacity="0"/></radialGradient><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#f0b46a" stop-opacity=".42"/><stop offset=".5" stop-color="#f0b46a" stop-opacity=".1"/><stop offset="1" stop-color="#f0b46a" stop-opacity="0"/></radialGradient><radialGradient id="mglow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#e9e1c4" stop-opacity=".5"/><stop offset=".3" stop-color="#e9e1c4" stop-opacity=".2"/><stop offset="1" stop-color="#e9e1c4" stop-opacity="0"/></radialGradient><filter id="pencil" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="1" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.5"/></filter><filter id="pencilS" x="-4%" y="-8%" width="108%" height="116%"><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="1" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale=".9"/></filter></defs><g clip-path="url(#frame)">';
     var TB=14-SE;s+=F('M0 '+(-SE-2)+'H'+ROOMW+'V560H0Z','var(--wall)')+F('M0 '+(-SE-2)+' H'+ROOMW+' V'+f(ceilR(ROOMW))+' L'+RC+' '+TB+' L125 '+TB+' L0 '+f(topL(0))+' Z','#16122a');
     s+=F('M0 '+f(topL(0))+' L125 '+TB+' L125 392 L0 442 Z','var(--wall-l)');
     s+=F('M'+RC+' '+TB+' L'+ROOMW+' '+f(ceilR(ROOMW))+' L'+ROOMW+' '+f(floorR(ROOMW))+' L'+RC+' 392 Z','var(--wall-l)');
