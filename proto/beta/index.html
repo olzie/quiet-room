@@ -12,7 +12,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Quiet Room">
-<style>html{box-sizing:border-box;height:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:#120f22}html[data-theme=dawn]{background:#efe6f4}html[data-theme=day]{background:#f8f0e3}html[data-theme=sunset]{background:#f6e4dc}*,*::before,*::after{box-sizing:inherit}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>html{box-sizing:border-box;height:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:#120f22}html[data-theme=night]{background:linear-gradient(#120f22,#120f22) top/100% env(safe-area-inset-top,0px) no-repeat,#151225}html[data-theme=dawn]{background:linear-gradient(#efe6f4,#efe6f4) top/100% env(safe-area-inset-top,0px) no-repeat,#ede4f2}html[data-theme=day]{background:linear-gradient(#f8f0e3,#f8f0e3) top/100% env(safe-area-inset-top,0px) no-repeat,#f6eee1}html[data-theme=sunset]{background:linear-gradient(#f6e4dc,#f6e4dc) top/100% env(safe-area-inset-top,0px) no-repeat,#f4e2db}*,*::before,*::after{box-sizing:inherit}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Quiet Room · beta</title>
 <meta name="robots" content="noindex">
 <!-- шрифты лежат рядом с игрой: без запроса к Google, быстрее первый кадр и работает офлайн -->
@@ -132,8 +132,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 .veil.on{opacity:1;pointer-events:auto}
 /* приложение на домашнем экране iOS: окно короче экрана на высоту статус-бара. Ниже окна браузер рисует только фон страницы,
    поэтому полосу внизу затемняем самим фоном, а окну не добавляем лишний отступ под полоской «домой» (она уже в этой полосе) */
-html{transition:background-color .45s}
-html[data-theme=night].veiled{background:#0c0918}html[data-theme=dawn].veiled{background:#605b68}html[data-theme=day].veiled{background:#635f61}html[data-theme=sunset].veiled{background:#625a5f}html[data-theme=night].veiled:has(body.relSky){background:#100d1e}html[data-theme=dawn].veiled:has(body.relSky){background:#b5aebc}html[data-theme=day].veiled:has(body.relSky){background:#bcb6af}html[data-theme=sunset].veiled:has(body.relSky){background:#baacaa}
+/* полоса под окном: днём/ночью цвет страницы с зерном, под открытым окном — затемнённый, под опущенной банкой — цвет самого окна */
+html[data-theme=night].veiled{background:linear-gradient(#120f22,#120f22) top/100% env(safe-area-inset-top,0px) no-repeat,#0e0c1b}html[data-theme=dawn].veiled{background:linear-gradient(#efe6f4,#efe6f4) top/100% env(safe-area-inset-top,0px) no-repeat,#625e69}html[data-theme=day].veiled{background:linear-gradient(#f8f0e3,#f8f0e3) top/100% env(safe-area-inset-top,0px) no-repeat,#656163}html[data-theme=sunset].veiled{background:linear-gradient(#f6e4dc,#f6e4dc) top/100% env(safe-area-inset-top,0px) no-repeat,#655d61}html[data-theme=night].veiled.relSky{background:linear-gradient(#120f22,#120f22) top/100% env(safe-area-inset-top,0px) no-repeat,#1f1b34}html[data-theme=dawn].veiled.relSky{background:linear-gradient(#efe6f4,#efe6f4) top/100% env(safe-area-inset-top,0px) no-repeat,#f4eef8}html[data-theme=day].veiled.relSky{background:linear-gradient(#f8f0e3,#f8f0e3) top/100% env(safe-area-inset-top,0px) no-repeat,#fbf5ea}html[data-theme=sunset].veiled.relSky{background:linear-gradient(#f6e4dc,#f6e4dc) top/100% env(safe-area-inset-top,0px) no-repeat,#f9eee8}
 html .sheet{padding-bottom:calc(10px + max(0px, env(safe-area-inset-bottom, 0px) - var(--vgap, 0px)))}
 /* пока плавно меняется время суток, кнопки остаются живыми (можно закрыть настройки) */
 ::view-transition{pointer-events:none}
@@ -1025,8 +1025,12 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
   /* комнату двигает мягкая «пружина» (без отскока): и от кнопок, и после пальца одинаково плавно.
      Пружина помнит скорость, поэтому второе нажатие или палец посреди движения не дают рывка */
   var PAN={x:0,v:0,T:0,raf:0,last:0,lo:-1e9,hi:1e9},PANW=8.5;
-  function panSet(x){PAN.x=x;$('#scenePan').style.transform='translate3d('+x.toFixed(2)+'px,0,0)'}
-  function panStop(){if(PAN.raf){cancelAnimationFrame(PAN.raf);PAN.raf=0}PAN.v=0;return PAN.x}
+  /* сдвиг всегда по целым пикселям экрана: картинки комнаты тогда не «дрожат» от пересэмплирования */
+  function panWrite(x){var d=window.devicePixelRatio||1;$('#scenePan').style.transform='translate3d('+(Math.round(x*d)/d).toFixed(3)+'px,0,0)'}
+  function panSet(x){PAN.x=x;panWrite(x)}
+  /* за пальцем: пишем сдвиг один раз за кадр, сколько бы касаний ни пришло (на 120 Гц экранах их больше, чем кадров) */
+  function panDrag(x){PAN.x=x;if(!PAN.dq)PAN.dq=requestAnimationFrame(function(){PAN.dq=0;panWrite(PAN.x)})}
+  function panStop(){if(PAN.raf){cancelAnimationFrame(PAN.raf);PAN.raf=0}if(PAN.dq){cancelAnimationFrame(PAN.dq);PAN.dq=0}PAN.v=0;return PAN.x}
   function panStep(now){var dt=Math.min(.05,Math.max(0,(now-PAN.last)/1000));PAN.last=now;
     var y=PAN.x-PAN.T,v=PAN.v,w=PANW,e=Math.exp(-w*dt),c=v+w*y;y=(y+c*dt)*e;v=(v-c*w*dt)*e;
     var x=PAN.T+y;if(x<PAN.lo){x=PAN.lo;v=0}if(x>PAN.hi){x=PAN.hi;v=0}PAN.v=v;
@@ -1035,7 +1039,7 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
   function panTo(T,anim,v0){PAN.T=T;PAN.lo=Math.min(viewT(VIEWS.length-1),T);PAN.hi=Math.max(viewT(0),T);
     if(!anim||Math.abs(PAN.x-T)<.5&&!v0){panStop();panSet(T);return false}
     if(v0!=null)PAN.v=Math.max(-3500,Math.min(3500,v0));roomMoving=Date.now();viewAnims(true);
-    if(!PAN.raf){PAN.last=performance.now();PAN.raf=requestAnimationFrame(panStep)}return true}
+    if(PAN.dq){cancelAnimationFrame(PAN.dq);PAN.dq=0}if(!PAN.raf){PAN.last=performance.now();PAN.raf=requestAnimationFrame(panStep)}return true}
   function applyView(anim,v0){var T=viewT(curView),moving=panTo(T,anim,v0);
     /* вся комната влезла в экран (альбомная ориентация) — листать нечего, стрелки прячем */
     var nb=$('#roomNav');if(nb)nb.style.display=Math.abs(viewT(0)-viewT(VIEWS.length-1))<1?'none':'';
@@ -1551,7 +1555,7 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
         var LEAD=reopen?1500:900,sh=$('#sheet'),js=$('#jStat');
         /* опускаем окно банки: под банкой пусто, а сверху становится видно окно комнаты */
         var drop=Math.max(0,Math.round(innerHeight-12-js.getBoundingClientRect().bottom)),rects=st.map(function(g){return g.getBoundingClientRect()});
-        sh.classList.add('relDown');sh.style.transform='translateY('+drop+'px)';document.body.classList.add('relSky');
+        sh.classList.add('relDown');sh.style.transform='translateY('+drop+'px)';document.body.classList.add('relSky');document.documentElement.classList.add('relSky');
         var sv=$('#scene'),M=sv.getScreenCTM(),old=skyExtra,cloudy=THEME==='day',add=Math.min(8,st.length),nw=cloudy?old:Math.min(40,skyExtra+add),land=cloudy?[]:skyPos(nw).slice(old);
         /* банку опустошаем сразу: если окно закрыть и открыть, пока звёзды ещё летят, банка уже пустая и новая записка не потеряется */
         jarStars=0;store.set('stars',0);jarOrder=[];store.set('jarOrder',[]);if(!cloudy)store.set('sky',nw);
@@ -1592,7 +1596,7 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
           if(cloudy)dust(tp,SC[(+g.dataset.i||i)%SC.length],cc,dl+dur*.9)}
         /* летящие звёзды создаём понемногу в следующих кадрах, чтобы не тормозить начало опускания окна */
         var tRel=performance.now();st.forEach(function(g,i){setTimeout(function(){requestAnimationFrame(function(){makeFlyer(g,i)})},Math.max(0,LEAD-260+i*65))});
-        relCleanup=function(){flyers.forEach(function(d){d.remove()});flyers=[];sh.style.transform='';document.body.classList.remove('relSky');setTimeout(function(){sh.classList.remove('relDown')},950)};
+        relCleanup=function(){flyers.forEach(function(d){d.remove()});flyers=[];sh.style.transform='';document.body.classList.remove('relSky');document.documentElement.classList.remove('relSky');setTimeout(function(){sh.classList.remove('relDown')},950)};
         setTimeout(function(){
           if(!cloudy){skyExtra=Math.max(skyExtra,nw);drawSky()}if(relCleanup){relCleanup();relCleanup=null}say(T(cloudy?'releasedSayC':'releasedSay'));if(reopen)setTimeout(function(){if(curtainTok===tok&&store.get('curtain',0))curtainTo(1,1300)},3200);
           /* остальное перерисовываем в следующих кадрах, по частям */
@@ -1673,7 +1677,7 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
       if(jarStars>=SLOTS.length){busy=true;$('#jarform').classList.add('gone');setTimeout(release,900)}
       return function(){alive=false;try{tin.blur()}catch(e){}if(motionOn)window.removeEventListener('devicemotion',onMotion);
         /* закрыли посреди улёта: окно уезжает как обычно, звёзды долетают до окна сами */
-        if(releasing){sh.style.transform='';sh.classList.remove('relDown');document.body.classList.remove('relSky')}};
+        if(releasing){sh.style.transform='';sh.classList.remove('relDown');document.body.classList.remove('relSky');document.documentElement.classList.remove('relSky')}};
     });
   }
 
@@ -1966,7 +1970,7 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
     function move(x,y,id){if(!st||id!==st.id)return false;var dx=x-st.x,dy=y-st.y,now=performance.now();st.hist.push([now,x]);while(st.hist.length>2&&now-st.hist[0][0]>120)st.hist.shift();
       if(!st.drag){if(Math.abs(dx)>14&&Math.abs(dx)>Math.abs(dy)*1.2){st.drag=true;st.lo=viewT(VIEWS.length-1);st.hi=viewT(0);st.T=panStop();st.x=x;clearTimeout(applyView.t);roomMoving=Date.now();viewAnims(true)}else return false}
       st.lx=x;clearTimeout(st.wd);st.wd=setTimeout(function(){finish(null)},1500);
-      var T=Math.max(st.lo,Math.min(st.hi,st.T+x-st.x));panSet(T);return true}
+      var T=Math.max(st.lo,Math.min(st.hi,st.T+x-st.x));panDrag(T);return true}
     function finish(x){if(!st)return;var s0=st;st=null;clearTimeout(s0.wd);if(!s0.drag)return;swipedAt=Date.now();
       var ex=x==null?s0.lx:x,dx=ex-s0.x,h0=s0.hist[0],h1=s0.hist[s0.hist.length-1],v=performance.now()-h1[0]>100?0:(h1[1]-h0[1])/Math.max(16,h1[0]-h0[0]),wpx=wr.clientWidth;
       var to=curView,far=Math.min(44,wpx*.1);if(dx<-far||(v<-.25&&dx<-16))to=curView+1;else if(dx>far||(v>.25&&dx>16))to=curView-1;to=Math.max(0,Math.min(VIEWS.length-1,to));curView=to;applyView(true,v*1000)}
