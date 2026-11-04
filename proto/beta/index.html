@@ -475,14 +475,14 @@ html:not([data-theme=night]){--pet-rim:#efb3a0;--pet-cush:#fbe0d3;--bowl1:#ef9f7
 /* игра с мышкой: прижался, лапа вверх — и хлоп по мышке, мышка отпрыгивает и снова подкрадывается */
 #sceneCat.play .pcat{transform-box:fill-box;transform-origin:50% 100%}
 #sceneCat.play.toy-mouse .pcat{animation:lean 2.4s ease-in-out infinite}
-#sceneCat.play .pawL{visibility:hidden}#sceneCat .pleg{display:none}#sceneCat.play .pleg{display:inline;transform-box:fill-box;transform-origin:58.7% 0%}
+#sceneCat.play .pawL{visibility:hidden}#sceneCat .pleg{display:none}#sceneCat.play .pleg{display:inline;transform-box:fill-box;transform-origin:4.3% 4%}
 #sceneCat.play.toy-mouse .pleg{animation:pounce 2.4s ease-in-out infinite}
 @keyframes lean{0%,30%{transform:none}48%{transform:rotate(-4deg) translateY(2px)}62%{transform:rotate(-3deg) translateY(2px)}86%,100%{transform:none}}
-@keyframes pounce{0%,30%{transform:none}42%{transform:rotate(96deg) scale(1,.92)}50%{transform:rotate(27deg) scale(1,1.14)}62%{transform:rotate(27deg) scale(1,1.14)}78%{transform:rotate(12deg)}90%,100%{transform:none}}
+@keyframes pounce{0%,30%{transform:none}42%{transform:rotate(62deg) scale(1,.86)}50%{transform:rotate(6deg) scale(1,1.12)}62%{transform:rotate(6deg) scale(1,1.12)}78%{transform:rotate(18deg) scale(1,.95)}90%,100%{transform:none}}
 /* клубок: две быстрые царапки по клубку, клубок покачивается */
 #sceneCat.play.toy-yarn .pleg{animation:scratch 2s ease-in-out infinite}
 #sceneCat.play.toy-yarn .pcat{animation:leanY 2s ease-in-out infinite}
-@keyframes scratch{0%,20%{transform:none}30%{transform:rotate(86deg) scale(1,.95)}40%{transform:rotate(44deg) scale(1,1.12)}48%{transform:rotate(80deg) scale(1,.95)}58%{transform:rotate(42deg) scale(1,1.14)}70%{transform:rotate(30deg) scale(1,1.05)}85%,100%{transform:none}}
+@keyframes scratch{0%,20%{transform:none}30%{transform:rotate(72deg) scale(1,.92)}40%{transform:rotate(34deg) scale(1,1.12)}48%{transform:rotate(66deg) scale(1,.92)}58%{transform:rotate(32deg) scale(1,1.14)}70%{transform:rotate(22deg) scale(1,1.04)}85%,100%{transform:none}}
 @keyframes leanY{0%,20%{transform:none}40%{transform:rotate(-3deg)}58%{transform:rotate(-3deg)}85%,100%{transform:none}}
 .toyYarn{transform-box:fill-box;transform-origin:50% 80%;animation:yarnWob 2s ease-in-out infinite}
 @keyframes yarnWob{0%,36%{transform:none}42%{transform:translate(-1px,1px) rotate(-9deg) scale(1.04,.94)}50%{transform:rotate(4deg)}60%{transform:translate(-1px,1px) rotate(-10deg) scale(1.04,.94)}70%{transform:rotate(3deg)}82%,100%{transform:none}}
@@ -938,7 +938,7 @@ noteTheme(THEME);document.documentElement.setAttribute('data-theme',THEME);
       /* значки на мисках: рыбка с хвостом и глазком, капля с бликом */
       var X=function(v){return f(x+v)},Y=function(v){return f(y+v)};
       if(b[2])o+='<path d="M'+X(-5.6)+' '+Y(-3.2)+' Q'+X(-1.8)+' '+Y(-6.6)+' '+X(2)+' '+Y(-3.2)+' Q'+X(-1.8)+' '+Y(.2)+' '+X(-5.6)+' '+Y(-3.2)+'Z M'+X(1.4)+' '+Y(-3.2)+' L'+X(5.2)+' '+Y(-5.8)+' Q'+X(4.2)+' '+Y(-3.2)+' '+X(5.2)+' '+Y(-.6)+'Z" fill="#fff" opacity=".92"/><circle cx="'+X(-3.4)+'" cy="'+Y(-3.7)+'" r=".6" fill="var(--bowl1)"/>';
-      else o+='<path d="M'+X(0)+' '+Y(-7.4)+' C'+X(1.3)+' '+Y(-5.3)+' '+X(2.9)+' '+Y(-3.8)+' '+X(2.9)+' '+Y(-2.4)+' A2.9 2.9 0 0 1 '+X(-2.9)+' '+Y(-2.4)+' C'+X(-2.9)+' '+Y(-3.8)+' '+X(-1.3)+' '+Y(-5.3)+' '+X(0)+' '+Y(-7.4)+'Z" fill="#fff" opacity=".92"/><path d="M'+X(-1.5)+' '+Y(-2.6)+' Q'+X(-1.4)+' '+Y(-1.2)+' '+X(-.2)+' '+Y(-.9)+'" stroke="var(--bowl2)" stroke-width=".7" fill="none" stroke-linecap="round" opacity=".8"/>'});
+      else o+='<path d="M'+X(0)+' '+Y(-7)+' C'+X(1.1)+' '+Y(-5.2)+' '+X(2.5)+' '+Y(-3.9)+' '+X(2.5)+' '+Y(-2.7)+' A2.5 2.5 0 0 1 '+X(-2.5)+' '+Y(-2.7)+' C'+X(-2.5)+' '+Y(-3.9)+' '+X(-1.1)+' '+Y(-5.2)+' '+X(0)+' '+Y(-7)+'Z" fill="#fff" opacity=".92"/>'});
     return o}
   function yarnSVG(cx,cy,r){var o=F(elFill(cx,cy+r*.85,r*1.1,r*.28),'#000','opacity=".16"')+F(elFill(cx,cy,r,r),'var(--yarn)');
     o+=SK(el(cx,cy,r,r,.4,1),1.1)+K('M'+(cx-r*.9)+' '+(cy-r*.3)+' Q'+cx+' '+(cy-r*1.1)+' '+(cx+r*.8)+' '+(cy+r*.5)+' M'+(cx-r*.6)+' '+(cy+r*.75)+' Q'+(cx-r*.1)+' '+(cy-r*.3)+' '+(cx+r*.55)+' '+(cy-r*.8)+' M'+(cx-r*.95)+' '+(cy+r*.2)+' Q'+(cx+r*.1)+' '+(cy+r*.05)+' '+(cx+r*.9)+' '+(cy-r*.15),.8,'k','opacity=".7"');
@@ -982,12 +982,12 @@ noteTheme(THEME);document.documentElement.setAttribute('data-theme',THEME);
     s+='</g>';
     return s}
   /* передняя лапа для игры: целиком от плеча, поворачивается вокруг плеча (а не одна подушечка в воздухе) */
-  function playLegSVG(){var L='M82 182 L80 221',o='<g class="pleg">';
+  function playLegSVG(){var L='M64 186 L73 221',o='<g class="pleg">';
     o+='<path d="'+L+'" fill="none" stroke="var(--cat-ink)" stroke-width="16" stroke-linecap="round"/><path d="'+L+'" fill="none" stroke="var(--cat)" stroke-width="13" stroke-linecap="round"/>';
-    o+=K('M76 192 Q74 206 76 218',.8,'kd','opacity=".6"');
-    o+=F(elFill(80,225,11.5,7),'var(--cat)')+F(elFill(80,226.5,7,3.6),'var(--cat-belly)','opacity=".55"')+K(el(80,225,11.5,7,.35,1,22),1.3,'kc')+K('M76 230.5 Q75.4 226 76.4 222.5 M83.6 230.5 Q84.4 226 83.6 222.5',1,'kc','opacity=".8"');
+    o+=K('M62 196 Q64 208 68 218',.8,'kd','opacity=".6"');
+    o+=F(elFill(75,225,11.5,7),'var(--cat)')+F(elFill(75,226.5,7,3.6),'var(--cat-belly)','opacity=".55"')+K(el(75,225,11.5,7,.35,1,22),1.3,'kc')+K('M71 230.5 Q70.4 226 71.4 222.5 M78.6 230.5 Q79.4 226 78.6 222.5',1,'kc','opacity=".8"');
     /* плечо без обводки: лапа вырастает из тела, а не приклеена сверху */
-    o+=F(elFill(82,186,9,10),'var(--cat)');
+    o+=F(elFill(65,188,8,9),'var(--cat)');
     return o+'</g>'}
   /* где сейчас Пирожок: ночью и на рассвете — на кровати, днём спит на лежанке, на закате играет с мышкой */
   var CATBED=[830,478];
