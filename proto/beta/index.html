@@ -135,6 +135,11 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 /* полоса под окном: днём/ночью цвет страницы с зерном, под открытым окном — затемнённый, под опущенной банкой — цвет самого окна */
 html[data-theme=night].veiled{background:linear-gradient(#120f22,#120f22) top/100% env(safe-area-inset-top,0px) no-repeat,#0e0c1b}html[data-theme=dawn].veiled{background:linear-gradient(#efe6f4,#efe6f4) top/100% env(safe-area-inset-top,0px) no-repeat,#625e69}html[data-theme=day].veiled{background:linear-gradient(#f8f0e3,#f8f0e3) top/100% env(safe-area-inset-top,0px) no-repeat,#656163}html[data-theme=sunset].veiled{background:linear-gradient(#f6e4dc,#f6e4dc) top/100% env(safe-area-inset-top,0px) no-repeat,#655d61}html[data-theme=night].veiled.relSky{background:linear-gradient(#120f22,#120f22) top/100% env(safe-area-inset-top,0px) no-repeat,#1f1b34}html[data-theme=dawn].veiled.relSky{background:linear-gradient(#efe6f4,#efe6f4) top/100% env(safe-area-inset-top,0px) no-repeat,#f4eef8}html[data-theme=day].veiled.relSky{background:linear-gradient(#f8f0e3,#f8f0e3) top/100% env(safe-area-inset-top,0px) no-repeat,#fbf5ea}html[data-theme=sunset].veiled.relSky{background:linear-gradient(#f6e4dc,#f6e4dc) top/100% env(safe-area-inset-top,0px) no-repeat,#f9eee8}
 html .sheet{padding-bottom:calc(10px + max(0px, env(safe-area-inset-bottom, 0px) - var(--vgap, 0px)))}
+/* iOS рисует эту полосу сам (WebKit 301994): её цвет берётся из фона страницы при запуске и потом не меняется.
+   Поэтому в приложении с домашнего экрана затемнение делаем цветом самой страницы, а экраны «свет погашен»
+   внизу мягко переходят в этот цвет — полоса выглядит продолжением экрана */
+html.gap .veil{background:var(--night)}html.gap .veil.on{opacity:.74}
+html.gap .night::after{content:"";position:absolute;left:0;right:0;bottom:0;height:110px;background:linear-gradient(rgba(0,0,0,0),var(--night));pointer-events:none}
 /* пока плавно меняется время суток, кнопки остаются живыми (можно закрыть настройки) */
 ::view-transition{pointer-events:none}
 html.thfade .sheet,html.thfade .sheet *{transition:background-color .5s,color .5s,border-color .5s,fill .5s,stroke .5s!important}
@@ -1944,7 +1949,7 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
       var c=of||el.getAttribute('fill'),mm=/^#([0-9a-f]{6})$/i.exec(c);if(!mm)return;var v=[0,2,4].map(function(i){return parseInt(mm[1].substr(i,2),16)});
       if((.3*v[0]+.59*v[1]+.11*v[2])/255>=.3)return;if(!of)el.setAttribute('data-of',c);el.setAttribute('fill','rgb('+v.map(function(x,i){return Math.round(x*.28+W[i]*.72)}).join(',')+')')})}
   function vgap(){var g=0;try{var sa=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone;
-    if(sa&&innerHeight>innerWidth&&screen.height>screen.width){g=Math.round(screen.height-innerHeight);if(g<0||g>90)g=0}}catch(e){}document.documentElement.style.setProperty('--vgap',g+'px')}
+    if(sa&&innerHeight>innerWidth&&screen.height>screen.width){g=Math.round(screen.height-innerHeight);if(g<0||g>90)g=0}}catch(e){}document.documentElement.style.setProperty('--vgap',g+'px');document.documentElement.classList.toggle('gap',g>0)}
   vgap();addEventListener('resize',vgap);addEventListener('orientationchange',function(){setTimeout(vgap,300)});
   var themeBoot=Date.now();
   /* время суток выбрали в открытых настройках: меняем сразу, без долгого перехода, который на это время блокирует экран (иначе окно не закрыть) */
