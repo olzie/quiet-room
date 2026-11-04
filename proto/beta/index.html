@@ -1060,22 +1060,32 @@ noteTheme(THEME);document.documentElement.setAttribute('data-theme',THEME);
     var hi=-offX,lo=st-offX-ROOMW*k;if(lo>hi)T=(lo+hi)/2;else T=Math.max(lo,Math.min(hi,T));return Math.round(T*dpr)/dpr}
   /* комнату двигает мягкая «пружина» (без отскока): и от кнопок, и после пальца одинаково плавно.
      Пружина помнит скорость, поэтому второе нажатие или палец посреди движения не дают рывка */
-  var PAN={x:0,v:0,T:0,raf:0,last:0,lo:-1e9,hi:1e9},PANW=8.5;
-  /* сдвиг всегда по целым пикселям экрана: картинки комнаты тогда не «дрожат» от пересэмплирования */
-  function panWrite(x){var d=window.devicePixelRatio||1;$('#scenePan').style.transform='translate3d('+(Math.round(x*d)/d).toFixed(3)+'px,0,0)'}
+  /* комнату везёт сам браузер (Web Animations, на видеокарте — не зависит от занятости страницы).
+     Плавность «как пружина»: если комната уже едет или её отпустил палец, новое движение начинается с той же скорости */
+  var PAN={x:0,dq:0,a:null,m:null};
+  function panTr(x){var d=window.devicePixelRatio||1;return 'translate3d('+(Math.round(x*d)/d).toFixed(3)+'px,0,0)'}
+  function panWrite(x){$('#scenePan').style.transform=panTr(x)}
   function panSet(x){PAN.x=x;panWrite(x)}
   /* за пальцем: пишем сдвиг один раз за кадр, сколько бы касаний ни пришло (на 120 Гц экранах их больше, чем кадров) */
   function panDrag(x){PAN.x=x;if(!PAN.dq)PAN.dq=requestAnimationFrame(function(){PAN.dq=0;panWrite(PAN.x)})}
-  function panStop(){if(PAN.raf){cancelAnimationFrame(PAN.raf);PAN.raf=0}if(PAN.dq){cancelAnimationFrame(PAN.dq);PAN.dq=0}PAN.v=0;return PAN.x}
-  function panStep(now){var dt=Math.min(.05,Math.max(0,(now-PAN.last)/1000));PAN.last=now;
-    var y=PAN.x-PAN.T,v=PAN.v,w=PANW,e=Math.exp(-w*dt),c=v+w*y;y=(y+c*dt)*e;v=(v-c*w*dt)*e;
-    var x=PAN.T+y;if(x<PAN.lo){x=PAN.lo;v=0}if(x>PAN.hi){x=PAN.hi;v=0}PAN.v=v;
-    if(Math.abs(x-PAN.T)<.25&&Math.abs(v)<6){panSet(PAN.T);PAN.v=0;PAN.raf=0;roomMoving=0;viewAnims(false);return}
-    panSet(x);PAN.raf=requestAnimationFrame(panStep)}
-  function panTo(T,anim,v0){PAN.T=T;PAN.lo=Math.min(viewT(VIEWS.length-1),T);PAN.hi=Math.max(viewT(0),T);
-    if(!anim||Math.abs(PAN.x-T)<.5&&!v0){panStop();panSet(T);return false}
-    if(v0!=null)PAN.v=Math.max(-3500,Math.min(3500,v0));roomMoving=Date.now();viewAnims(true);
-    if(PAN.dq){cancelAnimationFrame(PAN.dq);PAN.dq=0}if(!PAN.raf){PAN.last=performance.now();PAN.raf=requestAnimationFrame(panStep)}return true}
+  function cbz(p1,p2,u){var w=1-u;return 3*p1*u*w*w+3*p2*u*u*w+u*u*u}
+  function cbzd(p1,p2,u){var w=1-u;return 3*p1*w*w+6*(p2-p1)*u*w+3*(1-p2)*u*u}
+  /* где комната сейчас и с какой скоростью (px/с) — считаем по той же кривой, что у анимации */
+  function panState(now){var m=PAN.m;if(!m)return {x:PAN.x,v:0};var f=(now-m.t0)/m.D;if(f>=1)return {x:m.to,v:0};if(f<0)f=0;
+    var u=f;for(var i=0;i<8;i++){var e=cbz(m.x1,m.x2,u)-f,d=cbzd(m.x1,m.x2,u);if(Math.abs(e)<1e-5||Math.abs(d)<1e-6)break;u=Math.max(0,Math.min(1,u-e/d))}
+    var dx=cbzd(m.x1,m.x2,u);return {x:m.from+(m.to-m.from)*cbz(m.y1,m.y2,u),v:dx>1e-6?(m.to-m.from)*cbzd(m.y1,m.y2,u)/dx/m.D*1000:0}}
+  function panKill(){if(PAN.a){PAN.a.onfinish=null;PAN.a.cancel();PAN.a=null}PAN.m=null;if(PAN.dq){cancelAnimationFrame(PAN.dq);PAN.dq=0}}
+  function panStop(){var s=panState(performance.now());panKill();panSet(s.x);return s.x}
+  function panTo(T,anim,v0){var now=performance.now(),s=panState(now),from=s.x,v=v0!=null?v0:s.v;panKill();
+    if(!anim||Math.abs(from-T)<.5){panSet(T);return 0}
+    var dist=T-from,ad=Math.abs(dist),toward=v*dist>0?Math.min(4000,Math.abs(v)):0,D,x1,y1;
+    if(toward>30){D=Math.max(340,Math.min(720,2.4*ad/toward*1000));x1=.3;y1=Math.min(1,toward*D/1000/ad*x1)}
+    else{D=Math.max(420,Math.min(760,420+ad*.9));x1=.42;y1=0}
+    var pv=$('#scenePan');panSet(T);roomMoving=Date.now();viewAnims(true);
+    if(!pv.animate)return 0;
+    PAN.m={from:from,to:T,t0:now,D:D,x1:x1,y1:y1,x2:.25,y2:1};
+    PAN.a=pv.animate([{transform:panTr(from)},{transform:panTr(T)}],{duration:D,easing:'cubic-bezier('+x1+','+y1.toFixed(3)+',.25,1)'});
+    PAN.a.onfinish=function(){PAN.a=null;PAN.m=null;roomMoving=0;viewAnims(false)};return D}
   function applyView(anim,v0){var T=viewT(curView),moving=panTo(T,anim,v0);
     /* вся комната влезла в экран (альбомная ориентация) — листать нечего, стрелки прячем */
     var nb=$('#roomNav');if(nb)nb.style.display=Math.abs(viewT(0)-viewT(VIEWS.length-1))<1?'none':'';
