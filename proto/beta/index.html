@@ -432,7 +432,7 @@ body.relSky .sheet .card{box-shadow:0 -4px 16px rgba(0,0,0,.08)}
 .preset{font:inherit;font-size:.8rem;color:var(--muted);background:transparent;border:1.5px dashed var(--line);border-radius:999px;padding:5px 11px;cursor:pointer}
 
 /* комната шире экрана: листаем стрелками */
-#sceneWrap{position:absolute;left:0;right:0;overflow:hidden;touch-action:pan-y}
+#sceneWrap{position:absolute;left:0;right:0;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #sceneWrap #scenePan{position:absolute;left:0;top:0;height:100%;transition:transform .8s cubic-bezier(.45,.05,.25,1);will-change:transform;transform:translateZ(0)}
 #sceneWrap #scene{position:absolute;left:0;top:0;right:auto;bottom:auto;height:100%}
 .roomnavbar{position:absolute;z-index:3;left:50%;bottom:10px;transform:translateX(-50%);display:flex;align-items:center;gap:4px;padding:3px;border-radius:999px;background:color-mix(in srgb,var(--panel) 82%,transparent);border:1.5px solid var(--line);box-shadow:0 4px 14px rgba(0,0,0,.16)}
@@ -1901,15 +1901,18 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
   /* свайп пальцем: комната едет за пальцем, отпускаешь — доезжает до ближайшей части */
   var swipedAt=0,ptrAt=0;(function(){var wr=$('#sceneWrap'),sv=$('#scenePan'),st=null;
     function curT(){var m=/translate3d\(([-\d.]+)px/.exec(sv.style.transform||'');return m?+m[1]:0}
-    wr.addEventListener('pointerdown',function(e){if(lightsOut||e.button>0)return;if(st&&st.drag)end(null);ptrAt=Date.now();st={x:e.clientX,y:e.clientY,lx:e.clientX,t:performance.now(),T:curT(),drag:false,id:e.pointerId}});
+    wr.addEventListener('pointerdown',function(e){if(lightsOut||e.button>0)return;if(st&&st.drag)end(null);ptrAt=Date.now();st={x:e.clientX,y:e.clientY,lx:e.clientX,t:performance.now(),T:curT(),drag:false,id:e.pointerId,hist:[[performance.now(),e.clientX]]}});
+    /* старый iOS не всегда слушает touch-action: горизонтальное движение пальца по комнате забираем себе */
+    wr.addEventListener('touchmove',function(e){if(st&&st.drag&&e.cancelable)e.preventDefault()},{passive:false});
     wr.addEventListener('pointermove',function(e){if(!st||e.pointerId!==st.id)return;var dx=e.clientX-st.x,dy=e.clientY-st.y;
-      if(!st.drag){if(Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)*1.3){st.drag=true;try{wr.setPointerCapture(e.pointerId)}catch(_){}sv.style.transition='none';clearTimeout(applyView.t);roomMoving=Date.now();viewAnims(true)}else return}
+      var now=performance.now();st.hist.push([now,e.clientX]);while(st.hist.length>2&&now-st.hist[0][0]>120)st.hist.shift();
+      if(!st.drag){if(Math.abs(dx)>8&&Math.abs(dx)>Math.abs(dy)){st.drag=true;st.lo=viewT(VIEWS.length-1);st.hi=viewT(0);try{wr.setPointerCapture(e.pointerId)}catch(_){}sv.style.transition='none';clearTimeout(applyView.t);roomMoving=Date.now();viewAnims(true)}else return}
       st.lx=e.clientX;clearTimeout(st.wd);st.wd=setTimeout(function(){end(null)},1200);
-      var T=Math.max(viewT(VIEWS.length-1),Math.min(viewT(0),st.T+dx));sv.style.transform='translate3d('+T.toFixed(1)+'px,0,0)'});
-    function end(e){if(!st)return;var s0=st;st=null;clearTimeout(s0.wd);if(!s0.drag)return;swipedAt=Date.now();sv.style.transition='';var ex=e&&e.type!=='pointercancel'&&e.clientX?e.clientX:s0.lx,dx=ex-s0.x,v=dx/Math.max(1,performance.now()-s0.t);
-      var to=curView;if(dx<-50||v<-.45)to=curView+1;else if(dx>50||v>.45)to=curView-1;to=Math.max(0,Math.min(VIEWS.length-1,to));if(to!==curView){curView=to}applyView(true)}
+      var T=Math.max(st.lo,Math.min(st.hi,st.T+dx));sv.style.transform='translate3d('+T.toFixed(1)+'px,0,0)'});
+    function end(e){if(!st)return;var s0=st;st=null;clearTimeout(s0.wd);if(!s0.drag)return;swipedAt=Date.now();sv.style.transition='';var ex=e&&e.type!=='pointercancel'&&e.clientX?e.clientX:s0.lx,dx=ex-s0.x,h0=s0.hist[0],h1=s0.hist[s0.hist.length-1],v=performance.now()-h1[0]>100?0:(h1[1]-h0[1])/Math.max(16,h1[0]-h0[0]),wpx=$('#sceneWrap').clientWidth;
+      var to=curView,far=Math.min(50,wpx*.12);if(dx<-far||(v<-.25&&dx<-18))to=curView+1;else if(dx>far||(v>.25&&dx>18))to=curView-1;to=Math.max(0,Math.min(VIEWS.length-1,to));if(to!==curView){curView=to}applyView(true)}
     /* палец отпустили где угодно (или браузер забрал жест) — комната всё равно доезжает до ближайшей части */
-    ['pointerup','pointercancel'].forEach(function(n){window.addEventListener(n,function(e){if(st&&e.pointerId===st.id)end(e)},true)});wr.addEventListener('lostpointercapture',function(e){if(st&&e.pointerId===st.id)end(e)});
+    ['pointerup','pointercancel'].forEach(function(n){window.addEventListener(n,function(e){if(st&&e.pointerId===st.id)end(e)},true)});wr.addEventListener('lostpointercapture',function(e){if(st&&st.drag&&e.target===wr&&e.pointerId===st.id)end(e)});
     /* фокус на предмете не должен прокручивать комнату сам: показываем нужную часть сами */
     wr.addEventListener('scroll',function(){if(wr.scrollLeft||wr.scrollTop){wr.scrollLeft=0;wr.scrollTop=0}});
     wr.addEventListener('focusin',function(e){if(Date.now()-ptrAt<800)return;var v=viewOfEl(e.target);if(v!==curView)goView(v)})})();
