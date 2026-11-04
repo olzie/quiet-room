@@ -991,7 +991,7 @@ noteTheme(THEME);document.documentElement.setAttribute('data-theme',THEME);
     return o+'</g>'}
   /* где сейчас Пирожок: ночью и на рассвете — на кровати, днём спит на лежанке, на закате играет с мышкой */
   var CATBED=[830,478];
-  function catSpot(){if(THEME==='day')return 'bed';if(THEME==='sunset')return catAsleep?'bed':'play';return 'sleep'}
+  function catSpot(){if(THEME==='day')return 'bed';if(THEME==='sunset')return (catAsleep===undefined?store.get('catSleep','')===today():catAsleep)?'bed':'play';return 'sleep'}
   function catGroupSVG(){var sp=catSpot(),zz=function(x,y){return '<g><text class="zz" x="'+x+'" y="'+y+'" font-size="8">z</text><text class="zz" x="'+(x-6)+'" y="'+(y-6)+'" font-size="10">z</text><text class="zz" x="'+(x-13)+'" y="'+(y-13)+'" font-size="12">z</text></g>'};
     if(sp==='bed'){var LS=.41,lx=CATBED[0]-155*LS,ly=CATBED[1]-2-240*LS;return {hint:[CATBED[0],CATBED[1]-46],s:'<g class="hot" data-act="cat" tabindex="0" role="button" aria-label=""><rect x="'+(CATBED[0]-58)+'" y="'+(CATBED[1]-70)+'" width="116" height="92" fill="transparent"/><g id="sceneCat" class="loaf"><g filter="url(#pencil)" transform="translate('+f(lx)+' '+f(ly)+') scale('+LS+')">'+loafSVG()+'</g>'+zz(CATBED[0]+30,CATBED[1]-62)+'</g></g>'}}
     if(sp==='play'){var toy=playToy();return {hint:[748,430],s:'<g class="hot" data-act="cat" tabindex="0" role="button" aria-label=""><rect x="726" y="394" width="64" height="112" fill="transparent"/><rect x="672" y="438" width="54" height="68" fill="transparent"/><g id="sceneCat" class="toy-'+toy+'"><g filter="url(#pencil)" transform="translate(705 406) scale(.37)"><g class="pcat">'+catSVG('s')+playLegSVG()+'</g></g>'+zz(764,420)+'</g>'+(toy==='yarn'?'<g class="toyYarn" filter="url(#pencil)">'+yarnSVG(717,490,8.5)+'</g>':'<g class="toyMouse" filter="url(#pencil)">'+mouseSVG(726,497)+'</g>')+'</g>'}}
@@ -1184,7 +1184,9 @@ noteTheme(THEME);document.documentElement.setAttribute('data-theme',THEME);
   drawVase();drawJar();drawLaundry();drawCurtain(curtainT);drawSky();drawClouds();themeFix();
   if(typeof betaFill==='function')betaFill();
   var catAsleep=store.get('catSleep','')===today();
-  function setSceneSleep(v){var sp0=catSpot();catAsleep=v;if(sp0!==catSpot()&&$('#sceneCat')&&!setSceneSleep.busy){setSceneSleep.busy=1;rebuild();setSceneSleep.busy=0;return}var c=$('#sceneCat');c.classList.toggle('sleepy',v||catSpot()==='bed');c.classList.toggle('catSleep',v||catSpot()==='bed');c.classList.toggle('play',catSpot()==='play'&&!v);var tm=document.querySelector('#scene .toyMouse');if(tm)tm.style.animationPlayState=(catSpot()==='play'&&!v)?'':'paused';store.set('catSleep',v?today():'')}
+  function setSceneSleep(v){catAsleep=v;var sc=$('#sceneCat'),drawn=sc?(sc.classList.contains('loaf')?'bed':/toy-/.test(sc.getAttribute('class')||'')?'play':'sleep'):null;
+    /* нарисован не там, где должен быть (уснул во время игры, проснулся, новый запуск) — перерисовываем комнату */
+    if(sc&&drawn!==catSpot()&&!setSceneSleep.busy&&document.querySelector('.stage.ready')){setSceneSleep.busy=1;rebuild();setSceneSleep.busy=0;return}var c=$('#sceneCat');c.classList.toggle('sleepy',v||catSpot()==='bed');c.classList.toggle('catSleep',v||catSpot()==='bed');c.classList.toggle('play',catSpot()==='play'&&!v);var tm=document.querySelector('#scene .toyMouse');if(tm)tm.style.animationPlayState=(catSpot()==='play'&&!v)?'':'paused';store.set('catSleep',v?today():'')}
   setSceneSleep(catAsleep);
 
   /* ---------- свет и подписи ---------- */
@@ -1449,7 +1451,8 @@ noteTheme(THEME);document.documentElement.setAttribute('data-theme',THEME);
   }
 
   function wakeCat(){setSceneSleep(false);store.set('catCalm',0);var c=$('#sceneCat');c.classList.add('twitch');setTimeout(function(){c.classList.remove('twitch')},520);say(T('catWake'))}
-  function catTap(){if(THEME==='day'&&catSpot()==='bed'){actCat();return}if(catAsleep){wakeCat();return}actCat()}
+  /* на лежанке (днём или когда уснул на закате) он только дремлет: нажатие открывает тихое поглаживание, без резкого пробуждения */
+  function catTap(){if(catSpot()==='bed'){actCat();return}if(catAsleep){wakeCat();return}actCat()}
 
   /* ---------- бельё ---------- */
   var GARMENTS=[
