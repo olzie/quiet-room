@@ -435,6 +435,8 @@ body.relSky .sheet .card{box-shadow:0 -4px 16px rgba(0,0,0,.08)}
 .pt{font:inherit;font-size:.8rem;color:var(--text);background:var(--wall);border:1.5px solid var(--line);border-radius:12px;min-width:36px;height:34px;padding:0 10px;cursor:pointer;display:grid;place-items:center}
 .pt i{display:block;border-radius:50%;background:var(--ink)}
 .pt.on{border-color:var(--lamp);color:var(--lamp)}
+/* узкий экран (iPhone SE): палитра и инструменты в одну строку */
+@media (max-width:370px){.pal{gap:4px}.sw{width:26px;height:26px}.ptools{gap:3px}.ptools .pt{padding:0 5px;min-width:28px;font-size:.7rem}}
 .pt.on i{background:var(--lamp)}
 .pt.warn{border-color:#e6a9c0;color:#e6a9c0}
 .sw:focus-visible,.pt:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
@@ -956,7 +958,7 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
   function catSpot(){if(THEME==='day')return 'bed';if(THEME==='sunset')return 'play';return 'sleep'}
   function catGroupSVG(){var sp=catSpot(),zz=function(x,y){return '<g><text class="zz" x="'+x+'" y="'+y+'" font-size="8">z</text><text class="zz" x="'+(x-6)+'" y="'+(y-6)+'" font-size="10">z</text><text class="zz" x="'+(x-13)+'" y="'+(y-13)+'" font-size="12">z</text></g>'};
     if(sp==='bed'){var LS=.41,lx=CATBED[0]-155*LS,ly=CATBED[1]-2-240*LS;return {hint:[CATBED[0],CATBED[1]-46],s:'<g class="hot" data-act="cat" tabindex="0" role="button" aria-label=""><rect x="'+(CATBED[0]-58)+'" y="'+(CATBED[1]-70)+'" width="116" height="92" fill="transparent"/><g id="sceneCat" class="loaf"><g filter="url(#pencil)" transform="translate('+f(lx)+' '+f(ly)+') scale('+LS+')">'+loafSVG()+'</g>'+zz(CATBED[0]+30,CATBED[1]-62)+'</g></g>'}}
-    if(sp==='play'){return {hint:[748,430],s:'<g class="hot" data-act="cat" tabindex="0" role="button" aria-label=""><rect x="672" y="394" width="118" height="112" fill="transparent"/><g id="sceneCat"><g filter="url(#pencil)" transform="translate(705 406) scale(.37)">'+catSVG('s')+'</g>'+zz(764,420)+'</g><g class="toyMouse" filter="url(#pencil)">'+mouseSVG(704,498)+'</g></g>'}}
+    if(sp==='play'){return {hint:[748,430],s:'<g class="hot" data-act="cat" tabindex="0" role="button" aria-label=""><rect x="726" y="394" width="64" height="112" fill="transparent"/><rect x="672" y="438" width="54" height="68" fill="transparent"/><g id="sceneCat"><g filter="url(#pencil)" transform="translate(705 406) scale(.37)">'+catSVG('s')+'</g>'+zz(764,420)+'</g><g class="toyMouse" filter="url(#pencil)">'+mouseSVG(704,498)+'</g></g>'}}
     return {hint:[336,288],s:'<g class="hot" data-act="cat" tabindex="0" role="button" aria-label=""><rect x="278" y="248" width="96" height="110" fill="transparent"/><g id="sceneCat"><g filter="url(#pencil)" transform="translate(290 262) scale(.37)">'+catSVG('s')+'</g>'+zz(312,276)+'</g></g>'}}
   /* кровать целиком: справа одеяло и плед мягко свисают через край */
   function bedSVG(){var BX=472,s='<g filter="url(#pencil)">';
@@ -1016,7 +1018,10 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
   function viewOfEl(el){try{var sv=$('#scene');if(!el||!sv.contains(el))return curView;var sr=sv.getBoundingClientRect(),er=el.getBoundingClientRect(),k=roomK(),offX=(sv.clientWidth-ROOMW*k)/2;return viewOfX((er.left+er.width/2-sr.left-offX)/k)}catch(e){return curView}}
   function viewOfAct(a){return viewOfEl(document.querySelector('#scene [data-act="'+a+'"]'))}
   function roomK(){var sv=$('#scene'),w=sv.clientWidth,h=sv.clientHeight;return Math.min(w/ROOMW,h/(560+SE))}
-  function viewT(v){var sv=$('#scene'),st=$('.stage').getBoundingClientRect().width,k=roomK(),offX=(sv.clientWidth-ROOMW*k)/2,T=(st-400*k)/2-offX-VIEWS[v]*k,dpr=window.devicePixelRatio||1;return Math.round(T*dpr)/dpr}
+  /* на низком экране (альбом, маленький телефон) комната уже экрана по высоте и видно больше 400 единиц:
+     тогда не даём краю комнаты отъехать от края окна, иначе сбоку пустая полоса */
+  function viewT(v){var sv=$('#scene'),st=$('.stage').getBoundingClientRect().width,k=roomK(),offX=(sv.clientWidth-ROOMW*k)/2,T=(st-400*k)/2-offX-VIEWS[v]*k,dpr=window.devicePixelRatio||1;
+    var hi=-offX,lo=st-offX-ROOMW*k;if(lo>hi)T=(lo+hi)/2;else T=Math.max(lo,Math.min(hi,T));return Math.round(T*dpr)/dpr}
   /* комнату двигает мягкая «пружина» (без отскока): и от кнопок, и после пальца одинаково плавно.
      Пружина помнит скорость, поэтому второе нажатие или палец посреди движения не дают рывка */
   var PAN={x:0,v:0,T:0,raf:0,last:0,lo:-1e9,hi:1e9},PANW=8.5;
@@ -1032,6 +1037,8 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
     if(v0!=null)PAN.v=Math.max(-3500,Math.min(3500,v0));roomMoving=Date.now();viewAnims(true);
     if(!PAN.raf){PAN.last=performance.now();PAN.raf=requestAnimationFrame(panStep)}return true}
   function applyView(anim,v0){var T=viewT(curView),moving=panTo(T,anim,v0);
+    /* вся комната влезла в экран (альбомная ориентация) — листать нечего, стрелки прячем */
+    var nb=$('#roomNav');if(nb)nb.style.display=Math.abs(viewT(0)-viewT(VIEWS.length-1))<1?'none':'';
     var p=$('#navPrev'),n=$('#navNext');if(p)p.disabled=curView===0;if(n)n.disabled=curView===VIEWS.length-1;
     var ds=document.querySelectorAll('#roomDots i');ds.forEach(function(d,i){d.classList.toggle('on',i===curView)});
     clearTimeout(applyView.t);if(!moving)applyView.t=setTimeout(function(){viewAnims(false)},60)}
@@ -1546,6 +1553,8 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
         var drop=Math.max(0,Math.round(innerHeight-12-js.getBoundingClientRect().bottom)),rects=st.map(function(g){return g.getBoundingClientRect()});
         sh.classList.add('relDown');sh.style.transform='translateY('+drop+'px)';document.body.classList.add('relSky');
         var sv=$('#scene'),M=sv.getScreenCTM(),old=skyExtra,cloudy=THEME==='day',add=Math.min(8,st.length),nw=cloudy?old:Math.min(40,skyExtra+add),land=cloudy?[]:skyPos(nw).slice(old);
+        /* банку опустошаем сразу: если окно закрыть и открыть, пока звёзды ещё летят, банка уже пустая и новая записка не потеряется */
+        jarStars=0;store.set('stars',0);jarOrder=[];store.set('jarOrder',[]);if(!cloudy)store.set('sky',nw);
         function scr(x,y){var p=sv.createSVGPoint();p.x=x;p.y=y;var q=p.matrixTransform(M);return [q.x,q.y]}
         var gTop=topL(WI1)+32,flyers=[],durs=st.map(function(){return 2600+Math.random()*900}),fx=[],cloudEnd=0;
         /* днём: звезда рассыпается звёздной пылью, пыль собирается в облака, облака уплывают и тают */
@@ -1585,7 +1594,7 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
         var tRel=performance.now();st.forEach(function(g,i){setTimeout(function(){requestAnimationFrame(function(){makeFlyer(g,i)})},Math.max(0,LEAD-260+i*65))});
         relCleanup=function(){flyers.forEach(function(d){d.remove()});flyers=[];sh.style.transform='';document.body.classList.remove('relSky');setTimeout(function(){sh.classList.remove('relDown')},950)};
         setTimeout(function(){
-          jarStars=0;store.set('stars',0);jarOrder=[];store.set('jarOrder',[]);if(!cloudy){skyExtra=Math.min(40,skyExtra+add);store.set('sky',skyExtra);drawSky()}if(relCleanup){relCleanup();relCleanup=null}say(T(cloudy?'releasedSayC':'releasedSay'));if(reopen)setTimeout(function(){if(curtainTok===tok&&store.get('curtain',0))curtainTo(1,1300)},3200);
+          if(!cloudy){skyExtra=Math.max(skyExtra,nw);drawSky()}if(relCleanup){relCleanup();relCleanup=null}say(T(cloudy?'releasedSayC':'releasedSay'));if(reopen)setTimeout(function(){if(curtainTok===tok&&store.get('curtain',0))curtainTo(1,1300)},3200);
           /* остальное перерисовываем в следующих кадрах, по частям */
           requestAnimationFrame(function(){requestAnimationFrame(function(){drawJar();
             if(!alive)return;
