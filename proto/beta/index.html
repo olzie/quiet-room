@@ -130,8 +130,11 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opa
 /* панель занятия */
 .veil{position:fixed;inset:0;background:rgba(8,6,18,.62);opacity:0;pointer-events:none;transition:opacity .45s;z-index:20}
 .veil.on{opacity:1;pointer-events:auto}
-/* приложение на домашнем экране iOS: окно короче экрана на высоту статус-бара, затемнение и окна дотягиваем до низа */
-html .veil,html .night,html .ob{bottom:calc(0px - var(--vgap,0px))}html .sheet{bottom:calc(0px - var(--vgap,0px))}
+/* приложение на домашнем экране iOS: окно короче экрана на высоту статус-бара. Ниже окна браузер рисует только фон страницы,
+   поэтому полосу внизу затемняем самим фоном, а окну не добавляем лишний отступ под полоской «домой» (она уже в этой полосе) */
+html{transition:background-color .45s}
+html[data-theme=night].veiled{background:#0c0918}html[data-theme=dawn].veiled{background:#605b68}html[data-theme=day].veiled{background:#635f61}html[data-theme=sunset].veiled{background:#625a5f}html[data-theme=night].veiled:has(body.relSky){background:#100d1e}html[data-theme=dawn].veiled:has(body.relSky){background:#b5aebc}html[data-theme=day].veiled:has(body.relSky){background:#bcb6af}html[data-theme=sunset].veiled:has(body.relSky){background:#baacaa}
+html .sheet{padding-bottom:calc(10px + max(0px, env(safe-area-inset-bottom, 0px) - var(--vgap, 0px)))}
 /* пока плавно меняется время суток, кнопки остаются живыми (можно закрыть настройки) */
 ::view-transition{pointer-events:none}
 html.thfade .sheet,html.thfade .sheet *{transition:background-color .5s,color .5s,border-color .5s,fill .5s,stroke .5s!important}
@@ -1263,8 +1266,8 @@ if(A.indexOf(l)<0)l=A.indexOf('en')>=0?'en':A[0];var e=document.querySelector('#
   /* ---------- панель ---------- */
   var cleanup=null;
   function XBTN(){return '<button class="round x" id="closeX" aria-label="'+T('close')+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg></button>'}
-  function openSheet(html,after,noBack){if(cleanup){cleanup();cleanup=null}$('#card').innerHTML=XBTN()+html+(noBack?'':'<button class="btn ghost" id="closeSheet">'+T('back')+'</button>');$('#veil').classList.add('on');$('#sheet').classList.add('on');var cb=$('#closeSheet');if(cb)cb.addEventListener('click',closeSheet);$('#closeX').addEventListener('click',closeSheet);cleanup=after?after():null}
-  function closeSheet(){if(cleanup){cleanup();cleanup=null}$('#veil').classList.remove('on');$('#sheet').classList.remove('on');if(purrGain&&ctx)purrGain.gain.setTargetAtTime(0,ctx.currentTime,.3)}
+  function openSheet(html,after,noBack){if(cleanup){cleanup();cleanup=null}$('#card').innerHTML=XBTN()+html+(noBack?'':'<button class="btn ghost" id="closeSheet">'+T('back')+'</button>');$('#veil').classList.add('on');document.documentElement.classList.add('veiled');$('#sheet').classList.add('on');var cb=$('#closeSheet');if(cb)cb.addEventListener('click',closeSheet);$('#closeX').addEventListener('click',closeSheet);cleanup=after?after():null}
+  function closeSheet(){if(cleanup){cleanup();cleanup=null}$('#veil').classList.remove('on');document.documentElement.classList.remove('veiled');$('#sheet').classList.remove('on');if(purrGain&&ctx)purrGain.gain.setTargetAtTime(0,ctx.currentTime,.3)}
   $('#veil').addEventListener('click',closeSheet);
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet()});
 
