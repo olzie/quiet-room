@@ -528,12 +528,26 @@ html:not([data-theme=night]){--pet-rim:#efb3a0;--pet-cush:#fbe0d3;--bowl1:#ef9f7
 /* тестовая страница: всё, кроме прогулки кота, выключено */
 #scene [data-act]{pointer-events:none}.hint,[data-hint]{display:none!important}.hud button,#meter{pointer-events:none;opacity:.45}#roomNav{display:none!important}#sceneWrap{pointer-events:none}#sceneCat{opacity:0}
 #walkAgain{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60}
-.wleg{transform-box:fill-box;transform-origin:59.5% 0%}.wtail{transform-box:fill-box;transform-origin:0% 100%}
+.wleg{transform-box:fill-box;transform-origin:59.5% 0%;transition:transform .32s ease}.wtail{transform-box:fill-box;transform-origin:0% 100%;transition:transform .4s ease}
+.whead{transition:transform .4s ease}
+/* шаг */
 .walking .wleg.lf1,.walking .wleg.lb2{animation:wstep .52s ease-in-out infinite}
 .walking .wleg.lf2,.walking .wleg.lb1{animation:wstep .52s ease-in-out infinite;animation-delay:-.26s}
 @keyframes wstep{0%,100%{transform:rotate(20deg)}50%{transform:rotate(-20deg)}}
 .walking .wtail{animation:wtail 1.04s ease-in-out infinite}@keyframes wtail{50%{transform:rotate(-7deg)}}
 .walking .whead{animation:whead .52s ease-in-out infinite}@keyframes whead{0%,100%{transform:translate(6px,-2px) scale(.82)}50%{transform:translate(6px,-.6px) scale(.82)}}
+/* потягуси: передние лапы далеко вперёд, голова к полу, хвост вверх */
+.stretch .wleg.lf1,.stretch .wleg.lf2{transform:rotate(62deg)}.stretch .wleg.lb1,.stretch .wleg.lb2{transform:rotate(-6deg)}
+.stretch .whead{transform:translate(2px,10px) scale(.82) rotate(-6deg)}.stretch .wtail{transform:rotate(-14deg)}
+/* присел перед прыжком */
+.crouch .wleg.lf1,.crouch .wleg.lf2{transform:rotate(14deg)}.crouch .wleg.lb1,.crouch .wleg.lb2{transform:rotate(-12deg)}.crouch .wtail{transform:rotate(12deg)}
+/* в полёте */
+.air .wleg.lf1,.air .wleg.lf2{transform:rotate(58deg)}.air .wleg.lb1,.air .wleg.lb2{transform:rotate(-58deg)}.air .wtail{transform:rotate(38deg)}.air .whead{transform:translate(4px,0) scale(.82) rotate(-4deg)}
+/* топчется, устраиваясь */
+.tread .wleg.lf1,.tread .wleg.lb2{animation:tstep .34s ease-in-out infinite}.tread .wleg.lf2,.tread .wleg.lb1{animation:tstep .34s ease-in-out infinite;animation-delay:-.17s}
+@keyframes tstep{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.tread .wtail{animation:wtail .68s ease-in-out infinite}
+.sit .wleg.lb1,.sit .wleg.lb2{transform:rotate(-14deg)}
 </style>
 </head>
 <body>
@@ -2033,32 +2047,45 @@ noteTheme(THEME);document.documentElement.setAttribute('data-theme',THEME);
   (function walkTest(){
     var ok=false;function start(){if(ok)return;ok=true;
       var sv=$('#scene');if(!sv)return;var NS='http://www.w3.org/2000/svg';
-      var WS=.44;/* масштаб: голова как у сидящего на кровати */
+      var WS=.44;
       var g=document.createElementNS(NS,'g');g.setAttribute('id','walkLayer');g.setAttribute('data-act','walk');
       g.innerHTML='<g id="loafStart" filter="url(#pencil)" transform="translate('+f(CATBED[0]-155*.41)+' '+f(CATBED[1]-2-240*.41)+') scale(.41)">'+loafSVG()+'</g>'
         +'<g id="walker" style="opacity:0"><g filter="url(#pencil)"><g id="walkerIn">'+walkerSVG()+'</g></g></g>';
       sv.appendChild(g);
       var W=$('#walker'),WI=$('#walkerIn'),LO=$('#loafStart'),SC=$('#sceneCat');
-      function place(x,y,sx,sy,rot){/* (x,y) — точка между лапами на полу */
-        W.setAttribute('transform','translate('+f(x)+' '+f(y)+') rotate('+f(rot||0)+') scale('+f(WS*(sx||1))+' '+f(WS*(sy||1))+') translate(-130 -184)')}
-      function cam(x){var k=roomK(),st=$('.stage').getBoundingClientRect().width,offX=(sv.clientWidth-ROOMW*k)/2,T=st/2-offX-x*k;
+      /* (x,y) — точка между лапами на полу; поворот вокруг задних лап (px — где они в рамке) */
+      function place(x,y,sx,sy,rot,px){px=px==null?130:px;
+        W.setAttribute('transform','translate('+f(x)+' '+f(y)+') scale('+f(WS*(sx||1))+' '+f(WS*(sy||1))+') translate('+(px-130)+' 0) rotate('+f(rot||0)+') translate('+(-px)+' -184)')}
+      /* камера едет за котом плавно, без рывков */
+      var camX=null,camLast=0;
+      function cam(x,now,snap){var dt=camLast?Math.min(.05,(now-camLast)/1000):0;camLast=now;if(camX==null||snap)camX=x;else camX+=(x-camX)*(1-Math.exp(-dt*3.2));
+        var k=roomK(),st=$('.stage').getBoundingClientRect().width,offX=(sv.clientWidth-ROOMW*k)/2,T=st/2-offX-camX*k;
         T=Math.max(viewT(VIEWS.length-1),Math.min(viewT(0),T));panSet(T)}
-      var P0=[CATBED[0]-4,CATBED[1]+2],P1=[498,470],P2=[332,350],t0=0,raf=0;
-      var EV=[[0,'wake'],[900,'stand'],[1500,'walk'],[7300,'crouch'],[7700,'jump'],[8350,'land'],[8650,'curl'],[9800,'done']];
-      function ease(u){return u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2}
-      function frame(now){var t=now-t0;
-        if(t<900){place(P0[0],P0[1]);cam(P0[0])}
-        else if(t<1500){var u=(t-900)/600;LO.style.opacity=String(1-u);W.style.opacity=String(u);place(P0[0],P0[1],1,.92+.08*u);cam(P0[0])}
-        else if(t<7300){var u=(t-1500)/5800,uu=u<.08?u*u/.16:u>.92?1-(1-u)*(1-u)/.16:u-.04;uu=uu/.92;
-          var x=P0[0]+(P1[0]-P0[0])*uu,y=P0[1]+(P1[1]-P0[1])*uu;place(x,y+Math.sin(t/105)*.6);cam(x)}
-        else if(t<7700){var u=(t-7300)/400;place(P1[0],P1[1],1+.06*u,1-.14*u);cam(P1[0]-40*u)}
-        else if(t<8350){var u=(t-7700)/650,e=ease(u),x=P1[0]+(P2[0]-P1[0])*e,y=P1[1]+(P2[1]-P1[1])*e-Math.sin(Math.PI*u)*60;place(x,y,1-.04*Math.sin(Math.PI*u),1+.1*Math.sin(Math.PI*u),-14*Math.sin(Math.PI*u));cam(x)}
-        else if(t<8650){var u=(t-8350)/300;place(P2[0],P2[1],1+.08*Math.sin(Math.PI*u),1-.12*Math.sin(Math.PI*u));cam(P2[0])}
-        else if(t<9800){var u=(t-8650)/1150;W.style.opacity=String(1-u);if(SC){SC.style.opacity=String(u)}place(P2[0],P2[1],1,1-.1*u);cam(P2[0])}
-        else{W.style.opacity='0';if(SC)SC.style.opacity='1';WI.classList.remove('walking');raf=0;$('#walkAgain').hidden=false;return}
-        WI.classList.toggle('walking',t>=1500&&t<7300);
+      function cls(c){['walking','stretch','crouch','air','tread','sit'].forEach(function(n){WI.classList.toggle(n,n===c)})}
+      function sm(u){u=Math.max(0,Math.min(1,u));return u*u*(3-2*u)}
+      var P0=[CATBED[0]-4,CATBED[1]+2],P1=[528,476],P2=[327,348],t0=0,raf=0;
+      /* время каждого этапа, мс */
+      var A=900,B=1400,C=3000,D=8900,E=9250,F2=9950,G=10200,H=11700,H2=12050,I=12260;
+      function frame(now){var t=now-t0,u;
+        if(t<A){place(P0[0],P0[1]);cls('');cam(P0[0],now,t<40)}
+        else if(t<B){u=(t-A)/(B-A);LO.style.opacity=String(1-u);W.style.opacity=String(u);place(P0[0],P0[1],1,.9+.1*u);cls('');cam(P0[0],now)}
+        /* потягуси: передние лапы вперёд, грудь к полу, попа вверх — и обратно */
+        else if(t<C){u=(t-B)/(C-B);var s=u<.25?sm(u/.25):u>.75?sm((1-u)/.25):1;cls(u>.08&&u<.8?'stretch':'');place(P0[0]+4*s,P0[1],1+.1*s,1-.06*s,-14*s,196);cam(P0[0],now)}
+        else if(t<D){u=(t-C)/(D-C);var e=u<.1?u*u/.2:u>.9?1-(1-u)*(1-u)/.2:u-.05;e=e/.9;
+          var x=P0[0]+(P1[0]-P0[0])*e,y=P0[1]+(P1[1]-P0[1])*e;cls('walking');place(x,y);cam(x-20,now)}
+        else if(t<E){u=sm((t-D)/(E-D));cls('crouch');place(P1[0],P1[1],1+.05*u,1-.16*u,0);cam(P2[0]+60,now)}
+        /* прыжок: тело вытянуто, передние лапы вперёд, задние назад */
+        else if(t<F2){u=(t-E)/(F2-E);var e2=sm(u),x2=P1[0]+(P2[0]-P1[0])*e2,y2=P1[1]+(P2[1]-P1[1])*e2-Math.sin(Math.PI*u)*72;cls('air');place(x2,y2,1+.1*Math.sin(Math.PI*u),1-.04*Math.sin(Math.PI*u),-16*Math.cos(Math.PI*u)+4);cam(P2[0]+40,now)}
+        else if(t<G){u=(t-F2)/(G-F2);cls('crouch');place(P2[0],P2[1],1+.07*Math.sin(Math.PI*u),1-.13*Math.sin(Math.PI*u));cam(P2[0]+20,now)}
+        /* потоптался на месте, устраиваясь */
+        else if(t<H){u=(t-G)/(H-G);cls('tread');place(P2[0]+Math.sin(u*Math.PI*3)*1.6,P2[1]);cam(P2[0],now)}
+        /* сел и уснул: мягко сменяется на ночную позу */
+        else if(t<H2){u=sm((t-H)/(H2-H));cls('sit');place(P2[0],P2[1],1-.06*u,1-.1*u);cam(P2[0],now)}
+        /* короткая смена на ночную позу: сначала под ним проявляется спящий, потом он сам тает */
+        else if(t<I){u=(t-H2)/(I-H2);cls('sit');place(P2[0],P2[1],.94,.9);if(SC)SC.style.opacity=String(Math.min(1,u/.55));W.style.opacity=String(1-Math.max(0,(u-.3)/.7));cam(P2[0],now)}
+        else{W.style.opacity='0';if(SC)SC.style.opacity='1';cls('');raf=0;$('#walkAgain').hidden=false;return}
         raf=requestAnimationFrame(frame)}
-      function run(){if(raf)cancelAnimationFrame(raf);$('#walkAgain').hidden=true;LO.style.opacity='1';W.style.opacity='0';if(SC)SC.style.opacity='0';t0=performance.now();raf=requestAnimationFrame(frame)}
+      function run(){if(raf)cancelAnimationFrame(raf);$('#walkAgain').hidden=true;LO.style.opacity='1';W.style.opacity='0';if(SC)SC.style.opacity='0';camLast=0;camX=null;t0=performance.now();raf=requestAnimationFrame(frame)}
       $('#walkAgain').addEventListener('click',run);
       setTimeout(run,600)}
     var iv=setInterval(function(){if(document.querySelector('.stage.ready')&&$('#scene')){clearInterval(iv);setTimeout(start,400)}},150)})();
